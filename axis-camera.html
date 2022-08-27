@@ -1,4 +1,4 @@
-<script type="text/x-red" data-template-name="axis-com-camera">
+<script type="text/x-red" data-template-name="Axis camera">
     <div class="form-row">
         <label for="node-input-preset"><i class="icon-tag"></i> Camera</label>
         <input type="text" id="node-input-preset">
@@ -56,12 +56,12 @@
 </script>
 
 <script type="text/javascript">
-RED.nodes.registerType('axis-com-camera',{
+RED.nodes.registerType('Axis camera',{
 	category: 'Axis Com',
 	color: '#FFCC33',
 	defaults: {
 		name: { value:""},
-		preset: {type:"axis-com-preset"},
+		preset: {type:"Device Access"},
 		action: { value:"JPEG Image"},
 		resolution: { value:"640x360"},
 		output: { value:"Base64"},
@@ -116,7 +116,7 @@ RED.nodes.registerType('axis-com-camera',{
 });
 </script>
 
-<script type="text/x-red" data-help-name="axis-com-camera">
+<script type="text/x-red" data-help-name="Axis camera">
 	<h3>Inputs:</h3>
 	<dl class="message-properties">
 		<dt>Camera<span class="property-type">configuration</span></dt>

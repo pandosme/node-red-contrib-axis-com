@@ -385,10 +385,10 @@ module.exports = function(RED) {
         });
     }
 	
-    RED.nodes.registerType("axis-com-device",Axis_Device,{
+    RED.nodes.registerType("Axis device",Axis_Device,{
 		defaults: {
 			name: { type:"text" },
-			preset: {type:"axis-com-preset"},
+			preset: {type:"Device Access"},
 			action: { type:"text" },
 			data: {type: "text"},
 			options: {type: "text"},

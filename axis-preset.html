@@ -1,4 +1,4 @@
-<script type="text/x-red" data-template-name="axis-com-preset">
+<script type="text/x-red" data-template-name="Device Access">
     <div class="form-row">
         <label for="node-config-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-config-input-name" placeholder="optional">
@@ -25,7 +25,7 @@
 </script>
 
 <script type="text/javascript">
-    RED.nodes.registerType('axis-com-preset',{
+    RED.nodes.registerType('Device Access',{
         category: 'config',
         defaults: {
 			name: {value:""},
@@ -42,7 +42,7 @@
     });
 </script>
 
-<script type="text/x-red" data-help-name="axis-com-preset">
+<script type="text/x-red" data-help-name="Device Access">
     Defining a devices address, user and passwords simplifies for single device environment.  For multi device environments
 	you can exclude address and inject with <code>msg.address</code> 
 

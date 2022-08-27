@@ -220,10 +220,10 @@ module.exports = function(RED) {
         });
     }
 	
-    RED.nodes.registerType("axis-com-camera",Axis_Camera,{
+    RED.nodes.registerType("Axis camera",Axis_Camera,{
 		defaults: {
 			name: { type:"text" },
-			preset: {type:"axis-com-preset"},
+			preset: {type:"Device Access"},
 			action: { type:"text" },
 			resolution: { type:"text" },
 			output: { type:"text" },

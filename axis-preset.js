@@ -10,7 +10,7 @@ module.exports = function(RED) {
 		this.protocol = config.protocol;
 	}
 	
-	RED.nodes.registerType("axis-com-preset", Axis_Preset_Node,{
+	RED.nodes.registerType("Device Access", Axis_Preset_Node,{
 		defaults: {
 			name: {type: "text"},
 			address: {type: "text"},

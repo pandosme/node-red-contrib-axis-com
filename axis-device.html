@@ -1,4 +1,4 @@
-<script type="text/x-red" data-template-name="axis-com-device">
+<script type="text/x-red" data-template-name="Axis device">
     <div class="form-row">
         <label for="node-input-preset"><i class="icon-tag"></i> Device</label>
         <input type="text" id="node-input-preset">
@@ -47,12 +47,12 @@
 
 
 <script type="text/javascript">
-RED.nodes.registerType('axis-com-device',{
+RED.nodes.registerType('Axis device',{
 	category: 'Axis Com',
 	color: '#FFCC33',
 	defaults: {
 		name: { value:""},
-		preset: {type:"axis-com-preset"},
+		preset: {type:"Device Access"},
 		action: { value:"Device Info"},
 		cgi: { value:""},
 		data: {value:""},
@@ -110,7 +110,7 @@ RED.nodes.registerType('axis-com-device',{
 });
 </script>
 
-<script type="text/x-red" data-help-name="axis-com-device">
+<script type="text/x-red" data-help-name="Axis device">
 	<h3>Inputs:</h3>
 	<dl class="message-properties">
 		<dt>Device<span class="property-type">configuration</span></dt>

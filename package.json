@@ -1,0 +1,32 @@
+{
+  "name": "node-red-contrib-axis-template",
+  "version": "1.0.0",
+  "description": "Template node for simplifying specific Axis device integration",
+  "author": {
+    "name": "Fred Juhlin",
+    "email": "fred.juhlin.me"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pandosme/node-red-axis-template/issues"
+  },
+  "bundleDependencies": false,
+  "dependencies": {
+    "vapix-wrapper": "^1.0.0"
+  },
+  "deprecated": false,
+  "homepage": "https://github.com/pandosme/node-red-axis-template",
+  "keywords": ["node-red","Axis","Node template"],
+  "node-red": {
+    "nodes": {
+      "axis-template": "axis-template.js"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pandosme/node-red-axis-template.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}

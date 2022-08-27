@@ -1,0 +1,84 @@
+<script type="text/x-red" data-template-name="axis-template">
+    <div class="form-row">
+        <label for="node-input-preset"><i class="icon-tag"></i> Device</label>
+        <input type="text" id="node-input-preset">
+    </div>
+    <div class="form-row">
+        <label for="node-input-action"><i class="icon-tag"></i> Action</label>
+        <select id="node-input-action">
+            <option value="Get">Get</option>
+            <option value="Set">Set</option>
+		</select>
+	</div>
+    <div class="form-row input_data">
+        <label for="node-input-data"><i class="icon-tag"></i> Data</label>
+        <input type="text" id="node-input-data" placeholder="Optional or inject msg.payload">
+    </div>
+    <div class="form-row input_options">
+        <label for="node-input-options"><i class="icon-tag"></i> Options</label>
+        <input type="text" id="node-input-options" placeholder="Optional or inject msg.options">
+    </div>
+</script>
+
+<script type="text/javascript">
+RED.nodes.registerType('axis-template',{
+	category: 'Axis',
+	color: '#33CCFF',
+	defaults: {
+		preset: {type:"axis-preset"},
+		action: { value:""},
+		data: { value:""},
+		options: { value:""}
+	},
+	icon: "font-awesome/fa-puzzle-piece",
+	inputs:1,
+	outputs:1,
+	label: function() {
+		return this.action || "Axis Template";
+	},
+	oneditprepare: function() {
+		$("#node-input-action").change(function() {
+			var action = $("#node-input-action").val();
+			$(".input_data").hide();
+			$(".input_options").show();
+			switch (action) {
+				case "Get":
+					$(".input_data").hide();
+					$(".input_options").show();
+				break;
+				case "Set":
+					$(".input_data").show();
+					$(".input_options").show();
+				break;
+				default:
+					$(".input_data").hide();
+					$(".input_options").show();
+			}
+		});
+	}
+});
+</script>
+
+<script type="text/x-red" data-help-name="axis-template">
+	<h3>Inputs:</h3>
+	<dl class="message-properties">
+		<dt>credentials<span class="property-type">configuration</span></dt>
+		<dd>Camera credentials user and password is required.<br/>
+		Use <code>msg.user</code> and <code>msg.password</code> to override config</dd>
+	</dl>	
+	
+	<dl class="message-properties">
+		<dt>Action<span class="property-type">string</span></dt>
+		<dd>Use <code>msg.action</code> to override config</dd>
+	</dl>	
+
+	<dl class="message-properties">
+		<dt>Options (<code>msg.options</code>) <span class="property-type">string | object</span></dt>
+		<dd>Depends on action</dd>
+	</dl>	
+	
+	<dl class="message-properties">
+		<dt>Data (<code>msg.payload</code>) <span class="property-type">string | object</span></dt>
+		<dd>Depends on action</dd>
+	</dl>	
+</script>

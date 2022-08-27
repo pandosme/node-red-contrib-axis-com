@@ -1,0 +1,63 @@
+<script type="text/x-red" data-template-name="axis-com-preset">
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-config-input-name" placeholder="optional">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-address"><i class="icon-tag"></i> Address</label>
+        <input type="text" id="node-config-input-address" placeholder="IP or FQDN">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-user"><i class="icon-tag"></i> User</label>
+        <input type="text" id="node-config-input-user">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-password"><i class="icon-tag"></i> Password</label>
+        <input type="password" id="node-config-input-password">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-protocol"><i class="icon-tag"></i> Protocol</label>
+        <select id="node-config-input-protocol">
+            <option value="http">HTTP</option>
+            <option value="https">HTTPS</option>
+		</select>
+	</div>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('axis-com-preset',{
+        category: 'config',
+        defaults: {
+			name: {value:""},
+			address: {value:""},
+			protocol: {value:"http"}
+        },
+		credentials: {
+			user: {value:""},
+			password: {type:"password"}
+        },
+        label: function() {
+            return this.name || this.address || "Not defined";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-help-name="axis-com-preset">
+    Defining a devices address, user and passwords simplifies for single device environment.  For multi device environments
+	you can exclude address and inject with <code>msg.address</code> 
+
+	<dl class="message-properties">
+		<dt>Address (msg.address)<span class="property-type">string</span></dt>
+		<dd>IP address or FQDN to Axis device<br/>
+	</dl>	
+	
+	<dl class="message-properties">
+		<dt>User name (msg.user)<span class="property-type">string</span></dt>
+		<dd>IP address or FQDN to Axis device<br/>
+	</dl>	
+
+	<dl class="message-properties">
+		<dt>Password (msg.password)<span class="property-type">string</span></dt>
+		<dd>The device user account password<br/>
+	</dl>	
+</script>

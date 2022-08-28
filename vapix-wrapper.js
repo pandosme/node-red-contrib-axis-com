@@ -15,9 +15,9 @@ exports.HTTP_Get = function( device, cgi, responseType, callback ) {
 }
 
 exports.HTTP_Post = function( device, cgi, payload, responseType, callback ) {
-	console.log("vapix-wrapper:HTTP_Post:" + cgi);
+//	console.log("vapix-wrapper:HTTP_Post:" + cgi);
 	VapixDigest.HTTP_Post( device, cgi, payload, responseType, function( error, body ) {
-		console.log("vapix-wrapper:HTTP_Post:Response:", error,body);;
+//		console.log("vapix-wrapper:HTTP_Post:Response:", error,body);;
 		callback( error, body );
 	});
 }
@@ -47,9 +47,9 @@ exports.SOAP = function( device, soapBody, callback ) {
 }
 
 exports.CGI = function( device, cgi, callback ) {
-	console.log("vapix-wrapper:CGI (" + cgi + ")");
+//	console.log("vapix-wrapper:CGI (" + cgi + ")");
 	VapixDigest.HTTP_Get( device, cgi, "text", function( error, body ) {
-		console.log("vapix-wrapper:CGI: Response: ", error, body );
+//		console.log("vapix-wrapper:CGI: Response: ", error, body );
 		if(error) {
 			callback(error,body);
 			return;
@@ -83,7 +83,7 @@ exports.JPEG = function( device, profile, callback ) {
 }
 
 exports.Param_Get = function( device, paramPath, callback ) {
-	console.log("vapix-wrapper:Param:Get (" + paramPath + ")");
+//	console.log("vapix-wrapper:Param:Get (" + paramPath + ")");
 	if( !paramPath || paramPath.length === 0 || paramPath.toLowerCase ( ) === "root" ) {
 		callback(true,{
 			statusCode: 400,
@@ -93,7 +93,7 @@ exports.Param_Get = function( device, paramPath, callback ) {
 		return;
 	}
 	exports.HTTP_Get( device, '/axis-cgi/param.cgi?action=list&group=' + paramPath, "text", function( error, body ) {
-		console.log("vapix-wrapper:Param_Get:Response", error, body );
+//		console.log("vapix-wrapper:Param_Get:Response", error, body );
 		if( error ) {
 			callback( error, body );
 			return;
@@ -485,59 +485,44 @@ exports.Account_Remove = function( device, accountName, callback) {
 	});
 };
 
-exports.Upload_Firmare = function( device , options, callback ) {
-	if( Buffer.isBuffer(options)  ) {
-		VapixDigest.upload( device, "firmware", "firmware.bin", null, options, function( error, response) {
-			if( !error )  {
+exports.Upload_Firmare = function( device , buffer, callback ) {
+	console.log("vapix-wrapper.upload_firmware", device);
+	if( !Buffer.isBuffer(buffer) ) {
+		callback(true,{
+			statusCode: 400,
+			statusMessage: "Invalid input",
+			body: "Firmware data must be a buffer"
+		});
+		return;
+	}
+	
+	VapixDigest.upload( device, "firmware", "firmware.bin", null, buffer, 
+		function( error, response) {
+console.log("Upload",error,response);
+			if( error )  {
 				callback( error, response );
 				return;
 			}
-			VapixDigest.upload( device, "firmware_legacy", "firmware.bin", null, options, function( error2, response2) {
+			if( typeof response === "object" && response.hasOwnProperty("error") ){
+				callback(true, {
+					statusCode: response.error.code,
+					statusMessage: response.error.message,
+					body: response
+				});
+				return;
+			}
+
+			if( typeof response === "object" && response.hasOwnProperty("data") ){
+				callback(false, device.address + " updated to " + response.data.firmwareVersion);
+				return;
+			}
+			
+			VapixDigest.upload( device, "firmware_legacy", "firmware.bin", null, buffer, function( error2, response2) {
 				callback( error2, response2 );
 				return;
 			});
-		});
-		return;
-	}
-
-	if( typeof options !== "string" ) {
-		callback(true,{
-			statusCode: 400,
-			statusMessage: "Invalid input",
-			body: "Firmware upload requires a filepath or buffer input"
-		});
-		return;
-	}
-	if( !fs.existsSync(options) ) {
-		callback(true,{
-			statusCode: 400,
-			statusMessage: "Invalid input",
-			body: options + " does not exist"
-		});
-		return;
-	}	
-
-	VapixDigest.upload( device, "firmware", "firmware.bin", null, fs.createReadStream(options), function( error, response) {
-		if( !error ) {
-			callback( error, response );
-			return;
 		}
-		VapixDigest.upload( device, "firmware_legacy", "firmware.bin", null, fs.createReadStream(options), function( error, response) {
-			if( error ) {
-				callback(error, response);
-				return;
-			}
-			if( response.search("Error") > 0 ) 
-				callback(true,{
-					statusCode: 500,
-					statusMessage: "Upgrade failed",
-					body: response
-				});
-			else
-				callback( false, response );
-		});
-	});
-
+	);
 }
 
 exports.Upload_Overlay = function( device, filename, options, callback ) {

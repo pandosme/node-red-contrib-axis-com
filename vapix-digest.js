@@ -152,7 +152,7 @@ exports.HTTP_Post = function( device, path, body, responseType, callback ) {
 												responseType: responseType,
 												https: {rejectUnauthorized: false}
 											});
-			console.log("axis-digest:HTTP_Get: Response false",response.body);
+//			console.log("axis-digest:HTTP_Get: Response false",response.body);
 			callback(false, response.body );
 		} catch (error) {
 			callback(true, {
@@ -348,6 +348,7 @@ exports.Soap = function( device, body, callback ) {
 }
 
 exports.upload = function( device, type, filename, options, buffer, callback ) {
+//	console.log("vapix-digest.upload:", type,options);
 	if( !device || !device.hasOwnProperty("address") || !device.hasOwnProperty("user") || !device.hasOwnProperty("password") ) {
 		callback(true,{
 			statusCode: 400,
@@ -357,7 +358,7 @@ exports.upload = function( device, type, filename, options, buffer, callback ) {
 		return;
 	}
 	
-	if( !type || type !== "firmware" || type !== "firmware_legacy" || type !== "acap" || type !== "acap_legacy" || type !== "overlay"  ) {
+	if( !type || !(type === "firmware" || type === "firmware_legacy" || type === "acap" || type === "acap_legacy" || type === "overlay" ) ) {
 		callback(true,{
 			statusCode: 400,
 			statusMessage: "Invalid input",
@@ -379,7 +380,7 @@ exports.upload = function( device, type, filename, options, buffer, callback ) {
 		});
 		return;
 	}
-
+//console.log("vapix-digest: Uploading starting");
 	var formData = {
 		apiVersion: "1.0",
 		context: "nodered",

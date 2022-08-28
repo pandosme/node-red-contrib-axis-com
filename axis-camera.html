@@ -8,40 +8,39 @@
         <select id="node-input-action">
             <option value="JPEG Image">JPEG Image</option>
             <option value="Camera Info">Camera Info</option>
-            <option value="Get Image settings">Get image settings</option>
-            <option value="Set Image settings">Set image settings</option>
-            <option value="Upload overlay">Upload overlay</option>
+            <option value="Get Image settings">Get settings</option>
+            <option value="Set Image settings">Set settings</option>
 		</select>
 	</div>
 
-    <div class="form-row action_capture">
+    <div class="form-row user_input_resolution">
         <label for="node-input-resolution"><i class="icon-tag"></i> Resolution</label>
         <select id="node-input-resolution">
-            <option value="1920x1080">1920x1080</option>
-            <option value="1280x720">1280x720</option>
-            <option value="640x360">640x360</option>
-            <option value="320x180">320x180</option>
-            <option value="800x600">800x600</option>
-            <option value="640x480">640x480</option>
-            <option value="320x240">320x240</option>
-            <option value="2048x2048">2048x2048</option>
-            <option value="1280x1280">1280x1280</option>
-            <option value="640x640">640x640</option>
-            <option value="320x320">320x320</option>
+            <option value="1920x1080">1920x1080 [16:9]</option>
+            <option value="1280x720">1280x720 [16:9]</option>
+            <option value="640x360">640x360 [16:9]</option>
+            <option value="320x180">320x180 [16:9]</option>
+            <option value="800x600">800x600 [4:3]</option>
+            <option value="640x480">640x480 [4:3]</option>
+            <option value="320x240">320x240 [4:3]</option>
+            <option value="2048x2048">2048x2048 [1:1]</option>
+            <option value="1280x1280">1280x1280 [1:1]</option>
+            <option value="800x800">800x800 [1:1]</option>
+            <option value="640x640">640x640 [1:1]</option>
 		</select>
 	</div>
 
-    <div class="form-row input_filename">
-        <label for="node-input-filename"><i class="icon-tag"></i> Filename</label>
-        <input type="text" id="node-input-filename" placeholder="">
-    </div>
-
-    <div class="form-row input_options">
+    <div class="form-row user_input_options">
         <label for="node-input-options"><i class="icon-tag"></i> Options</label>
-        <input type="text" id="node-input-options" placeholder="">
+        <input type="text" id="node-input-options" placeholder="Overrides msg.options">
     </div>
 
-    <div class="form-row action_capture">
+    <div class="form-row user_input_data">
+        <label for="node-input-data"><i class="icon-tag"></i> Data</label>
+        <input type="text" id="node-input-data" placeholder="Overrides msg.payload">
+    </div>
+
+    <div class="form-row user_input_response">
         <label for="node-input-output"><i class="icon-tag"></i> Output</label>
         <select id="node-input-output">
             <option value="Base64">Base64</option>
@@ -66,7 +65,8 @@ RED.nodes.registerType('Axis camera',{
 		resolution: { value:"640x360"},
 		output: { value:"Base64"},
 		filename: { value:""},
-		options: { value:""}		
+		options: { value:""},
+		data: { value:""}
 	},
 	icon: "font-awesome/fa-video-camera",
 	inputs:1,
@@ -77,39 +77,18 @@ RED.nodes.registerType('Axis camera',{
 	oneditprepare: function() {
 		$("#node-input-action").change(function() {
 			var action = $("#node-input-action").val();
-			$(".action_capture").show();
-			$(".input_options").hide();
-			$(".input_filename").hide();
+			$(".user_input_resolution").show();
+			$(".user_input_response").show();
+			$(".user_input_data").hide();
+			$(".user_input_options").hide();
 			switch (action) {
 				case "JPEG Image":
-					$(".action_capture").show();
-					$(".input_options").hide();
-					$(".input_filename").hide();
-				break;
-				case "Camera Info":
-					$(".action_capture").hide();
-					$(".input_options").hide();
-					$(".input_filename").hide();
-				break;
-				case "Get Image settings":
-					$(".action_capture").hide();
-					$(".input_options").hide();
-					$(".input_filename").hide();
+					$(".user_input_resolution").show();
+					$(".user_input_response").show();
 				break;
 				case "Set Image settings":
-					$(".action_capture").hide();
-					$(".input_options").show();
-					$(".input_filename").hide();
+					$(".user_input_data").show();
 				break;
-				case "Upload overlay":
-					$(".action_capture").hide();
-					$(".input_filename").show();
-					$(".input_options").show();
-				break;
-				default:
-					$(".action_capture").hide();
-					$(".input_options").hide();
-					$(".input_filename").hide();
 			}
 		});
 	}

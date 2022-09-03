@@ -1,0 +1,422 @@
+[
+    {
+        "id": "4a305f37a96bf169",
+        "type": "tab",
+        "label": "Camera",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "18a6e5641aa75e93",
+        "type": "inject",
+        "z": "4a305f37a96bf169",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 140,
+        "y": 80,
+        "wires": [
+            [
+                "6c93753be2ba2ef2"
+            ]
+        ]
+    },
+    {
+        "id": "5660f2b7cadbf404",
+        "type": "inject",
+        "z": "4a305f37a96bf169",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 140,
+        "y": 160,
+        "wires": [
+            [
+                "c9cfdf20d5483f92"
+            ]
+        ]
+    },
+    {
+        "id": "ab1443cb25a96479",
+        "type": "inject",
+        "z": "4a305f37a96bf169",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 140,
+        "y": 240,
+        "wires": [
+            [
+                "ee85e72ea1c48971"
+            ]
+        ]
+    },
+    {
+        "id": "7c9ce6375bae498d",
+        "type": "inject",
+        "z": "4a305f37a96bf169",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 140,
+        "y": 320,
+        "wires": [
+            [
+                "79e721c602d5cf2b"
+            ]
+        ]
+    },
+    {
+        "id": "79e721c602d5cf2b",
+        "type": "function",
+        "z": "4a305f37a96bf169",
+        "name": "Image settings",
+        "func": "msg.payload = {\n    Brightness: 50,\n    ColorLevel: 50,\n    DayLevel: 100\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 380,
+        "y": 320,
+        "wires": [
+            [
+                "564fa00c43e5d08b"
+            ]
+        ]
+    },
+    {
+        "id": "1be1a63fc33351f0",
+        "type": "debug",
+        "z": "4a305f37a96bf169",
+        "name": "Error",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 810,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "a7127613c321e53d",
+        "type": "debug",
+        "z": "4a305f37a96bf169",
+        "name": "Success",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 820,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "5c8d5a4fc385f38b",
+        "type": "debug",
+        "z": "4a305f37a96bf169",
+        "name": "Error",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 810,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "6ff0428fa684ced9",
+        "type": "debug",
+        "z": "4a305f37a96bf169",
+        "name": "Success",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 820,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "40600f52d72c63e4",
+        "type": "debug",
+        "z": "4a305f37a96bf169",
+        "name": "Error",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 810,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "9d9d493fae191c02",
+        "type": "debug",
+        "z": "4a305f37a96bf169",
+        "name": "Success",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 820,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "b4dc5f47735575a6",
+        "type": "debug",
+        "z": "4a305f37a96bf169",
+        "name": "Error",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 810,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "9e321868e28db3f9",
+        "type": "Axis camera",
+        "z": "4a305f37a96bf169",
+        "name": "",
+        "preset": "f869d7cd6eb9b911",
+        "action": "JPEG Image",
+        "resolution": "640x360",
+        "output": "Base64",
+        "filename": "",
+        "options": "",
+        "data": "",
+        "x": 650,
+        "y": 80,
+        "wires": [
+            [
+                "0be3d3ae2d5245d3"
+            ],
+            [
+                "1be1a63fc33351f0"
+            ]
+        ]
+    },
+    {
+        "id": "c9cfdf20d5483f92",
+        "type": "Axis camera",
+        "z": "4a305f37a96bf169",
+        "name": "",
+        "preset": "f869d7cd6eb9b911",
+        "action": "Camera Info",
+        "resolution": "640x360",
+        "output": "Base64",
+        "filename": "",
+        "options": "",
+        "data": "",
+        "x": 650,
+        "y": 160,
+        "wires": [
+            [
+                "a7127613c321e53d"
+            ],
+            [
+                "5c8d5a4fc385f38b"
+            ]
+        ]
+    },
+    {
+        "id": "ee85e72ea1c48971",
+        "type": "Axis camera",
+        "z": "4a305f37a96bf169",
+        "name": "",
+        "preset": "f869d7cd6eb9b911",
+        "action": "Get Image settings",
+        "resolution": "640x360",
+        "output": "Base64",
+        "filename": "",
+        "options": "",
+        "data": "",
+        "x": 630,
+        "y": 240,
+        "wires": [
+            [
+                "6ff0428fa684ced9"
+            ],
+            [
+                "40600f52d72c63e4"
+            ]
+        ]
+    },
+    {
+        "id": "564fa00c43e5d08b",
+        "type": "Axis camera",
+        "z": "4a305f37a96bf169",
+        "name": "",
+        "preset": "f869d7cd6eb9b911",
+        "action": "Set Image settings",
+        "resolution": "640x360",
+        "output": "Base64",
+        "filename": "",
+        "options": "",
+        "data": "",
+        "x": 630,
+        "y": 320,
+        "wires": [
+            [
+                "9d9d493fae191c02"
+            ],
+            [
+                "b4dc5f47735575a6"
+            ]
+        ]
+    },
+    {
+        "id": "6c93753be2ba2ef2",
+        "type": "function",
+        "z": "4a305f37a96bf169",
+        "name": "Resolution",
+        "func": "msg.resolution = \"1280x720\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 370,
+        "y": 80,
+        "wires": [
+            [
+                "9e321868e28db3f9"
+            ]
+        ]
+    },
+    {
+        "id": "0be3d3ae2d5245d3",
+        "type": "ui_template",
+        "z": "4a305f37a96bf169",
+        "group": "77b88125b159ae08",
+        "name": "",
+        "order": 0,
+        "width": "13",
+        "height": "8",
+        "format": "<img src=\"data:image/jpeg;base64, {{msg.payload}}\">",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 820,
+        "y": 60,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "f869d7cd6eb9b911",
+        "type": "Device Access",
+        "name": "Demo camera",
+        "address": "driveway.juhlin.me",
+        "protocol": "http"
+    },
+    {
+        "id": "77b88125b159ae08",
+        "type": "ui_group",
+        "name": "Image",
+        "tab": "b06550e8db67ab14",
+        "order": 1,
+        "disp": true,
+        "width": "13",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "b06550e8db67ab14",
+        "type": "ui_tab",
+        "name": "Camera",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    }
+]

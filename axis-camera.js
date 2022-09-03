@@ -1,4 +1,4 @@
-//Copyright (c) 2021 Fred Juhlin
+//Copyright (c) 2021-2022 Fred Juhlin
 
 const VapixWrapper = require('./vapix-wrapper');
 
@@ -38,7 +38,6 @@ module.exports = function(RED) {
 			var options = node.options || msg.payload;
 			
 			msg.error = false;
-			
 			switch( action ) {
 				case "JPEG Image":
 					var resolution = "resolution=" + node.resolution;

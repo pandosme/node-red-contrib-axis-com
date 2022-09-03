@@ -1,0 +1,117 @@
+<script type="text/x-red" data-template-name="Axis ACAP">
+    <div class="form-row">
+        <label for="node-input-preset"><i class="icon-tag"></i> Device</label>
+        <input type="text" id="node-input-preset">
+    </div>
+    <div class="form-row">
+        <label for="node-input-action"><i class="icon-tag"></i> Action</label>
+        <select id="node-input-action">
+            <option value="ACAP Status">ACAP Status</option>
+            <option value="Start ACAP">Start ACAP</option>
+            <option value="Stop ACAP">Stop ACAP</option>
+            <option value="Remove ACAP">Remove ACAP</option>
+            <option value="Install ACAP">Install ACAP</option>
+		</select>
+	</div>
+
+    <div class="form-row acap_control">
+        <label for="node-input-acap"><i class="icon-tag"></i> ACAP</label>
+        <input type="text" id="node-input-acap" placeholder="ACAP package ID">
+    </div>
+
+    <div class="form-row acap_install">
+        <label for="node-input-filename"><i class="icon-tag"></i> Filename</label>
+        <input type="text" id="node-input-filename" placeholder="File path">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="">
+    </div>
+	
+</script>
+
+<script type="text/javascript">
+RED.nodes.registerType('Axis ACAP',{
+	category: 'Axis Com',
+	color: '#FFCC33',
+	defaults: {
+		name: {value:""},
+		preset: {type:"Device Access"},
+		action: { value:"ACAP Status"},
+		acap: {value:""},
+		filename: {value:""}
+	},
+	icon: "font-awesome/fa-puzzle-piece",
+	inputs:1,
+	outputs:2,
+	label: function() {
+		return this.name || this.action;
+	},
+	oneditprepare: function() {
+		$("#node-input-action").change(function() {
+			var action = $("#node-input-action").val();
+			$(".acap_install").hide();
+			$(".acap_control").hide();
+			switch (action) {
+				case "ACAP Status":
+					$(".acap_control").show();
+				break;
+				case "Start ACAP":
+					$(".acap_control").show();
+				break;
+				case "Stop ACAP":
+					$(".acap_control").show();
+				break;
+				case "Remove ACAP":
+					$(".acap_control").show();
+				break;
+				case "Install ACAP":
+				break;
+			}
+		});
+	}
+	
+});
+</script>
+
+<script type="text/x-red" data-help-name="Axis ACAP">
+	<h3>Inputs:</h3>
+	<dl class="message-properties">
+		<dt>Device<span class="property-type">configuration</span></dt>
+		<dd>A preset device with address, user and password that can be reused in multiple nodes without the need to inject with msg<br/>
+		Properties in device can be left empty and optional inject <code>msg.address</code>, <code>msg.user</code> and <code>msg.password</code></dd>
+	</dl>	
+
+	<dl class="message-properties">
+		<dt>Action<span class="property-type">string</span></dt>
+		<dd>Use <code>msg.action</code> to override config</dd>
+	</dl>	
+
+	<dl class="message-properties">
+		<dt>ACAP (<code>msg.acap</code>) <span class="property-type">string</span></dt>
+		<dd>ACAP package ID as recived by property Name from <i>ACAP status</i></dd>
+	</dl>	
+
+	<dl class="message-properties">
+		<dt>Install</dt>
+		<dd><code>msg.payload</code> must be a buffer containing the ACAÅP EAP file</dd>
+	</dl>	
+
+	<h3>Output 1 (Success):</h3>
+	<dl class="message-properties">
+		Result based on action
+	</dl>	
+
+	<h3>Output 2 (Error):</h3>
+	<dl class="message-properties">
+		<dt>msg.payload<span class="property-type">object</span></dt>
+		<dd>{<br/>
+			&nbsp;&nbsp;statusCode:400,<br/>
+			&nbsp;&nbsp;statusMessage: "Some message"<br/>
+			&nbsp;&nbsp;body: "Response body"<br/>
+			}</code><br/>
+		</dd>
+	</dl>	
+
+</script>

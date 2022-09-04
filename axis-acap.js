@@ -37,9 +37,10 @@ module.exports = function(RED) {
 
 			var action = msg.action || node.action;
 			var data = node.data || msg.payload;
+			var acap = msg.acap || node.acap;
 			var options = msg.options || node.options;
 			var filename = msg.filename || node.filename;
-			
+
 			switch( action ) {
 				case "ACAP Status":
 					VapixWrapper.ACAP_List( device, function( error, response ) {

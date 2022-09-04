@@ -37,10 +37,11 @@ module.exports = function(RED) {
 				case "List accounts":
 					VapixWrapper.Account_List( device,function(error, response){
 						msg.payload = response;
-						if( error )
+						if( error ) {
 							node.send([null,msg]);
-						else
+						} else {
 							node.send([msg,null]);
+						}
 					});
 				break;
 
@@ -60,15 +61,18 @@ module.exports = function(RED) {
 					}
 					VapixWrapper.Account_Set( device, account, function(error, response){
 						msg.payload = response;
-						if( error )
+						if( error ) {
 							node.send([null,msg]);
-						else
+						} else {
+							msg.payload = account.name + " added/updated";
 							node.send([msg,null]);
+						}
 					});
 				break;
 
 				case "Remove account":
-					if( !options || typeof options !== "string" || options.length === 0 ) {
+					var account = node.account || msg.payload;
+					if( !account || typeof account !== "string" || account.length === 0 ) {
 						msg.payload = {
 							statusCode: 400,
 							statusMessage: "Invalid input",
@@ -77,183 +81,152 @@ module.exports = function(RED) {
 						node.send([null,msg]);
 						return;
 					}
-					VapixWrapper.Account_Remove( device, options, function(error, response){
+					VapixWrapper.Account_Remove( device, account, function(error, response){
 						msg.payload = response;
-						if( error )
+						if( error ) {
 							node.send([null,msg]);
-						else
+						} else {
+							msg.payload = account + " removed";
 							node.send([msg,null]);
+						}
 					});
 				break;
 
-				case "Set common hardening":
-					if( typeof options === "string" )
-						options = JSON.parse(options);
-					if( typeof options !== "object") {
+				case "Allow discovery":
+					var state = msg.payload;
+					if( typeof state !== "boolean" ) {
 						msg.payload = {
 							statusCode: 400,
 							statusMessage: "Invalid input",
-							body: "Check JSON data"
+							body: "msg.payload must be boolean"
 						}
 						node.send([null,msg]);
 						return;
 					}
-					var setting = null;
-					var cgi = null;
 					
-					var numberOfSetttings = Object.keys(options).length;
-					if( numberOfSetttings == 0 ) {
-						msg.payload = "OK"
-						node.send([msg,null]);
+					if( state === true ) {
+						cgi = "/axis-cgi/param.cgi?action=update&Network.UPnP.Enabled=yes&Network.Bonjour.Enabled=yes&Network.ZeroConf.Enabled=yes&WebService.DiscoveryMode.Discoverable=Yes";
+					} else {
+						cgi = "/axis-cgi/param.cgi?action=update&Network.UPnP.Enabled=no&Network.Bonjour.Enabled=no&Network.ZeroConf.Enabled=no&WebService.DiscoveryMode.Discoverable=No";
 					}
-					
-					for( var name in options ) {
-						switch( name ) {
-							case "discovery":
-								setting = options[name];
-								if( setting === true ) {
-									cgi = "/axis-cgi/param.cgi?action=update&Network.UPnP.Enabled=yes&Network.Bonjour.Enabled=yes&Network.ZeroConf.Enabled=yes&WebService.DiscoveryMode.Discoverable=Yes";
-								} else {
-									cgi = "/axis-cgi/param.cgi?action=update&Network.UPnP.Enabled=no&Network.Bonjour.Enabled=no&Network.ZeroConf.Enabled=no&WebService.DiscoveryMode.Discoverable=No";
-								}
-								VapixWrapper.CGI( device, cgi, function(error,response ) {
-									if( error ) {
-										node.send([null,msg]);
-										return;
-									}
-									msg.payload = response;
-									numberOfSetttings--;
-									if( numberOfSetttings <= 0 ) {
-										node.send([msg,null]);
-										return;
-									}
-								});
-							break;
-							case "maintenance":
-								setting = options[name];
-								if( setting === true ) {
-									cgi = "/axis-cgi/param.cgi?action=update&Network.SSH.Enabled=yes&Network.FTP.Enabled=yes&root.System.EditCgi=yes";
-								} else {
-									cgi = "/axis-cgi/param.cgi?action=update&Network.SSH.Enabled=no&Network.FTP.Enabled=no&System.EditCgi=no";
-								}
-								VapixWrapper.CGI( device, cgi, function(error,response ) {
-									msg.payload = response;
-									if( error ) {
-										node.send([null,msg]);
-										return;
-									}
-									numberOfSetttings--;
-									if( numberOfSetttings <= 0 ) {
-										node.send([msg,null]);
-										return;
-									}
-								});
-							break;
-							case "forceHTTPS":
-								setting = options[name];
-								if( setting === true ) {
-									cgi = "/axis-cgi/param.cgi?action=update&System.BoaGroupPolicy.admin=https&System.BoaGroupPolicy.operator=https&System.BoaGroupPolicy.viewer=https";
-								} else {
-									cgi = "/axis-cgi/param.cgi?action=update&System.BoaGroupPolicy.admin=both&System.BoaGroupPolicy.operator=both&System.BoaGroupPolicy.viewer=both";
-								}
-								VapixWrapper.CGI( device, cgi, function(error,response ) {
-									msg.payload = response;
-									if( error ) {
-										node.send([null,msg]);
-										return;
-									}
-									numberOfSetttings--;
-									if( numberOfSetttings <= 0 ) {
-										node.send([msg,null]);
-										return;
-									}
-								});
-							break;
-							case "browser":
-								setting = options[name];
-								if( setting === true ) {
-									cgi = "/axis-cgi/param.cgi?action=update&System.BoaGroupPolicy.admin=https&System.BoaGroupPolicy.operator=https&System.WebInterfaceDisabled=no";
-								} else {
-									cgi = "/axis-cgi/param.cgi?action=update&System.BoaGroupPolicy.admin=both&System.BoaGroupPolicy.operator=both&System.WebInterfaceDisabled=yes";
-								}
-								VapixWrapper.CGI( device, cgi, function(error,response ) {
-									msg.payload = response;
-									if( error ) {
-										node.send([null,msg]);
-										return;
-									}
-									numberOfSetttings--;
-									if( numberOfSetttings <= 0 ) {
-										node.send([msg,null]);
-										return;
-									}
-								});
-							break;
-							
-							default:
-								numberOfSetttings--;
-								if( numberOfSetttings <= 0 ) {
-									node.send([msg,null]);
-									return;
-								}
-							break;
-						}
-					}
-				break;
-			
-				
-				case "Set IP whitelist":
-				    var ipFormat = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-
-					if( typeof options === "string" )
-						options = JSON.parse(options);
-					
-					if( !options ) {
-						msg.payload = {
-							statusCode: 400,
-							statusMessage: "Invalid input",
-							body: "Set whitelist options"
-						}
-						node.send([null,msg]);
-						return;
-					}
-
-					var whitelist = "no";
-					var list = "";
-						
-					if( Array.isArray(options) && options.length > 0 ) {
-						if( !ipFormat.test(options[0]) ) {
-							msg.payload = {
-								statusCode: 400,
-								statusMessage: "Invalid input",
-								body: options[0] + " is invalid IP address"
-							}
-							node.send([null,msg]);
-							return;
-						}
-						whitelist = "yes";
-						list = options[0];
-						for(var i = 1; i < options.length;i++) {
-							if( !ipFormat.test(options[i]) ) {
-								msg.payload = {
-									statusCode: 400,
-									statusMessage: "Invalid input",
-									body: options[i] + " is invalid IP address"
-								}
-								node.send([null,msg]);
-								return;
-							}
-							list += "%20" + options[i];
-						}
-					}
-					var cgi = "/axis-cgi/param.cgi?action=update&root.Network.Filter.Enabled=" + whitelist;
-					cgi += "&root.Network.Filter.Input.AcceptAddresses=" + list;
 					VapixWrapper.CGI( device, cgi, function(error,response ) {
 						msg.payload = response;
 						if( error ) {
 							node.send([null,msg]);
 							return;
 						}
+						msg.payload = state;
+						node.send([msg,null]);
+					});
+				break;
+
+				case "Allow SSH":
+					var state = msg.payload;
+					if( typeof state !== "boolean" ) {
+						msg.payload = {
+							statusCode: 400,
+							statusMessage: "Invalid input",
+							body: "msg.payload must be boolean"
+						}
+						node.send([null,msg]);
+						return;
+					}
+					
+					if( state === true ) {
+						cgi = "/axis-cgi/param.cgi?action=update&Network.SSH.Enabled=yes";
+					} else {
+						cgi = "/axis-cgi/param.cgi?action=update&Network.SSH.Enabled=no";
+					}
+					VapixWrapper.CGI( device, cgi, function(error,response ) {
+						msg.payload = response;
+						if( error ) {
+							node.send([null,msg]);
+							return;
+						}
+						msg.payload = state;
+						node.send([msg,null]);
+					});
+				break;
+
+				case "Allow Browser Access":
+					var state = msg.payload;
+					if( typeof state !== "boolean" ) {
+						msg.payload = {
+							statusCode: 400,
+							statusMessage: "Invalid input",
+							body: "msg.payload must be boolean"
+						}
+						node.send([null,msg]);
+						return;
+					}
+					if( state === true ) {
+						cgi = "/axis-cgi/param.cgi?action=update&System.WebInterfaceDisabled=no";
+					} else {
+						cgi = "/axis-cgi/param.cgi?action=update&System.WebInterfaceDisabled=yes";
+					}
+					VapixWrapper.CGI( device, cgi, function(error,response ) {
+						msg.payload = response;
+						if( error ) {
+							node.send([null,msg]);
+							return;
+						}
+						msg.payload = state;
+						node.send([msg,null]);
+					});
+				break;
+				
+				case "Set firewall":
+				    var ipFormat = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+
+					var list = node.options || msg.payload;
+
+					if( typeof list === "string" && list[0] === "[")
+						list = JSON.parse(list);
+					if( !list || !Array.isArray(list) ) {
+						msg.payload = {
+							statusCode: 400,
+							statusMessage: "Invalid input",
+							body: "Input must be an array of IP addresses"
+						}
+						node.send([null,msg]);
+						return;
+					}
+					//Check if all address are vaid IP addresses
+					var listOK = true;
+					var stringList = "";
+					list.forEach(function(item){
+						if( !listOK )
+							return;
+						if( !ipFormat.test(item) ) {
+							listOK = false;
+							msg.payload = {
+								statusCode: 400,
+								statusMessage: "Invalid input",
+								body: item + " is invalid IP address"
+							}
+							node.send([null,msg]);
+							return;
+						}
+						stringList += item + " ";
+					});
+
+					if( !listOK )
+						return;
+
+					if( stringList.length > 0 )
+						stringList = stringList.slice(0, -1);
+					if( list.length > 0 )
+						var cgi = "/axis-cgi/param.cgi?action=update&root.Network.Filter.Enabled=yes";
+					else
+						var cgi = "/axis-cgi/param.cgi?action=update&root.Network.Filter.Enabled=no";
+					cgi += "&root.Network.Filter.Input.AcceptAddresses=" + stringList;
+					VapixWrapper.CGI( device, cgi, function(error,response ) {
+						msg.payload = response;
+						if( error ) {
+							node.send([null,msg]);
+							return;
+						}
+						msg.payload = list;
 						node.send([msg,null]);
 					});
 				break;

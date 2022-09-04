@@ -16,7 +16,12 @@
 
     <div class="form-row acap_control">
         <label for="node-input-acap"><i class="icon-tag"></i> ACAP</label>
-        <input type="text" id="node-input-acap" placeholder="ACAP package ID">
+        <input type="text" id="node-input-acap" placeholder="Specific ACAP">
+    </div>
+
+    <div class="form-row acap_list">
+        <label for="node-input-acap"><i class="icon-tag"></i> ACAP</label>
+        <input type="text" id="node-input-acap" placeholder="Optional name for single/specific ACAP">
     </div>
 
     <div class="form-row acap_install">
@@ -51,11 +56,12 @@ RED.nodes.registerType('Axis ACAP',{
 	oneditprepare: function() {
 		$("#node-input-action").change(function() {
 			var action = $("#node-input-action").val();
-			$(".acap_install").hide();
 			$(".acap_control").hide();
+			$(".acap_install").hide();
+			$(".acap_list").hide();
 			switch (action) {
 				case "ACAP Status":
-					$(".acap_control").show();
+					$(".acap_list").show();
 				break;
 				case "Start ACAP":
 					$(".acap_control").show();

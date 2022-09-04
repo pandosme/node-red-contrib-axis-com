@@ -5,7 +5,6 @@ const VapixWrapper = require('./vapix-wrapper');
 module.exports = function(RED) {
 	
 	function Axis_Camera(config) {
-console.log("Register Axis camera");		
 		RED.nodes.createNode(this,config);
 		this.preset = config.preset;		
 		this.action = config.action;

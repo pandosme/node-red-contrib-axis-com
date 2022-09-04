@@ -12,7 +12,6 @@ module.exports = function(RED) {
 		var node = this;
 		node.on('input', function(msg) {
 			node.status({});
-			msg.error = false;
 			var preset = RED.nodes.getNode(node.preset);
 			var device = {
 				address: msg.address || preset.address,
@@ -34,7 +33,6 @@ module.exports = function(RED) {
 			var options = node.options || msg.options;
 			var data = node.data || msg.payload;
 
-			msg.error = false;
 			switch( action ) {
 				case "List accounts":
 					VapixWrapper.Account_List( device,function(error, response){

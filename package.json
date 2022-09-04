@@ -23,9 +23,10 @@
   "node-red": {
     "nodes": {
       "Axis Access": "axis-preset.js",
-      "Axis device": "axis-device.js",
-      "Axis camera": "axis-camera.js",
-	  "Axis ACAP": "axis-acap.js"
+      "Axis Device": "axis-device.js",
+      "Axis Camera": "axis-camera.js",
+	  "Axis ACAP": "axis-acap.js",
+	  "Axis Security": "axis-security.js"
     }
   },
   "repository": {

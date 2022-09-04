@@ -572,7 +572,7 @@ module.exports = function(RED) {
         });
     }
 	
-    RED.nodes.registerType("axis-security", Axis_Security,{
+    RED.nodes.registerType("Axis Security", Axis_Security,{
 		defaults: {
 			name: {type:"text"},
 			preset: {type:"Device Preset"},

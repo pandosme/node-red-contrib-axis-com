@@ -226,6 +226,34 @@ module.exports = function(RED) {
 						}
 					}
 				break;
+				
+				case "Set name":
+					var name = msg.payload;
+					name = name.replace(/\s/g , "-");
+					if( typeof name !== "string" || name.length < 3 ) {
+						msg.payload = {
+							statusCode: 0,
+							statusMessage: "Invalid input",
+							body: "Name needs to be a string"
+						}
+						node.send([null,msg]);
+					}
+						
+					var cgi = "/axis-cgi/param.cgi?action=update";
+					cgi += "&root.Network.VolatileHostName.ObtainFromDHCP=no";
+					cgi += "&root.Network.HostName=" + name;
+					cgi += "&root.Network.Bonjour.FriendlyName=" + name;
+					cgi += "&root.Network.UPnP.FriendlyName=" + name;
+					VapixWrapper.CGI( device, cgi, function(error, response) {
+						if( error ) {
+							msg.payload = response;
+							node.send([null,msg]);
+							return;
+						}
+						msg.payload = name;
+						node.send([msg,null]);
+					});
+					break;
 
 				case "Syslog":
 					VapixWrapper.Syslog( device, function( error, response) {

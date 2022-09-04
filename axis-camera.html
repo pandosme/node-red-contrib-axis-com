@@ -10,6 +10,7 @@
             <option value="Camera Info">Camera Info</option>
             <option value="Get Image settings">Get settings</option>
             <option value="Set Image settings">Set settings</option>
+            <option value="Set Video filter">Set Video filter</option>
 		</select>
 	</div>
 
@@ -27,6 +28,15 @@
             <option value="1280x1280">1280x1280 [1:1]</option>
             <option value="800x800">800x800 [1:1]</option>
             <option value="640x640">640x640 [1:1]</option>
+		</select>
+	</div>
+
+    <div class="form-row user_input_filter">
+        <label for="node-input-options"><i class="icon-tag"></i> Resolution</label>
+        <select id="node-input-options">
+            <option value="None">None</option>
+            <option value="Sketch">Sketch</option>
+            <option value="Blur">Blur</option>
 		</select>
 	</div>
 
@@ -88,6 +98,9 @@ RED.nodes.registerType('Axis camera',{
 				break;
 				case "Set Image settings":
 					$(".user_input_data").show();
+				break;
+				case "Set Video filter":
+					$(".user_input_filter").hide();
 				break;
 			}
 		});

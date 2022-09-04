@@ -22,10 +22,10 @@
   "keywords": ["node-red","Axis","Camera"],
   "node-red": {
     "nodes": {
-      "axis-config": "axis-preset.js",
-      "axis-device": "axis-device.js",
-      "axis-camera": "axis-camera.js",
-	  "axis-camera": "axis-acap.js"
+      "Axis Access": "axis-preset.js",
+      "Axis device": "axis-device.js",
+      "Axis camera": "axis-camera.js",
+	  "Axis ACAP": "axis-acap.js"
     }
   },
   "repository": {

@@ -2,6 +2,7 @@
 
 module.exports = function(RED) {
 	function Axis_Preset_Node(config) {
+console.log("Preser registration");
 		RED.nodes.createNode(this,config);
 		this.name = config.name;
 		this.address = config.address;

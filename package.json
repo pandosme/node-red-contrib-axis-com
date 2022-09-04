@@ -24,9 +24,7 @@
     "nodes": {
       "axis-config": "axis-preset.js",
       "axis-device": "axis-device.js",
-      "axis-camera": "axis-camera.js",
-      "axis-camera": "axis-acap.js",
-	  "axis-security": "axis-sucurity.js"
+      "axis-camera": "axis-camera.js"
     }
   },
   "repository": {

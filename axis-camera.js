@@ -106,7 +106,7 @@ module.exports = function(RED) {
 					});
 				break;
 
-				case "Get Image settings":
+				case "Get image settings":
 					VapixWrapper.Param_Get( device, "ImageSource.I0.Sensor", function( error, response ) {
 						if( error ) {
 							msg.payload = response;
@@ -139,7 +139,7 @@ module.exports = function(RED) {
 					});
 				break;
 
-				case "Set Image settings":
+				case "Set image settings":
 					if( typeof options === "string" )
 						options = JSON.parse(options);
 					if(!options || typeof options !== "object") {
@@ -182,44 +182,65 @@ module.exports = function(RED) {
 					});
 				break;
 
-				case "Set Video filter":
+				case "Set video filter":
 					var postData = {
 						"apiVersion": "1.0", 
 						"method": "set",
 						"params":{"flagValues":{"graphics_udvd":true}}
 					}
-					VapixWrapper.HTTP_Post(device,'/axis-cgi/featureflag.cgi',data, function(error,response){
+					VapixWrapper.HTTP_Post(device,'/axis-cgi/featureflag.cgi',postData, "json", function(error,response){
 						if( error ) {
 							msg.payload = response;
 							node.send([null,msg]);
 							return;
 						}
-						data = {
+						
+						if( response.hasOwnProperty("error") ) {
+							msg.payload = {
+								statusCode: 400,
+								statusMessage: "Error",
+								body: response.error.message
+							}
+							node.send([null,msg]);
+							return;
+						}
+						postData = {
 							"apiVersion": "1.0", 
 							"method": "toggle_filter", "param": { "type": "none"}
 						};
-						
-						var filter = msg.options );
+						var filter = msg.options;
 						switch( filter ) {
 							case "Sketch": 
-								data = {
+								postData = {
 									"apiVersion": "1.0", 
 									"method": "toggle_filter", "param": { "type": "sobel"}
 								}
 							break;
 							case "Blur":
-								data = {
+								postData = {
 									"apiVersion": "1.0", 
 									"method": "toggle_filter", "param": { "type": "blur"}
 								}
 							break;
 						}
-						VapixWrapper.HTTP_Post(device,'/axis-cgi/udvd/udvd.cgi',data, function(error,response){
-							if( error ) {
-								msg.payload = response;
+
+						VapixWrapper.HTTP_Post(device,'/axis-cgi/udvd/udvd.cgi',postData, "json", function(error2,response2){
+							if( error2 ) {
+								msg.payload = response2;
 								node.send([null,msg]);
 								return;
 							}
+/*
+							if( response.hasOwnProperty("error") ) {
+								msg.payload = {
+									statusCode: 400,
+									statusMessage: "Error",
+									body: response.error.message
+								}
+								node.send([null,msg]);
+								return;
+							}
+*/							
 							msg.payload = filter;
 							node.send([msg,null]);
 						});
@@ -256,7 +277,7 @@ module.exports = function(RED) {
 				break;
 				
 				default:
-					node.warn( action + "is not yet implemented");
+					node.warn( action + " is not yet implemented");
 				break;
 
 			}

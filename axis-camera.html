@@ -8,9 +8,9 @@
         <select id="node-input-action">
             <option value="JPEG Image">JPEG Image</option>
             <option value="Camera Info">Camera Info</option>
-            <option value="Get Image settings">Get settings</option>
-            <option value="Set Image settings">Set settings</option>
-            <option value="Set Video filter">Set Video filter</option>
+            <option value="Get image settings">Get image settings</option>
+            <option value="Set image settings">Set image settings</option>
+            <option value="Set video filter">Set video filter</option>
 		</select>
 	</div>
 
@@ -32,7 +32,7 @@
 	</div>
 
     <div class="form-row user_input_filter">
-        <label for="node-input-options"><i class="icon-tag"></i> Resolution</label>
+        <label for="node-input-options"><i class="icon-tag"></i> Filter</label>
         <select id="node-input-options">
             <option value="None">None</option>
             <option value="Sketch">Sketch</option>
@@ -87,20 +87,21 @@ RED.nodes.registerType('Axis camera',{
 	oneditprepare: function() {
 		$("#node-input-action").change(function() {
 			var action = $("#node-input-action").val();
-			$(".user_input_resolution").show();
-			$(".user_input_response").show();
+			$(".user_input_resolution").hide();
+			$(".user_input_response").hide();
 			$(".user_input_data").hide();
 			$(".user_input_options").hide();
+			$(".user_input_filter").hide();
 			switch (action) {
 				case "JPEG Image":
 					$(".user_input_resolution").show();
 					$(".user_input_response").show();
 				break;
-				case "Set Image settings":
+				case "Set image settings":
 					$(".user_input_data").show();
 				break;
-				case "Set Video filter":
-					$(".user_input_filter").hide();
+				case "Set video filter":
+					$(".user_input_filter").show();
 				break;
 			}
 		});

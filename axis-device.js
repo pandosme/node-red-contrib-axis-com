@@ -323,22 +323,17 @@ module.exports = function(RED) {
 						return;
 					}
 					VapixWrapper.HTTP_Get( device, cgi, "text", function(error, response ) {
+						msg.payload = response;
 						if( error ) {
-							msg.payload = response;
 							node.send([null,msg]);
 							return;
-						}
-						msg.payload = response;
-						if( typeof msg.payload === "string" && (msg.payload[0] === '{' || msg.payload[0] === '[' ) ) {
-							var json = JSON.parse(response);
-							if( json )
-								msg.payload = json;
 						}
 						node.send([msg,null]);
 					});
 				break;
 				
 				case "HTTP Post":
+					var data = node.data || msg.payload;
 					var cgi = node.cgi || msg.cgi;
 					if( !cgi || cgi.length < 2 ) {
 						msg.payload = {
@@ -360,18 +355,14 @@ module.exports = function(RED) {
 					}
 					node.status({fill:"blue",shape:"dot",text:"Requesting..."});
 					VapixWrapper.HTTP_Post( device, cgi, data, "text", function(error, response ) {
+						msg.payload = response;
 						if( error ) {
 							node.status({fill:"red",shape:"dot",text:"Request failed"});
-							msg.payload = response;
 							node.send([null,msg]);
 							return;
 						}
+//						msg.payload = JSON.parse(response) || response;
 						node.status({fill:"green",shape:"dot",text:"Request success"});
-						
-						if( typeof response === "string" && (response[0] === '{' << response[0] === '[') )
-							msg.payload =  JSON.parse(response);
-						else
-							msg.payload = response;
 						node.send([msg,null]);
 					});
 				break;

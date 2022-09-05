@@ -1,4 +1,4 @@
-//Copyright (c) 2021-2022 Fred Juhlin
+//Copyright (c) 2021 Fred Juhlin
 
 const xml2js = require('xml2js');
 const got = require("got");
@@ -10,36 +10,30 @@ var exports = module.exports = {};
 exports.HTTP_Get_No_digest = function( device, path, resonseType, callback ) {
 	var protocol = device.protocol || "http";
 	var url = protocol + "://" + device.address + path;
+//	console.log("HTTP_No_digest: " + url);
 	(async () => {
 		try {
 			const response = await got( url,{
 				responseType: resonseType,
 				https:{rejectUnauthorized: false}
 			});
+//			console.log("HTTP_No_digest: " + response );
 			callback(false, response.body );
 		} catch (error) {
-			callback( true, {
-				statusCode: error && error.response ? error.response.statusCode:0,
-				statusMessage: error && error.response ? error.response.statusMessage:"Unkown error",
-				body: error && error.response ? error.response.body:""
-			} );
+			callback(error, error );
 		}
 	})();
 }
 
-exports.HTTP_Get = function( device, path, responseType, callback ) {
-	
+
+exports.HTTP_Get = function( device, path, resonseType, callback ) {
 	if( !device || !device.hasOwnProperty("address") || !device.hasOwnProperty("user") || !device.hasOwnProperty("password") ) {
-		callback(true,{
-			statusCode: 400,
-			statusMessage: "Invalid input",
-			body: "Missing address, user or password"
-		});
-		return;
+			callback("Invalid input","Missing address,user or password");
+			return;
 	}
 	var protocol = device.protocol || "http";
 	var url = protocol + "://" + device.address + path;
-
+//	console.log("VapixWrapper HTTP_GET: ", url); 
 	var client = got.extend({
 		hooks:{
 			afterResponse: [
@@ -62,54 +56,27 @@ exports.HTTP_Get = function( device, path, responseType, callback ) {
 			]
 		}
 	});
+
 	(async () => {
-		const data = await client.get( url,{
-				responseType: responseType,
+		try {
+			const response = await client.get( url,{
+				responseType: resonseType,
 				https:{rejectUnauthorized: false}
-		})
-		.then( response => {
-			var resolve = Promise.resolve( response.body );
-			callback( false, response && response.body? response.body:"" );
-			return resolve;
-		})
-		.catch(err => {
-			var resolve = Promise.resolve( err );
-			var errorObject = {
-				statusCode: err && err.response ? err.response.statusCode:0,
-				statusMessage: err && err.response ? err.response.statusMessage:"Unkown error",
-				body: err && err.response ? err.response.body:""
-			};
-			callback( true, errorObject );
-			return resolve;
-		});
+			});
+			callback(false, response.body );
+		} catch (error) {
+			callback(error, error );
+		}
 	})();
+
 }
 
 exports.HTTP_Post = function( device, path, body, responseType, callback ) {
-
+console.log("Post:",device,path,body, responseType);	
 	if( !device || !device.hasOwnProperty("address") || !device.hasOwnProperty("user") || !device.hasOwnProperty("password") ) {
-		callback(true,{
-			statusCode: 400,
-			statusMessage: "Invalid input",
-			body: "Missing address, user or password"
-		});
-		return;
+			callback("Invalid input","Missing address,user or password");
+			return;
 	}
-
-	if(!body) {
-		callback(true,{
-			statusCode: 400,
-			statusMessage: "Invalid input",
-			body: "Missing post body"
-		});
-		return;
-	}
-
-	var json = null;
-	if( typeof body === "object" )
-		json = body;
-	if( typeof body === "string" && (body[0]==='{' || body[0]==='[' ))
-		json = JSON.parse( body );
 
 	var protocol = device.protocol || "http";
 	var url = protocol + "://" + device.address + path;
@@ -140,46 +107,28 @@ exports.HTTP_Post = function( device, path, body, responseType, callback ) {
 	(async () => {
 		try {
 			var response = 0;
-			if( json )
-				response = await client.post( url, {
-												json: json,
-												responseType: 'json',
-												https: {rejectUnauthorized: false}
-											});
-			else
-				response = await client.post( url, {
-												body: body,
-												responseType: responseType,
-												https: {rejectUnauthorized: false}
-											});
-//			console.log("axis-digest:HTTP_Get: Response false",response.body);
-			callback(false, response.body );
-		} catch (error) {
-			callback(true, {
-				statusCode: error && error.response ? error.response.statusCode:0,
-				statusMessage: error && error.response ? error.response.statusMessage:"Unkown error",
-				body: error && error.response ? error.response.body:""
+			response = await client.post( url, {
+				body: body,
+				responseType: responseType,
+				https: {rejectUnauthorized: false}
 			});
+		} catch (error) {
+//			console.error("HTTP Response Error:", error);
+			callback(error, error  );
+			return;
 		}
+		callback(false, response.body );
 	})();
 }
 
 exports.HTTP_Put = function( device, path, body, responseType, callback ) {
 	if( !device || !device.hasOwnProperty("address") || !device.hasOwnProperty("user") || !device.hasOwnProperty("password") ) {
-		callback(true,{
-			statusCode: 400,
-			statusMessage: "Invalid input",
-			body: "Missing address, user or password"
-		});
-		return;
+			callback("Invalid input","Missing address,user or password");
+			return;
 	}
 
 	if(!body) {
-		callback(true,{
-			statusCode: 400,
-			statusMessage: "Invalid input",
-			body: "Missing put body"
-		});
+		callback("Invalid input", "Missing POST body");
 		return;
 	}
 
@@ -234,11 +183,8 @@ exports.HTTP_Put = function( device, path, body, responseType, callback ) {
 //			console.log("Digest Post Response:", url, response.body);
 			callback(false, response.body );
 		} catch (error) {
-			callback(true, {
-				statusCode: error && error.response ? error.response.statusCode:0,
-				statusMessage: error && error.response ? error.response.statusMessage:"Unkown error",
-				body: error && error.response ? error.response.body:""
-			});
+//			console.error("HTTP Response Error:", error);
+			callback(error, error  );
 		}
 	})();
 }
@@ -305,25 +251,14 @@ exports.HTTP_Patch = function( device, path, body, responseType, callback ) {
 //			console.log("Digest Post Response:", url, response.body);
 			callback(false, response.body );
 		} catch (error) {
-			callback(true, {
-				statusCode: error && error.response ? error.response.statusCode:0,
-				statusMessage: error && error.response ? error.response.statusMessage:"Unkown error",
-				body: error && error.response ? error.response.body:""
-			});
+//			console.error("HTTP Response Error:", error);
+			callback(error, error  );
 		}
 	})();
 }
 
+
 exports.Soap = function( device, body, callback ) {
-	if(!body || body.length < 20 ) {
-		callback(true,{
-			statusCode: 400,
-			statusMessage: "Invalid input",
-			body: "SOAP body is missing"
-		});
-		return;
-	}
-	
 	var soapEnvelope = '<SOAP-ENV:Envelope ' +
 	                   'xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" '+
 					   'xmlns:xs="http://www.w3.org/2001/XMLSchema" '+
@@ -342,45 +277,40 @@ exports.Soap = function( device, body, callback ) {
 
 	soapEnvelope += '<SOAP-ENV:Body>' + body + '</SOAP-ENV:Body>\n';
 	soapEnvelope += '</SOAP-ENV:Envelope>\n';
-	exports.HTTP_Post( device, '/vapix/services', soapEnvelope,"text", function( error, response) {
+//	console.log("VapixDigest.Soap", soapEnvelope);
+		exports.HTTP_Post( device, '/vapix/services', soapEnvelope,"text", function( error, response) {
 		callback(error,response);
 	});
 }
 
 exports.upload = function( device, type, filename, options, buffer, callback ) {
-//	console.log("vapix-digest.upload:", type,options);
 	if( !device || !device.hasOwnProperty("address") || !device.hasOwnProperty("user") || !device.hasOwnProperty("password") ) {
-		callback(true,{
-			statusCode: 400,
-			statusMessage: "Invalid input",
-			body: "Missing address, user or password"
-		});
-		return;
+			callback("Invalid input","Missing address,user or password");
+			return;
 	}
-	
-	if( !type || !(type === "firmware" || type === "firmware_legacy" || type === "acap" || type === "acap_legacy" || type === "overlay" ) ) {
-		callback(true,{
-			statusCode: 400,
-			statusMessage: "Invalid input",
-			body: type + " is not a valid upload type"
-		});
-		return;
-	}
-	
-	
 	var protocol = device.protocol || "http";
 	var url = protocol + "://" + device.address;
 
-
 	if(!buffer || Buffer.isBuffer(buffer) !== true ) {
-		callback(true,{
-			statusCode: 400,
-			statusMessage: "Invalid input",
-			body: "Data is not a buffer"
-		});
+		callback(true,"Invalid upload buffer");
 		return;
 	}
-//console.log("vapix-digest: Uploading starting");
+
+	if( !filename || typeof filename !== "string" || filename.length === 0 ) {
+		callback(true,"Invalid file path");
+		return;
+	}
+
+	if( !device.user || typeof device.user !== "string" || device.user.length === 0 ) {
+		callback(true,"Invalid user name");
+		return;
+	}
+
+	if( !device.password || typeof device.password !== "string" || device.password.length === 0 ) {
+		callback(true,"Invalid password");
+		return;
+	}
+
 	var formData = {
 		apiVersion: "1.0",
 		context: "nodered",
@@ -423,15 +353,6 @@ exports.upload = function( device, type, filename, options, buffer, callback ) {
 		break;
 
 		case "overlay":
-			if( !filename || typeof filename !== "string" || filename.length === 0 ) {
-				callback(true,{
-					statusCode: 400,
-					statusMessage: "Invalid input",
-					body: "Overlay must have a filename"
-				});
-				return;
-			}
-
 			url += '/axis-cgi/uploadoverlayimage.cgi';
 			part1 = "json";
 			part2 = "image";
@@ -507,17 +428,16 @@ exports.upload = function( device, type, filename, options, buffer, callback ) {
 			if( typeof response.body === "string" && ( response.body[0] === '{' || response.body[0] === '[' ) ) {
 				var json = JSON.parse( response.body );
 				if( json ) {
-					callback(false, json );
+					if( json.hasOwnProperty("error") )
+						callback("Upload failed", json.error );
+					else
+						callback(false, json );
 					return;
 				}
 			}
 			callback(false, response.body );
 		} catch (error) {
-			callback(true, {
-				statusCode: error && error.response ? error.response.statusCode:0,
-				statusMessage: error && error.response ? error.response.statusMessage:"Unkown error",
-				body: error && error.response ? error.response.body:""
-			});
+			callback(error, error);
 		}
 	})();
 }

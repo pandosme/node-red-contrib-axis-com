@@ -10,18 +10,17 @@ var exports = module.exports = {};
 exports.HTTP_Get_No_digest = function( device, path, resonseType, callback ) {
 	var protocol = device.protocol || "http";
 	var url = protocol + "://" + device.address + path;
-//	console.log("HTTP_No_digest: " + url);
 	(async () => {
 		try {
 			const response = await got( url,{
 				responseType: resonseType,
 				https:{rejectUnauthorized: false}
 			});
-//			console.log("HTTP_No_digest: " + response );
-			callback(false, response.body );
 		} catch (error) {
 			callback(error, error );
+			return;
 		}
+		callback(false, response.body );
 	})();
 }
 
@@ -33,7 +32,6 @@ exports.HTTP_Get = function( device, path, resonseType, callback ) {
 	}
 	var protocol = device.protocol || "http";
 	var url = protocol + "://" + device.address + path;
-//	console.log("VapixWrapper HTTP_GET: ", url); 
 	var client = got.extend({
 		hooks:{
 			afterResponse: [
@@ -63,24 +61,30 @@ exports.HTTP_Get = function( device, path, resonseType, callback ) {
 				responseType: resonseType,
 				https:{rejectUnauthorized: false}
 			});
-			callback(false, response.body );
 		} catch (error) {
 			callback(error, error );
+			return;
 		}
+		callback(false, response.body );
 	})();
 
 }
 
 exports.HTTP_Post = function( device, path, body, responseType, callback ) {
-console.log("Post:",device,path,body, responseType);	
 	if( !device || !device.hasOwnProperty("address") || !device.hasOwnProperty("user") || !device.hasOwnProperty("password") ) {
-			callback("Invalid input","Missing address,user or password");
-			return;
+		callback(true,{
+			statusCode: 0,
+			statusMessage: "Invalid input",
+			body: "Missing address,user or password"
+		});
+		return;
 	}
+
+	if( typeof body === "object" )
+		body = JSON.stringify(body);
 
 	var protocol = device.protocol || "http";
 	var url = protocol + "://" + device.address + path;
-//	console.log("Digest POST:", url, body, responseType );
 	var client = got.extend({
 		hooks:{
 			afterResponse: [
@@ -113,7 +117,6 @@ console.log("Post:",device,path,body, responseType);
 				https: {rejectUnauthorized: false}
 			});
 		} catch (error) {
-//			console.error("HTTP Response Error:", error);
 			callback(error, error  );
 			return;
 		}
@@ -123,24 +126,28 @@ console.log("Post:",device,path,body, responseType);
 
 exports.HTTP_Put = function( device, path, body, responseType, callback ) {
 	if( !device || !device.hasOwnProperty("address") || !device.hasOwnProperty("user") || !device.hasOwnProperty("password") ) {
-			callback("Invalid input","Missing address,user or password");
-			return;
-	}
-
-	if(!body) {
-		callback("Invalid input", "Missing POST body");
+		callback(true,{
+			statusCode: 0,
+			statusMessage: "Invalid input",
+			body: "Missing address,user or password"
+		});
 		return;
 	}
 
-	var json = null;
+	if(!body) {
+		callback(true,{
+			statusCode: 0,
+			statusMessage: "Invalid input",
+			body: "Missing post body"
+		});
+		return;
+	}
+
 	if( typeof body === "object" )
-		json = body;
-	if( typeof body === "string" && (body[0]==='{' || body[0]==='[' ))
-		json = JSON.parse( body );
+		body = JSON.stringify(body);
 
 	var protocol = device.protocol || "http";
 	var url = protocol + "://" + device.address + path;
-//	console.log("Digest POST:", url, body, responseType );
 	var client = got.extend({
 		hooks:{
 			afterResponse: [
@@ -148,7 +155,6 @@ exports.HTTP_Put = function( device, path, body, responseType, callback ) {
 					const options = res.request.options;
 					const digestHeader = res.headers["www-authenticate"];
 					if (!digestHeader){
-//						console.error("Response contains no digest header");
 						return res;
 					}
 					const incomingDigest = digestAuth.ClientDigestAuth.analyze(	digestHeader );
@@ -167,44 +173,38 @@ exports.HTTP_Put = function( device, path, body, responseType, callback ) {
 	(async () => {
 		try {
 			var response = 0;
-			if( json )
-				response = await client.put( url, {
-												json: json,
-												responseType: 'json',
-												https: {rejectUnauthorized: false}
-											});
-			else
-				response = await client.put( url, {
-												body: body,
-												responseType: responseType,
-												https: {rejectUnauthorized: false}
-											});
-
-//			console.log("Digest Post Response:", url, response.body);
-			callback(false, response.body );
+			response = await client.put( url, {
+				body: body,
+				responseType: responseType,
+				https: {rejectUnauthorized: false}
+			});
 		} catch (error) {
-//			console.error("HTTP Response Error:", error);
 			callback(error, error  );
+			return;
 		}
+		callback(false, response.body );
 	})();
+
 }
 
 exports.HTTP_Patch = function( device, path, body, responseType, callback ) {
 	if( !device || !device.hasOwnProperty("address") || !device.hasOwnProperty("user") || !device.hasOwnProperty("password") ) {
-			callback("Invalid input","Missing address,user or password");
-			return;
-	}
-
-	if(!body) {
-		callback("Invalid input", "Missing POST body");
+		callback(true,{
+			statusCode: 0,
+			statusMessage: "Invalid input",
+			body: "Missing address,user or password"
+		});
 		return;
 	}
 
-	var json = null;
-	if( typeof body === "object" )
-		json = body;
-	if( typeof body === "string" && (body[0]==='{' || body[0]==='[' ))
-		json = JSON.parse( body );
+	if(!body) {
+		callback(true,{
+			statusCode: 0,
+			statusMessage: "Invalid input",
+			body: "Missing patch body"
+		});
+		return;
+	}
 
 	var protocol = device.protocol || "http";
 	var url = protocol + "://" + device.address + path;

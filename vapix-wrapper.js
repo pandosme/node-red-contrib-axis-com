@@ -8,38 +8,17 @@ var exports = module.exports = {};
 
 exports.HTTP_Get = function( device, cgi, responseType, callback ) {
 	VapixDigest.HTTP_Get( device, cgi, responseType, function( error, body ) {
-		if( error ) {
-			callback( error, body );
-			return;
-		}
 		callback( error, body );
 	});
 }
 
 exports.HTTP_Post = function( device, cgi, payload, responseType, callback ) {
-	if(typeof payload === "object")
-		payload = JSON.stringify(payload);
-
 	VapixDigest.HTTP_Post( device, cgi, payload, responseType, function( error, body ) {
-		if( error ) {
-			callback( error, body );
-			return;
-		}
-		
-		try {
-			body = JSON.parse(body);
-		} catch( error ) {
-//			callback( error, body );
-		}
-console.log("After catch:", body);
-//		body = JSON.parse(body) || body;
 		callback( error, body );
 	});
 }
 
 exports.HTTP_Put = function( device, cgi, payload, responseType, callback ) {
-	if(typeof payload === "object")
-		payload = JSON.stringify(payload);
 	VapixDigest.HTTP_Put( device, cgi, payload, responseType, function( error, body ) {
 		callback( error, body );
 	});

@@ -64,7 +64,7 @@ module.exports = function(RED) {
 						if( error ) {
 							node.send([null,msg]);
 						} else {
-							msg.payload = account.name + " added/updated";
+							msg.payload = account;
 							node.send([msg,null]);
 						}
 					});
@@ -86,7 +86,7 @@ module.exports = function(RED) {
 						if( error ) {
 							node.send([null,msg]);
 						} else {
-							msg.payload = account + " removed";
+							msg.payload = account;
 							node.send([msg,null]);
 						}
 					});
@@ -191,6 +191,8 @@ module.exports = function(RED) {
 						node.send([null,msg]);
 						return;
 					}
+			
+					
 					//Check if all address are vaid IP addresses
 					var listOK = true;
 					var stringList = "";
@@ -212,6 +214,16 @@ module.exports = function(RED) {
 
 					if( !listOK )
 						return;
+
+					if( list.length === 1 ) {
+						msg.payload = {
+							statusCode: 400,
+							statusMessage: "Invalid input",
+							body: "Set two or more white listed IP address"
+						}
+						node.send([null,msg]);
+						return;
+					}
 
 					if( stringList.length > 0 )
 						stringList = stringList.slice(0, -1);
@@ -305,16 +317,19 @@ module.exports = function(RED) {
 						csr = JSON.parse(data);
 					
 					if( !csr || typeof csr !== "object" ) {
-						msg.error = "Invalid input";
-						msg.payload = "Check CSR property syntax";
-						node.send( msg );
+						msg.payload = {
+							statusCode: 400,
+							statusMessage: "Invalid input",
+							body: "Invalid object or JSON"
+						}
+						node.send([null,msg]);
 						return;
 					}
 					if( !csr.hasOwnProperty('CN') ) {
 						msg.payload = {
 							statusCode: 400,
 							statusMessage: "Invalid input",
-							body: "Missing CN"
+							body: "Common name (CN) must be set"
 						}
 						node.send([null,msg]);
 					}
@@ -394,7 +409,7 @@ module.exports = function(RED) {
 						msg.payload = {
 							statusCode: 400,
 							statusMessage: "Invalid input",
-							body: "Missing cert PEM"
+							body: "Missing PEM DATA"
 						}
 						node.send([null,msg]);
 						return;
@@ -403,7 +418,7 @@ module.exports = function(RED) {
 						msg.payload = {
 							statusCode: 400,
 							statusMessage: "Invalid input",
-							body: "Invalid certificatePEM data"
+							body: "Invalid PEM data"
 						}
 						node.send([null,msg]);
 						return;

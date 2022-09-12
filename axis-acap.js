@@ -49,7 +49,6 @@ module.exports = function(RED) {
 							node.send([null,msg]);
 							return;
 						}
-						
 						if( acap ) {
 							var selectedACAP = null;
 							response.forEach( function( item ){

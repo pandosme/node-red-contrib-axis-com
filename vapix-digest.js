@@ -16,11 +16,14 @@ exports.HTTP_Get_No_digest = function( device, path, resonseType, callback ) {
 				responseType: resonseType,
 				https:{rejectUnauthorized: false}
 			});
+			callback(false, response.body );
 		} catch (error) {
-			callback(error, error );
-			return;
+			callback( true, {
+				statusCode: error && error.response ? error.response.statusCode:0,
+				statusMessage: error && error.response ? error.response.statusMessage:"Unkown error",
+				body: error && error.response ? error.response.body:""
+			} );
 		}
-		callback(false, response.body );
 	})();
 }
 
@@ -61,13 +64,15 @@ exports.HTTP_Get = function( device, path, resonseType, callback ) {
 				responseType: resonseType,
 				https:{rejectUnauthorized: false}
 			});
+			callback(false, response.body );
 		} catch (error) {
-			callback(error, error );
-			return;
+			callback( true, {
+				statusCode: error && error.response ? error.response.statusCode:0,
+				statusMessage: error && error.response ? error.response.statusMessage:"Unkown error",
+				body: error && error.response ? error.response.body:""
+			} );
 		}
-		callback(false, response.body );
 	})();
-
 }
 
 exports.HTTP_Post = function( device, path, body, responseType, callback ) {
@@ -116,11 +121,14 @@ exports.HTTP_Post = function( device, path, body, responseType, callback ) {
 				responseType: responseType,
 				https: {rejectUnauthorized: false}
 			});
+			callback(false, response.body );
 		} catch (error) {
-			callback(error, error  );
-			return;
+			callback( true, {
+				statusCode: error && error.response ? error.response.statusCode:0,
+				statusMessage: error && error.response ? error.response.statusMessage:"Unkown error",
+				body: error && error.response ? error.response.body:""
+			} );
 		}
-		callback(false, response.body );
 	})();
 }
 
@@ -178,11 +186,15 @@ exports.HTTP_Put = function( device, path, body, responseType, callback ) {
 				responseType: responseType,
 				https: {rejectUnauthorized: false}
 			});
+			callback(false, response.body );
 		} catch (error) {
-			callback(error, error  );
+			callback( true, {
+				statusCode: error && error.response ? error.response.statusCode:0,
+				statusMessage: error && error.response ? error.response.statusMessage:"Unkown error",
+				body: error && error.response ? error.response.body:""
+			} );
 			return;
 		}
-		callback(false, response.body );
 	})();
 
 }
@@ -248,11 +260,13 @@ exports.HTTP_Patch = function( device, path, body, responseType, callback ) {
 												https: {rejectUnauthorized: false}
 											});
 
-//			console.log("Digest Post Response:", url, response.body);
 			callback(false, response.body );
 		} catch (error) {
-//			console.error("HTTP Response Error:", error);
-			callback(error, error  );
+			callback( true, {
+				statusCode: error && error.response ? error.response.statusCode:0,
+				statusMessage: error && error.response ? error.response.statusMessage:"Unkown error",
+				body: error && error.response ? error.response.body:""
+			} );
 		}
 	})();
 }
@@ -424,20 +438,13 @@ exports.upload = function( device, type, filename, options, buffer, callback ) {
 			const response = await client.post(url, {
 				https:{rejectUnauthorized: false}
 			});
-//			console.log("AxisDigest Upload Response", response.body);
-			if( typeof response.body === "string" && ( response.body[0] === '{' || response.body[0] === '[' ) ) {
-				var json = JSON.parse( response.body );
-				if( json ) {
-					if( json.hasOwnProperty("error") )
-						callback("Upload failed", json.error );
-					else
-						callback(false, json );
-					return;
-				}
-			}
 			callback(false, response.body );
 		} catch (error) {
-			callback(error, error);
+			callback( true, {
+				statusCode: error && error.response ? error.response.statusCode:0,
+				statusMessage: error && error.response ? error.response.statusMessage:"Unkown error",
+				body: error && error.response ? error.response.body:""
+			} );
 		}
 	})();
 }

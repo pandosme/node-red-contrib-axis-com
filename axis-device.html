@@ -7,17 +7,17 @@
         <label for="node-input-action"><i class="icon-tag"></i> Action</label>
         <select id="node-input-action">
             <option value="Device Info">Device Info</option>
+            <option value="Connections">Connections</option>
+            <option value="Syslog">Syslog</option>
+            <option value="Get location">Get location</option>
             <option value="Set name">Set name</option>
             <option value="Set time">Set time</option>
-            <option value="Syslog">Syslog</option>
-            <option value="Connections">Connections</option>
-            <option value="Get location">Get location</option>
             <option value="Set location">Set location</option>
-            <option value="Upgrade firmware">Upgrade firmware</option>
-            <option value="Restart">Restart</option>
             <option value="HTTP Get">HTTP Get</option>
             <option value="HTTP Post">HTTP Post</option>
             <option value="SOAP Post">SOAP Post</option>
+            <option value="Restart">Restart</option>
+            <option value="Upgrade firmware">Upgrade firmware</option>
 		</select>
 	</div>
     <div class="form-row user_input_cgi">
@@ -43,7 +43,7 @@
 
 <script type="text/javascript">
 RED.nodes.registerType('Axis device',{
-	category: 'Axis Com',
+	category: 'Axis',
 	color: '#FFCC33',
 	defaults: {
 		name: { value:""},
@@ -56,7 +56,7 @@ RED.nodes.registerType('Axis device',{
 	},
 	icon: "font-awesome/fa-cog",
 	inputs:1,
-	outputs:2,
+	outputs: 1,
 	label: function() {
 		return this.name || this.action || "Axis Device";
 	},
@@ -92,97 +92,112 @@ RED.nodes.registerType('Axis device',{
 </script>
 
 <script type="text/x-red" data-help-name="Axis device">
-	<h3>Inputs:</h3>
-	<dl class="message-properties">
-		<dt>Device<span class="property-type">configuration</span></dt>
-		<dd>A preset device with address, user and password that can be reused in multiple nodes without the need to inject with msg<br/>
-		Properties in device can be left empty and optional inject <code>msg.address</code>, <code>msg.user</code> and <code>msg.password</code></dd>
-	</dl>	
-
-	<dl class="message-properties">
-		<dt>Action<span class="property-type">string</span></dt>
-		<dd>Use <code>msg.action</code> to override config</dd>
-		<ul>
-			<li><b>Device Info:</b><br/>
-			Gets information about the Axis device.
-			</li>
-			<li><b>Set time:</b><br/>
-			Options (msg.options): <code><br/>
-			{<br/>
-			&nbsp;&nbsp;"ntp":[<br/>
-			&nbsp;&nbsp;"&nbsp;&nbsp;"pool.ntp.org"<br/>
-			&nbsp;&nbsp;],<br/>
-			&nbsp;&nbsp;"timezone":"America/New_York"<br/>
-			}</code><br/>
-			Settings ntp to true will use NTP server obtained by DHCP.
-			</li>
-			<li><b>Syslog:</b><br/>
-			A list of the device syslog messages
-			</li>
-			<li><b>Connections:</b><br/>
-			A list of current netork connections to the device
-			</li>
-			<li><b>Get Location:</b><br/>
-			Geo location data stored on the device.
-			</li>
-			<li><b>Set Location:</b><br/>
-			Options: <code>{<br/>
-			&nbsp;&nbsp;"longitude":12.34,<br/>
-			&nbsp;&nbsp;"latitude":56.78,<br/>
-			&nbsp;&nbsp;"direction":90,<br/>
-			&nbsp;&nbsp;"text":"Free text"<br/>
-			}</code><br/>
-			</li>
-			<li><b>Upgrade firmware:</b><br/>
-			Payload can be either a file path to the firmware file or a file buffer.  If <code>msg.filename</code> is set, <code>msg.payload</code> will be ignored.
-			</li>
-			<li><b>Restart:</b><br/>
-			Reboots the device.
-			</li>
-			<li><b>HTTP Get:</b><br/>
-			Make VAPIX request for operations not supported in this node. VAPIX paths will typical start with "/axis-cgi/...".  <code>msg.cgi</code> will override the node configuration.<br/>
-			Read Axis VAPIX documentation for more information.
-			</li>
-			<li><b>HTTP Post:</b><br/>
-			Make VAPIX request that requires post.  Data can be injected with <code>msg.payload</code> if node config data is left blank.
-			</li>
-			<li><b>SOAP Post:</b><br/>
-			SOAP Post request with JS response.<br/>
-			Data (msg.payload) needs to be a string with the SOAP body XML that goes inbetween <code><SOAP-ENV:Body></code> and <code></SOAP-ENV:Body></code>
-			</li>
-		</ul>
-	</dl>	
-
-	<dl class="message-properties">
-		<dt>CGI<span class="property-type">string</span></dt>
-		<dd>For VAPIX HTTP Get and Post.  See Axis VAPIX documentation.  Use <code>msg.cgi</code> to override config<br/>
-		For Post, use <code>msg.payload</code> to override Data config.  Objects will be automatically converted to JSON.</dd>
-	</dl>	
-
-	<dl class="message-properties">
-		<dt>Data<span class="property-type">string | object | buffer</span></dt>
-		<dd>Depends on action<br/>
-		Use <code>msg.payload</code> to override config.
-		</dd>
-	</dl>	
-
-	<dl class="message-properties">
-		<dt>Filname<span class="property-type">string</span></dt>
-		<dd>Firmware update can take a file path or a file buffer can be injected with <code>msg.payload</code>.  Settings filename will override file buffer injection<br/>
-		Filename can be injected with <code>msg.filname</code>.<br/>
-		</dd>
-	</dl>	
-
-	<h3>Outputs:</h3>
-	<dl class="message-properties">
-		<dt>msg.error<span class="property-type">bool | string</span></dt>
-		<dd>On success, error will be <code>false</code><br/>
-		On failure, error will be <code>true</code> or message string</dd>
-	</dl>	
-
-	<dl class="message-properties">
-		<dt>msg.payload<span class="property-type">bool | string | buffer</span></dt>
-		<dd>Depends on action</dd>
-	</dl>	
+	<h2>Inputs & Outputs</h2>
+	Set the device and call an action.
+	Each action will only output on success.
+	Use a Catch node to get detailed errors.
+	
+	<br/><br/>
+	<p>
+		<b>Device Info</b><br/>
+		General information about the device
+	</p>
+	<br/>
+	<p>
+		<b>Connections</b><br/>
+		List active connections to device
+	</p>
+	<br/>
+	<p>
+		<b>Syslog</b><br/>
+		List of device syslog messages
+	</p>
+	<br/>
+	<p>
+		<b>Get location</b>
+		Geo location stored in device
+	</p>
+	<br/>
+	<p>
+		<b>Set name</b><br/>
+		Sets hostname, UPNP name and Bonjour name<br/>
+		<dl class="message-properties">
+			<dt>msg.payload<span class="property-type">string</span></dt>
+			<dd>The name of the device</dd>
+		</dl>
+	</p>
+	<br/>
+	<p>
+		<b>Set time</b><br/>
+		Set timezone and/or NTP servers.
+		<dl class="message-properties">
+			<dt>msg.payload<span class="property-type">object</span></dt>
+			<dd>
+				Optional properties.<br/>
+				{<br/>
+				&nbsp;&nbsp;timezone: "Europe/London",<br/>
+				&nbsp;&nbsp;ntp: ["1.2.3.4","2.3.4.5"] <br/>
+				}<br/>
+			</dd>
+		</dl>
+	</p>
+	<br/>
+	<p>
+		<b>Set location</b><br/>
+		Stores geo location data in device.
+		<dl class="message-properties">
+			<dt>msg.payload<span class="property-type">object</span></dt>
+			<dd>
+				{<br/>
+				&nbsp;&nbsp;longitude: 1.23456,<br/>
+				&nbsp;&nbsp;longitude: 2.34567,<br/>
+				&nbsp;&nbsp;direction: 0, <br/>
+				&nbsp;&nbsp;text: "Some string", <br/>
+				}<br/>
+			</dd>
+		</dl>
+	</p>
+	<br/>
+	<p>
+		<b>HTTP Get</b><br/>
+		VAPIX CGI request.  
+		<dl class="message-properties">
+			<dt>msg.cgi<span class="property-type">string</span></dt>
+			<dd>Typically "/axis-cgi/..."</dd>
+		</dl>
+	</p>
+	<br/>
+	<p>
+		<b>HTTP Post</b><br/>
+		VAPIX CGI post request.  
+		<dl class="message-properties">
+			<dt>msg.cgi<span class="property-type">string</span></dt>
+			<dd>Typically /axis-cgi/...</dd>
+			<dt>msg.payload<span class="property-type">object string</span></dt>
+			<dd>Post body</dd>
+		</dl>
+	</p>
+	<br/>
+	<p>
+		<b>SOAP Post</b><br/>
+		Post a SOAP (ONVIF) request.  
+		<dl class="message-properties">
+			<dt>msg.payload<span class="property-type">string</span></dt>
+			<dd>SOAP XML body</dd>
+		</dl>
+	</p>
+	<br/>
+	<p>
+		<b>Restart</b><br/>
+		Restart device
+	</p>
+	<br/>
+	<p>
+		<b>Upgrade firmware</b>
+		<dl class="message-properties">
+			<dt>msg.payload<span class="property-type">buffer</span></dt>
+			<dd>Buffer data to firmware file</dd>
+		</dl>
+	</p>
 
 </script>

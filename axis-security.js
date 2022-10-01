@@ -17,16 +17,18 @@ module.exports = function(RED) {
 				address: msg.address || preset.address,
 				user: msg.user || preset.credentials.user,
 				password: msg.password || preset.credentials.password,
-				protocol: "http"
+				protocol: preset.protocol || "http"
 			}
 
 			if( !device.address || device.address.length === 0 || !device.user || device.user.length === 0 || !device.password || device.password.length === 0 ) {
 				msg.payload = {
 					statusCode: 0,
 					statusMessage: "Invalid input",
-					body: "Missing, address, user or password"
+					body: "Missing device address, user or password"
 				}
-				node.send([null,msg]);
+				msg.payload.action = action;
+				msg.payload.address = device.address;
+				node.error("Invalid input", msg);
 			}	
 
 			var action = msg.action || node.action;
@@ -38,10 +40,12 @@ module.exports = function(RED) {
 					VapixWrapper.Account_List( device,function(error, response){
 						msg.payload = response;
 						if( error ) {
-							node.send([null,msg]);
-						} else {
-							node.send([msg,null]);
+							msg.payload.action = action;
+							msg.payload.address = device.address;
+							node.error(response.statusMessage, msg);
+							return;
 						}
+						node.send(msg);
 					});
 				break;
 
@@ -56,17 +60,21 @@ module.exports = function(RED) {
 							statusMessage: "Invalid input",
 							body: "Missing account data"
 						}
-						node.send([null,msg]);
+						msg.payload.action = action;
+						msg.payload.address = device.address;
+						node.error(response.statusMessage, msg);
 						return;
 					}
 					VapixWrapper.Account_Set( device, account, function(error, response){
 						msg.payload = response;
 						if( error ) {
-							node.send([null,msg]);
-						} else {
-							msg.payload = account;
-							node.send([msg,null]);
+							msg.payload.action = action;
+							msg.payload.address = device.address;
+							node.error(response.statusMessage, msg);
+							return;
 						}
+						msg.payload = account;
+						node.send(msg);
 					});
 				break;
 
@@ -78,17 +86,21 @@ module.exports = function(RED) {
 							statusMessage: "Invalid input",
 							body: "Missing account name"
 						}
-						node.send([null,msg]);
+						msg.payload.action = action;
+						msg.payload.address = device.address;
+						node.error(response.statusMessage, msg);
 						return;
 					}
 					VapixWrapper.Account_Remove( device, account, function(error, response){
 						msg.payload = response;
 						if( error ) {
-							node.send([null,msg]);
-						} else {
-							msg.payload = account;
-							node.send([msg,null]);
+							msg.payload.action = action;
+							msg.payload.address = device.address;
+							node.error(response.statusMessage, msg);
+							return;
 						}
+						msg.payload = account;
+						node.send(msg);
 					});
 				break;
 
@@ -100,7 +112,9 @@ module.exports = function(RED) {
 							statusMessage: "Invalid input",
 							body: "msg.payload must be boolean"
 						}
-						node.send([null,msg]);
+						msg.payload.action = action;
+						msg.payload.address = device.address;
+						node.error("msg.payload must be boolean", msg);
 						return;
 					}
 					
@@ -112,11 +126,13 @@ module.exports = function(RED) {
 					VapixWrapper.CGI( device, cgi, function(error,response ) {
 						msg.payload = response;
 						if( error ) {
-							node.send([null,msg]);
+							msg.payload.action = action;
+							msg.payload.address = device.address;
+							node.error(response.statusMessage, msg);
 							return;
 						}
 						msg.payload = state;
-						node.send([msg,null]);
+						node.send(msg);
 					});
 				break;
 
@@ -128,7 +144,9 @@ module.exports = function(RED) {
 							statusMessage: "Invalid input",
 							body: "msg.payload must be boolean"
 						}
-						node.send([null,msg]);
+						msg.payload.action = action;
+						msg.payload.address = device.address;
+						node.error("msg.payload must be boolean", msg);
 						return;
 					}
 					
@@ -140,11 +158,13 @@ module.exports = function(RED) {
 					VapixWrapper.CGI( device, cgi, function(error,response ) {
 						msg.payload = response;
 						if( error ) {
-							node.send([null,msg]);
+							msg.payload.action = action;
+							msg.payload.address = device.address;
+							node.error(response.statusMessage, msg);
 							return;
 						}
 						msg.payload = state;
-						node.send([msg,null]);
+						node.send(msg);
 					});
 				break;
 
@@ -156,7 +176,9 @@ module.exports = function(RED) {
 							statusMessage: "Invalid input",
 							body: "msg.payload must be boolean"
 						}
-						node.send([null,msg]);
+						msg.payload.action = action;
+						msg.payload.address = device.address;
+						node.error("msg.payload must be boolean", msg);
 						return;
 					}
 					if( state === true ) {
@@ -167,11 +189,13 @@ module.exports = function(RED) {
 					VapixWrapper.CGI( device, cgi, function(error,response ) {
 						msg.payload = response;
 						if( error ) {
-							node.send([null,msg]);
+							msg.payload.action = action;
+							msg.payload.address = device.address;
+							node.error(response.statusMessage, msg);
 							return;
 						}
 						msg.payload = state;
-						node.send([msg,null]);
+						node.send(msg);
 					});
 				break;
 				
@@ -188,7 +212,9 @@ module.exports = function(RED) {
 							statusMessage: "Invalid input",
 							body: "Input must be an array of IP addresses"
 						}
-						node.send([null,msg]);
+						msg.payload.action = action;
+						msg.payload.address = device.address;
+						node.error(response.statusMessage, msg);
 						return;
 					}
 			
@@ -206,7 +232,9 @@ module.exports = function(RED) {
 								statusMessage: "Invalid input",
 								body: item + " is invalid IP address"
 							}
-							node.send([null,msg]);
+							msg.payload.action = action;
+							msg.payload.address = device.address;
+							node.error(response.statusMessage, msg);
 							return;
 						}
 						stringList += item + " ";
@@ -221,7 +249,9 @@ module.exports = function(RED) {
 							statusMessage: "Invalid input",
 							body: "Set two or more white listed IP address"
 						}
-						node.send([null,msg]);
+						msg.payload.action = action;
+						msg.payload.address = device.address;
+						node.error(response.statusMessage, msg);
 						return;
 					}
 
@@ -235,11 +265,13 @@ module.exports = function(RED) {
 					VapixWrapper.CGI( device, cgi, function(error,response ) {
 						msg.payload = response;
 						if( error ) {
-							node.send([null,msg]);
+							msg.payload.action = action;
+							msg.payload.address = device.address;
+							node.error(response.statusMessage, msg);
 							return;
 						}
 						msg.payload = list;
-						node.send([msg,null]);
+						node.send(msg);
 					});
 				break;
 
@@ -247,14 +279,16 @@ module.exports = function(RED) {
 					VapixWrapper.Certificates_List( device, function(error, response){
 						msg.payload = response;
 						if( error ) {
-							node.send([null,msg]);
+							msg.payload.action = action;
+							msg.payload.address = device.address;
+							node.error(response.statusMessage, msg);
 							return;
 						}
-						node.send([msg,null]);
+						node.send(msg);
 					});
 				break;
 			
-				case "HTTPS":
+				case "Set HTTPS certificate":
 					data = msg.payload;
 					if( !data || typeof data !== "object" || !data.hasOwnProperty("cert") || !data.hasOwnProperty("key") ) {
 						msg.payload = {
@@ -262,7 +296,9 @@ module.exports = function(RED) {
 							statusMessage: "Invalid input",
 							body: "Missing cert or key"
 						}
-						node.send([null,msg]);
+						msg.payload.action = action;
+						msg.payload.address = device.address;
+						node.error(response.statusMessage, msg);
 						return;
 					}
 					data.cert = data.cert.replace("-----BEGIN CERTIFICATE-----","");
@@ -278,7 +314,9 @@ module.exports = function(RED) {
 					VapixWrapper.SOAP( device, body, function(error,response){
 						msg.payload = response;
 						if( error ) {
-							node.send([null,msg]);
+							msg.payload.action = action;
+							msg.payload.address = device.address;
+							node.error(response.statusMessage, msg);
 							return;
 						}
 						body = '<aweb:SetWebServerTlsConfiguration xmlns="http://www.axis.com/vapix/ws/webserver"><Configuration>';
@@ -302,10 +340,13 @@ module.exports = function(RED) {
 						VapixWrapper.SOAP( device, body, function(error,response){
 							msg.payload = response;
 							if( error ) {
-								node.send([null,msg]);
+								msg.payload.action = action;
+								msg.payload.address = device.address;
+								node.error(response.statusMessage, msg);
 								return;
 							}
-							node.send([null,msg]);
+							msg.payload = data;
+							node.send(msg);
 							return;
 						});
 					});
@@ -322,7 +363,9 @@ module.exports = function(RED) {
 							statusMessage: "Invalid input",
 							body: "Invalid object or JSON"
 						}
-						node.send([null,msg]);
+						msg.payload.action = action;
+						msg.payload.address = device.address;
+						node.error(response.statusMessage, msg);
 						return;
 					}
 					if( !csr.hasOwnProperty('CN') ) {
@@ -331,7 +374,9 @@ module.exports = function(RED) {
 							statusMessage: "Invalid input",
 							body: "Common name (CN) must be set"
 						}
-						node.send([null,msg]);
+						msg.payload.action = action;
+						msg.payload.address = device.address;
+						node.error(response.statusMessage, msg);
 					}
 					node.status({fill:"blue",shape:"dot",text:"Requesting CSR..."});
 
@@ -368,7 +413,9 @@ module.exports = function(RED) {
 						if( error ) {
 							msg.payload = certResponse;
 							node.status({fill:"red",shape:"dot",text:"CSR request failed"});
-							node.send([null,msg]);
+							msg.payload.action = action;
+							msg.payload.address = device.address;
+							node.error(response.statusMessage, msg);
 							return;
 						}
 						node.status({fill:"green",shape:"dot",text:"CSR complete"});
@@ -381,7 +428,9 @@ module.exports = function(RED) {
 								if( error ) {
 									msg.payload = response;
 									node.status({fill:"red",shape:"dot",text:"CSR request failed"});
-									node.send([null,msg]);
+									msg.payload.action = action;
+									msg.payload.address = device.address;
+									node.error(response.statusMessage, msg);
 									return;
 								}
 								node.status({fill:"green",shape:"dot",text:"CSR complete"});
@@ -395,7 +444,7 @@ module.exports = function(RED) {
 									PEM += "-----END CERTIFICATE REQUEST-----\n";
 									msg.payload = PEM;
 									msg.csrID = 'CSR_' + validFrom;
-									node.send([msg,null]);
+									node.send(msg);
 									return;
 								}
 							});
@@ -411,7 +460,9 @@ module.exports = function(RED) {
 							statusMessage: "Invalid input",
 							body: "Missing PEM DATA"
 						}
-						node.send([null,msg]);
+						msg.payload.action = action;
+						msg.payload.address = device.address;
+						node.error(response.statusMessage, msg);
 						return;
 					}
 					if( PEM.search("-----BEGIN CERTIFICATE-----") < 0 || PEM.search("-----END CERTIFICATE-----") < 0 ) {
@@ -420,10 +471,12 @@ module.exports = function(RED) {
 							statusMessage: "Invalid input",
 							body: "Invalid PEM data"
 						}
-						node.send([null,msg]);
+						msg.payload.action = action;
+						msg.payload.address = device.address;
+						node.error(response.statusMessage, msg);
 						return;
 					}
-					//STUPID ONVIF again...why not accepting standard PEM fomrating?!!!!!!!
+					//Awkward ONVIF again...why not accepting standard PEM formating?!!!!!!!
 					PEM = PEM.replace("-----BEGIN CERTIFICATE-----","");
 					PEM = PEM.replace("-----END CERTIFICATE-----","");
 					
@@ -442,11 +495,13 @@ module.exports = function(RED) {
 					VapixWrapper.SOAP( device, soapBody, function(error,response) {
 							msg.payload = response;
 						if( error ) {
-							node.send([null,msg]);
+							msg.payload.action = action;
+							msg.payload.address = device.address;
+							node.error(response.statusMessage, msg);
 							return;
 						}
 						msg.certID;
-						node.send([msg,null]);
+						node.send(msg);
 						return;
 					});
 				break;
@@ -459,7 +514,9 @@ module.exports = function(RED) {
 							statusMessage: "Invalid input",
 							body: "Missing certificate id"
 						}
-						node.send([null,msg]);
+						msg.payload.action = action;
+						msg.payload.address = device.address;
+						node.error(response.statusMessage, msg);
 						return;
 					}
 					var soapBody = '<tds:DeleteCertificates xmlns="http://www.onvif.org/ver10/device/wsdl">';
@@ -467,10 +524,13 @@ module.exports = function(RED) {
 					soapBody += '</tds:DeleteCertificates>';
 					VapixWrapper.SOAP( device, soapBody, function(error,response) {
 						msg.payload = response;
-						if( error )
-							node.send([null,msg]);
-						else
-							node.send([msg,null]);
+						if( error ) {
+							msg.payload.action = action;
+							msg.payload.address = device.address;
+							node.error(response.statusMessage, msg);
+							return;
+						}
+						node.send(msg);
 					});
 				break;
 				
@@ -482,9 +542,14 @@ module.exports = function(RED) {
 						!data.hasOwnProperty("EAP_identity") || !data.hasOwnProperty("EAPOL_version") || 
 						data.cert.length < 500 || data.key.length < 500 || data.CA_cert.length < 500
 						) {
-						msg.error = "Invalid input";
-						msg.payload = "Check 802.1X property syntax";
-						node.send( msg );
+						msg.payload = {
+							statusCode: 400,
+							statusMessage: "Invalid input",
+							body: "Check 802.1X property syntax"
+						}
+						msg.payload.action = action;
+						msg.payload.address = device.address;
+						node.error(response.statusMessage, msg);
 						return;
 					}
 
@@ -498,8 +563,9 @@ module.exports = function(RED) {
 						msg.error = error;
 						msg.payload = response;
 						if( error ) {
-							msg.payload = "Cannot install CA certificate";
-							node.send(msg);
+							msg.payload.action = action;
+							msg.payload.address = device.address;
+							node.error(response.statusMessage, msg);
 							return;
 						}
 						data.cert = data.cert.replace("-----BEGIN CERTIFICATE-----","");
@@ -514,11 +580,11 @@ module.exports = function(RED) {
 						body += '<tt:PrivateKey>\n<tt:Data>' + data.key + '</tt:Data>\n</tt:PrivateKey>\n';
 						body += '</CertificateWithPrivateKey></tds:LoadCertificateWithPrivateKey>\n';
 						VapixWrapper.SOAP( device, body, function(error,response){
-							msg.error = error;
 							msg.payload = response;
 							if( error ) {
-								msg.payload = "Cannot install client certificate";
-								node.send(msg);
+								msg.payload.action = action;
+								msg.payload.address = device.address;
+								node.error(response.statusMessage, msg);
 								return;
 							}
 					
@@ -536,16 +602,21 @@ module.exports = function(RED) {
 								msg.error = error;
 								msg.payload = response;
 								if( error ) {
-									msg.payload = "Cannot install 802.1X client certificate";
-									node.send(msg);
+									msg.payload.action = action;
+									msg.payload.address = device.address;
+									node.error(response.statusMessage, msg);
 									return;
 								}
 								var cgi = '/axis-cgi/param.cgi?action=update&Network.Interface.I0.dot1x.Enabled=yes&Network.Interface.I0.dot1x.EAPOLVersion=' + data.EAPOL_version;	
 								VapixWrapper.CGI( device, cgi, function(error,response ) {
-									msg.error = error;
-									msg.payload = "802.1X is set";
-									if(error)
+									msg.payload = resonse;
+									if(error) {
 										msg.payload = "Certififcates installed but could not enable 802.1X";
+										msg.payload.action = action;
+										msg.payload.address = device.address;
+										node.error(response.statusMessage, msg);
+										return;
+									}
 									node.send(msg);
 								});
 							});

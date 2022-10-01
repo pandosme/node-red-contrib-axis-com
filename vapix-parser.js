@@ -70,6 +70,58 @@ exports.AcapList2JSON = function( xml, callback ) {
 	});
 }
 
+
+exports.Recordings = function( xml, callback ) {
+	var parser = new xml2js.Parser({
+		explicitArray: false,
+		mergeAttrs: true
+	});
+		
+	parser.parseString(xml, function (err, result) {
+		if( err ) {
+			callback( true, {
+				statusCode: "PARSER",
+				statusMessage: err,
+				body: xml
+			});
+			return;
+		}
+		var json = result;
+		if( !json.hasOwnProperty("root") || !json.root.hasOwnProperty("recordings") ) {
+			callback( true, {
+				statusCode: "VALIDATOR",
+				statusMessage: "Invalid JSON Response",
+				body: result
+			});
+			return;
+		}
+		var data = json.root.recordings;
+		var list = [];	
+		if( !data.hasOwnProperty("recording") || data.recording.length === 0 ) {
+			callback(false,list);
+			return;
+		}
+		data.recording.forEach( function( item ) {
+			var recording = {
+				storage: item.diskid,
+				start: new Date(item.starttime),
+				stop: new Date(item.stoptime),
+				duration: 0,
+				type: item.recordingtype,
+				event: item.eventtrigger,
+				width: parseInt(item.video.width),
+				height: parseInt(item.video.height),
+				fps: parseInt(item.video.framerate.split(":")[0]),
+				id: item.recordingid
+			};
+			recording.duration = parseInt( (recording.stop.getTime() - recording.start.getTime())/1000);
+			if ( recording.duration > 1 )
+				list.push(recording );
+		});
+		callback(false,list);
+	});
+}
+
 exports.Accounts2JSON = function( data, callback ) {
 	var accounts = [];
 	var admins = [];

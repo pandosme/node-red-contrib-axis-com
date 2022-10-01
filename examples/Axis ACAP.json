@@ -1,0 +1,376 @@
+[
+    {
+        "id": "76c6a3d87b4816fc",
+        "type": "inject",
+        "z": "47941e09e2e30d81",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 140,
+        "y": 120,
+        "wires": [
+            [
+                "a6fdcc0f35cc1de0"
+            ]
+        ]
+    },
+    {
+        "id": "33cffdbd45f22a94",
+        "type": "inject",
+        "z": "47941e09e2e30d81",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 140,
+        "y": 180,
+        "wires": [
+            [
+                "2092ec0da6759c6d"
+            ]
+        ]
+    },
+    {
+        "id": "1b926265d812a3a2",
+        "type": "inject",
+        "z": "47941e09e2e30d81",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 140,
+        "y": 240,
+        "wires": [
+            [
+                "16af6b79e7d6b06b"
+            ]
+        ]
+    },
+    {
+        "id": "323cd9541214fa4a",
+        "type": "inject",
+        "z": "47941e09e2e30d81",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 140,
+        "y": 300,
+        "wires": [
+            [
+                "8d9c83f6bc5c7970"
+            ]
+        ]
+    },
+    {
+        "id": "c263e3d3205fd59f",
+        "type": "inject",
+        "z": "47941e09e2e30d81",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 140,
+        "y": 360,
+        "wires": [
+            [
+                "0e3b8d9b423a4e31"
+            ]
+        ]
+    },
+    {
+        "id": "0e3b8d9b423a4e31",
+        "type": "file in",
+        "z": "47941e09e2e30d81",
+        "name": "Load EAP File",
+        "filename": "/some/file/acap.eap",
+        "filenameType": "str",
+        "format": "",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 360,
+        "y": 360,
+        "wires": [
+            [
+                "a22dcf7ddc543d83"
+            ]
+        ]
+    },
+    {
+        "id": "47cd6d32daeec050",
+        "type": "debug",
+        "z": "47941e09e2e30d81",
+        "name": "Success",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 800,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "820801163e848cbb",
+        "type": "debug",
+        "z": "47941e09e2e30d81",
+        "name": "Success",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 800,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "d0ca60005c4500f3",
+        "type": "debug",
+        "z": "47941e09e2e30d81",
+        "name": "Success",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 800,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "65571cf0e8b94bf2",
+        "type": "debug",
+        "z": "47941e09e2e30d81",
+        "name": "Success",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 800,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "26a95d38a2b72e52",
+        "type": "debug",
+        "z": "47941e09e2e30d81",
+        "name": "Success",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 800,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "a6fdcc0f35cc1de0",
+        "type": "Axis ACAP",
+        "z": "47941e09e2e30d81",
+        "name": "",
+        "preset": "f869d7cd6eb9b911",
+        "action": "ACAP Status",
+        "acap": "fred",
+        "filename": "",
+        "x": 610,
+        "y": 120,
+        "wires": [
+            [
+                "47cd6d32daeec050"
+            ]
+        ]
+    },
+    {
+        "id": "2092ec0da6759c6d",
+        "type": "Axis ACAP",
+        "z": "47941e09e2e30d81",
+        "name": "",
+        "preset": "f869d7cd6eb9b911",
+        "action": "Start ACAP",
+        "acap": "vmd",
+        "filename": "",
+        "x": 610,
+        "y": 180,
+        "wires": [
+            [
+                "820801163e848cbb"
+            ]
+        ]
+    },
+    {
+        "id": "16af6b79e7d6b06b",
+        "type": "Axis ACAP",
+        "z": "47941e09e2e30d81",
+        "name": "",
+        "preset": "f869d7cd6eb9b911",
+        "action": "Stop ACAP",
+        "acap": "vmd",
+        "filename": "",
+        "x": 610,
+        "y": 240,
+        "wires": [
+            [
+                "d0ca60005c4500f3"
+            ]
+        ]
+    },
+    {
+        "id": "8d9c83f6bc5c7970",
+        "type": "Axis ACAP",
+        "z": "47941e09e2e30d81",
+        "name": "",
+        "preset": "f869d7cd6eb9b911",
+        "action": "Remove ACAP",
+        "acap": "",
+        "filename": "",
+        "x": 600,
+        "y": 300,
+        "wires": [
+            [
+                "65571cf0e8b94bf2"
+            ]
+        ]
+    },
+    {
+        "id": "a22dcf7ddc543d83",
+        "type": "Axis ACAP",
+        "z": "47941e09e2e30d81",
+        "name": "",
+        "preset": "f869d7cd6eb9b911",
+        "action": "Install ACAP",
+        "acap": "",
+        "filename": "",
+        "x": 610,
+        "y": 360,
+        "wires": [
+            [
+                "26a95d38a2b72e52"
+            ]
+        ]
+    },
+    {
+        "id": "963b1edf1007e2e9",
+        "type": "catch",
+        "z": "47941e09e2e30d81",
+        "name": "",
+        "scope": null,
+        "uncaught": true,
+        "x": 140,
+        "y": 60,
+        "wires": [
+            [
+                "4c4cf0f3b7050a41"
+            ]
+        ]
+    },
+    {
+        "id": "4c4cf0f3b7050a41",
+        "type": "debug",
+        "z": "47941e09e2e30d81",
+        "name": "Error",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 370,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "f869d7cd6eb9b911",
+        "type": "Device Access",
+        "name": "Demo camera",
+        "address": "10.13.8.227",
+        "protocol": "http"
+    }
+]

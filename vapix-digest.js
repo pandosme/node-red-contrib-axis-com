@@ -18,6 +18,32 @@ exports.HTTP_Get_No_digest = function( device, path, resonseType, callback ) {
 			});
 			callback(false, response.body );
 		} catch (error) {
+			if( error.code === 'ECONNREFUSED' ) {
+				callback( true, {
+					statusCode: error.code,
+					statusMessage: "Connection refused",
+					body: "Port is not active or blocked by firewall"
+				});
+				return;
+			}
+			if( error.code === 'EHOSTUNREACH' ) {
+				callback( true, {
+					statusCode: error.code,
+					statusMessage: "Unreachable",
+					body: "Host does not respond"
+				});
+				return;
+			}
+			if( error.code === 'ETIMEDOUT' ) {
+				callback( true, {
+					statusCode: error.code,
+					statusMessage: "Timeout",
+					body: "Host does not respond"
+				});
+				return;
+			}
+console.log(error.code + " : " + url );
+			
 			callback( true, {
 				statusCode: error && error.response ? error.response.statusCode:0,
 				statusMessage: error && error.response ? error.response.statusMessage:"Unkown error",
@@ -65,12 +91,38 @@ exports.HTTP_Get = function( device, path, resonseType, callback ) {
 				https:{rejectUnauthorized: false}
 			});
 			callback(false, response.body );
-		} catch (error) {
+		} 
+		catch (error) {
+			if( error.code === 'ECONNREFUSED' ) {
+				callback( true, {
+					statusCode: error.code,
+					statusMessage: "Connection refused",
+					body: "Port is not active or blocked by firewall"
+				});
+				return;
+			}
+			if( error.code === 'EHOSTUNREACH' ) {
+				callback( true, {
+					statusCode: error.code,
+					statusMessage: "Unreachable",
+					body: "Host does not respond"
+				});
+				return;
+			}
+			if( error.code === 'ETIMEDOUT' ) {
+				callback( true, {
+					statusCode: error.code,
+					statusMessage: "Timeout",
+					body: "Host does not respond"
+				});
+				return;
+			}
+console.log(error.code + " : " + url );
 			callback( true, {
 				statusCode: error && error.response ? error.response.statusCode:0,
 				statusMessage: error && error.response ? error.response.statusMessage:"Unkown error",
 				body: error && error.response ? error.response.body:""
-			} );
+			});
 		}
 	})();
 }
@@ -123,6 +175,31 @@ exports.HTTP_Post = function( device, path, body, responseType, callback ) {
 			});
 			callback(false, response.body );
 		} catch (error) {
+			if( error.code === 'ECONNREFUSED' ) {
+				callback( true, {
+					statusCode: error.code,
+					statusMessage: "Connection refused",
+					body: "Port is not active or blocked by firewall"
+				});
+				return;
+			}
+			if( error.code === 'EHOSTUNREACH' ) {
+				callback( true, {
+					statusCode: error.code,
+					statusMessage: "Unreachable",
+					body: "Host does not respond"
+				});
+				return;
+			}
+			if( error.code === 'ETIMEDOUT' ) {
+				callback( true, {
+					statusCode: error.code,
+					statusMessage: "Timeout",
+					body: "Host does not respond"
+				});
+				return;
+			}
+console.log(error.code + " : " + url );
 			callback( true, {
 				statusCode: error && error.response ? error.response.statusCode:0,
 				statusMessage: error && error.response ? error.response.statusMessage:"Unkown error",
@@ -188,6 +265,31 @@ exports.HTTP_Put = function( device, path, body, responseType, callback ) {
 			});
 			callback(false, response.body );
 		} catch (error) {
+			if( error.code === 'ECONNREFUSED' ) {
+				callback( true, {
+					statusCode: error.code,
+					statusMessage: "Connection refused",
+					body: "Port is not active or blocked by firewall"
+				});
+				return;
+			}
+			if( error.code === 'EHOSTUNREACH' ) {
+				callback( true, {
+					statusCode: error.code,
+					statusMessage: "Unreachable",
+					body: "Host does not respond"
+				});
+				return;
+			}
+			if( error.code === 'ETIMEDOUT' ) {
+				callback( true, {
+					statusCode: error.code,
+					statusMessage: "Timeout",
+					body: "Host does not respond"
+				});
+				return;
+			}
+console.log(error.code + " : " + url );
 			callback( true, {
 				statusCode: error && error.response ? error.response.statusCode:0,
 				statusMessage: error && error.response ? error.response.statusMessage:"Unkown error",
@@ -262,6 +364,31 @@ exports.HTTP_Patch = function( device, path, body, responseType, callback ) {
 
 			callback(false, response.body );
 		} catch (error) {
+			if( error.code === 'ECONNREFUSED' ) {
+				callback( true, {
+					statusCode: error.code,
+					statusMessage: "Connection refused",
+					body: "Port is not active or blocked by firewall"
+				});
+				return;
+			}
+			if( error.code === 'EHOSTUNREACH' ) {
+				callback( true, {
+					statusCode: error.code,
+					statusMessage: "Unreachable",
+					body: "Host does not respond"
+				});
+				return;
+			}
+			if( error.code === 'ETIMEDOUT' ) {
+				callback( true, {
+					statusCode: error.code,
+					statusMessage: "Timeout",
+					body: "Host does not respond"
+				});
+				return;
+			}
+console.log(error.code + " : " + url );
 			callback( true, {
 				statusCode: error && error.response ? error.response.statusCode:0,
 				statusMessage: error && error.response ? error.response.statusMessage:"Unkown error",
@@ -440,6 +567,31 @@ exports.upload = function( device, type, filename, options, buffer, callback ) {
 			});
 			callback(false, response.body );
 		} catch (error) {
+			if( error.code === 'ECONNREFUSED' ) {
+				callback( true, {
+					statusCode: error.code,
+					statusMessage: "Connection refused",
+					body: "Port is not active or blocked by firewall"
+				});
+				return;
+			}
+			if( error.code === 'EHOSTUNREACH' ) {
+				callback( true, {
+					statusCode: error.code,
+					statusMessage: "Unreachable",
+					body: "Host does not respond"
+				});
+				return;
+			}
+			if( error.code === 'ETIMEDOUT' ) {
+				callback( true, {
+					statusCode: error.code,
+					statusMessage: "Timeout",
+					body: "Host does not respond"
+				});
+				return;
+			}
+//console.log(error.code + " : " + url );
 			callback( true, {
 				statusCode: error && error.response ? error.response.statusCode:0,
 				statusMessage: error && error.response ? error.response.statusMessage:"Unkown error",

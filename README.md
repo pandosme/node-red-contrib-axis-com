@@ -3,4 +3,6 @@
 Nodes to simplify integration with Axis devices
 
 ## History
-Still under development
+
+### 1.0.0 
+First commit

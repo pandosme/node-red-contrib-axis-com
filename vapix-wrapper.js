@@ -14,6 +14,14 @@ exports.HTTP_Get = function( device, cgi, responseType, callback ) {
 
 exports.HTTP_Post = function( device, cgi, payload, responseType, callback ) {
 	VapixDigest.HTTP_Post( device, cgi, payload, responseType, function( error, body ) {
+		if( error ) {
+			callback(error,body);
+			return;
+		}
+		try {
+			body = JSON.parse(body);
+		} catch {
+		}
 		callback( error, body );
 	});
 }
@@ -43,9 +51,9 @@ exports.SOAP = function( device, soapBody, callback ) {
 }
 
 exports.CGI = function( device, cgi, callback ) {
-//	console.log("vapix-wrapper:CGI (" + cgi + ")");
+//console.log("vapix-wrapper:CGI (" + cgi + ")");
 	VapixDigest.HTTP_Get( device, cgi, "text", function( error, body ) {
-//		console.log("vapix-wrapper:CGI: Response: ", error, body );
+//console.log("vapix-wrapper:CGI: Response: ", error, body );
 		if(error) {
 			callback(error,body);
 			return;
@@ -378,8 +386,9 @@ exports.ACAP_Control = function( device, action, acapID, callback ) {
 exports.Account_List = function( device, callback) {
 
 	exports.CGI( device, '/axis-cgi/pwdgrp.cgi?action=get', function( error, response ) {
+//console.log(response);
 		if( error ) {
-			callback( true, error );
+			callback( true, response );
 			return;
 		}
 		VapixParser.Accounts2JSON( response, function( error, json ) {
@@ -550,148 +559,85 @@ exports.Upload_Overlay = function( device, filename, options, callback ) {
 
 }
 
-exports.Upload_ACAP = function( device , options, callback ) {
+exports.Upload_ACAP = function( device , buffer, callback ) {
 
-	if(!options) {  
+	if(!buffer) {  
 		callback(true,{
 			statusCode: 400,
 			statusMessage: "Invalid input",
-			body: "ACAP data must be a buffer or a filepath"
+			body: "ACAP data must be a buffer"
 		});
 		return;
 	}
 	
-	if( Buffer.isBuffer(options)  ) {
-		VapixDigest.upload( device, "acap", "acap.eap", null, options, function( error, response) {
-			if(!error) {
-				callback( error, response );
+	VapixDigest.upload( device, "acap", "acap.eap", null, buffer, function( error, response) {
+		if(!error) {
+			//VAPIX responds error with 200 OK but error is in JSON
+			try {
+				response = JSON.parse(response);
+			} catch {
+			}
+			if( response.hasOwnProperty("error") ) {
+				callback( true, {
+					statusCode: response.error.code || 0,
+					statusMessage: response.error.message || "Unknown error",
+					body: "Not compatible with device"
+				});
 				return;
 			}
-			VapixDigest.upload( device, "acap_legacy", "acap.eap", null, options, function( error, response) {
-				if( error ) {
-					callback( error, response );
-					return;
-				}
-				var body = response.trim();
-				switch( body ) {
-					case "OK":
-						callback( false, "ACAP installed" );
-					break;
-					case "Error: 1":
-						callback(true,{
-							statusCode: 500,
-							statusMessage: "Installation failed",
-							body: body
-						});
-					break;
-					case "Error: 2":
-						callback(true,{
-							statusCode: 500,
-							statusMessage: "Installation failed",
-							body: "File verification failed"
-						});
-					break;
-					case "Error: 3":
-						callback(true,{
-							statusCode: 500,
-							statusMessage: "Installation failed",
-							body: "File is too large or the storage is full"
-						});
-					break;
-					case "Error: 5":
-					case "Error: 10":
-						callback(true,{
-							statusCode: 500,
-							statusMessage: "Installation failed",
-							body: "File is not compatible with the HW or FW"
-						});
-					break;
-					default:
-						callback(true,{
-							statusCode: 500,
-							statusMessage: "Installation failed",
-							body: body
-						});
-					break;
-				}
-			});
-		});
-		return;
-	}
-	
-	if( typeof options !== "string" ) {
-		callback(true,{
-			statusCode: 400,
-			statusMessage: "Invalid input",
-			body: "Missing filepatg to ACAP"
-		});
-		return;
-	}
-	if( !fs.existsSync(options) ) {
-		callback(true,{
-			statusCode: 400,
-			statusMessage: "Invalid input",
-			body: options + " does not exist"
-		});
-		return;
-	}	
-
-	VapixDigest.upload( device, "acap", "acap.eap", null, fs.createReadStream(options), function( error, response) {
-		if(!error) {
-			callback( error, response );
+			callback( false, response );
 			return;
 		}
-//		console.log("ACAP upload failed.  Testing legacy ACAP upload CGI...");
-		VapixDigest.upload( device, "acap_legacy", "acap.eap", null, fs.createReadStream(options), function( error, response) {
+
+		VapixDigest.upload( device, "acap_legacy", "acap.eap", null, buffer, function( error, response) {
 			if( error ) {
 				callback( error, response );
 				return;
 			}
-				var body = response.trim();
-				switch( body ) {
-					case "OK":
-						callback( false, "ACAP installed" );
-					break;
-					case "Error: 1":
-						callback(true,{
-							statusCode: 500,
-							statusMessage: "Installation failed",
-							body: body
-						});
-					break;
-					case "Error: 2":
-						callback(true,{
-							statusCode: 500,
-							statusMessage: "Installation failed",
-							body: "File verification failed"
-						});
-					break;
-					case "Error: 3":
-						callback(true,{
-							statusCode: 500,
-							statusMessage: "Installation failed",
-							body: "File is too large or the storage is full"
-						});
-					break;
-					case "Error: 5":
-					case "Error: 10":
-						callback(true,{
-							statusCode: 500,
-							statusMessage: "Installation failed",
-							body: "File is not compatible with the HW or FW"
-						});
-					break;
-					default:
-						callback(true,{
-							statusCode: 500,
-							statusMessage: "Installation failed",
-							body: body
-						});
-					break;
-				}
+			var body = response.trim();
+			switch( body ) {
+				case "OK":
+					callback( false, "ACAP installed" );
+				break;
+				case "Error: 1":
+					callback(true,{
+						statusCode: 500,
+						statusMessage: "Installation failed",
+						body: body
+					});
+				break;
+				case "Error: 2":
+					callback(true,{
+						statusCode: 500,
+						statusMessage: "Installation failed",
+						body: "File verification failed"
+					});
+				break;
+				case "Error: 3":
+					callback(true,{
+						statusCode: 500,
+						statusMessage: "Installation failed",
+						body: "File is too large or the storage is full"
+					});
+				break;
+				case "Error: 5":
+				case "Error: 10":
+					callback(true,{
+						statusCode: 500,
+						statusMessage: "Installation failed",
+						body: "File is not compatible with the HW or FW"
+					});
+				break;
+				default:
+					callback(true,{
+						statusCode: 500,
+						statusMessage: "Installation failed",
+						body: body
+					});
+				break;
+			}
 		});
 	});
-
 }
 
 exports.Certificates_Get = function( device, certificateID, callback ) {
@@ -788,6 +734,24 @@ exports.Certificates_CSR = function( device, options, callback){
 					pem: data["acertificates:CreateCertificate2Response"]["acertificates:Certificate"]
 				});
 			});
+		});
+	});
+}
+
+exports.Recordings = function( device, options, callback) {
+	var cgi = "/axis-cgi/record/list.cgi?recordingid=all";
+	if( options.hasOwnProperty("from") ) {
+		cgi += "&starttime=" + new Date(options.from).toISOString();
+		if( options.hasOwnProperty("to") )
+			cgi += "&stoptime=" + new Date(options.to).toISOString();
+	}
+	exports.CGI( device, cgi, function( error, response ) {
+		if( error ) {
+			callback(error, response );
+			return;
+		}
+		VapixParser.Recordings( response, function( error, body ) {
+			callback(error, body);
 		});
 	});
 }

@@ -1,0 +1,1011 @@
+[
+    {
+        "id": "e70ef828f1e366f1",
+        "type": "Axis Security",
+        "z": "799bb70ed7364692",
+        "name": "",
+        "preset": "f869d7cd6eb9b911",
+        "address": "",
+        "action": "List accounts",
+        "data": "",
+        "options": "",
+        "x": 610,
+        "y": 120,
+        "wires": [
+            [
+                "a234a96b176f10e9"
+            ]
+        ]
+    },
+    {
+        "id": "c53b2c7a71f21a36",
+        "type": "inject",
+        "z": "799bb70ed7364692",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 140,
+        "y": 120,
+        "wires": [
+            [
+                "e70ef828f1e366f1"
+            ]
+        ]
+    },
+    {
+        "id": "a234a96b176f10e9",
+        "type": "debug",
+        "z": "799bb70ed7364692",
+        "name": "Success",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 800,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "ef6ee5dd6be536a6",
+        "type": "Axis Security",
+        "z": "799bb70ed7364692",
+        "name": "",
+        "preset": "f869d7cd6eb9b911",
+        "address": "",
+        "action": "Set account",
+        "data": "",
+        "options": "",
+        "x": 610,
+        "y": 180,
+        "wires": [
+            [
+                "bde4218780827885"
+            ]
+        ]
+    },
+    {
+        "id": "7420b8a32e8d4fe9",
+        "type": "inject",
+        "z": "799bb70ed7364692",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 140,
+        "y": 180,
+        "wires": [
+            [
+                "15841b9687c0c4a5"
+            ]
+        ]
+    },
+    {
+        "id": "15841b9687c0c4a5",
+        "type": "function",
+        "z": "799bb70ed7364692",
+        "name": "Account",
+        "func": "msg.payload = {\n    name: \"Fred\",\n    password: \"8924iunbv9qmkc\",\n    privileges: \"Admin\"\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 300,
+        "y": 180,
+        "wires": [
+            [
+                "ef6ee5dd6be536a6"
+            ]
+        ]
+    },
+    {
+        "id": "1d6b3d201e0fbbbf",
+        "type": "Axis Security",
+        "z": "799bb70ed7364692",
+        "name": "",
+        "preset": "f869d7cd6eb9b911",
+        "address": "",
+        "action": "Remove account",
+        "data": "",
+        "options": "",
+        "x": 590,
+        "y": 240,
+        "wires": [
+            [
+                "d7a48553bae22c07"
+            ]
+        ]
+    },
+    {
+        "id": "4f4d56c44b113acc",
+        "type": "inject",
+        "z": "799bb70ed7364692",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 140,
+        "y": 240,
+        "wires": [
+            [
+                "ff1ae1200329224f"
+            ]
+        ]
+    },
+    {
+        "id": "ff1ae1200329224f",
+        "type": "function",
+        "z": "799bb70ed7364692",
+        "name": "Account",
+        "func": "msg.payload = \"Fred\";\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 300,
+        "y": 240,
+        "wires": [
+            [
+                "1d6b3d201e0fbbbf"
+            ]
+        ]
+    },
+    {
+        "id": "5e82be0239abb476",
+        "type": "Axis Security",
+        "z": "799bb70ed7364692",
+        "name": "",
+        "preset": "f869d7cd6eb9b911",
+        "address": "",
+        "action": "Allow discovery",
+        "data": "",
+        "options": "",
+        "x": 620,
+        "y": 300,
+        "wires": [
+            [
+                "2d746b157b506c4c"
+            ]
+        ]
+    },
+    {
+        "id": "798f4b4e9f0aca94",
+        "type": "inject",
+        "z": "799bb70ed7364692",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "true",
+        "payloadType": "bool",
+        "x": 130,
+        "y": 300,
+        "wires": [
+            [
+                "5e82be0239abb476"
+            ]
+        ]
+    },
+    {
+        "id": "b07cf085a00db31d",
+        "type": "inject",
+        "z": "799bb70ed7364692",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "false",
+        "payloadType": "bool",
+        "x": 130,
+        "y": 340,
+        "wires": [
+            [
+                "5e82be0239abb476"
+            ]
+        ]
+    },
+    {
+        "id": "30323279adda46af",
+        "type": "Axis Security",
+        "z": "799bb70ed7364692",
+        "name": "",
+        "preset": "f869d7cd6eb9b911",
+        "address": "",
+        "action": "Allow SSH",
+        "data": "",
+        "options": "",
+        "x": 640,
+        "y": 400,
+        "wires": [
+            [
+                "d65fe3eedac51e0c"
+            ]
+        ]
+    },
+    {
+        "id": "8199742061bbe912",
+        "type": "inject",
+        "z": "799bb70ed7364692",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "true",
+        "payloadType": "bool",
+        "x": 130,
+        "y": 400,
+        "wires": [
+            [
+                "30323279adda46af"
+            ]
+        ]
+    },
+    {
+        "id": "0c2285db5e218f44",
+        "type": "inject",
+        "z": "799bb70ed7364692",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "false",
+        "payloadType": "bool",
+        "x": 130,
+        "y": 440,
+        "wires": [
+            [
+                "30323279adda46af"
+            ]
+        ]
+    },
+    {
+        "id": "d08c99f6e34dde45",
+        "type": "Axis Security",
+        "z": "799bb70ed7364692",
+        "name": "",
+        "preset": "f869d7cd6eb9b911",
+        "address": "",
+        "action": "Allow Browser Access",
+        "data": "",
+        "options": "",
+        "x": 600,
+        "y": 500,
+        "wires": [
+            [
+                "6612499b9465f12f"
+            ]
+        ]
+    },
+    {
+        "id": "da01d665c9ac74dc",
+        "type": "inject",
+        "z": "799bb70ed7364692",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "true",
+        "payloadType": "bool",
+        "x": 130,
+        "y": 500,
+        "wires": [
+            [
+                "d08c99f6e34dde45"
+            ]
+        ]
+    },
+    {
+        "id": "941790aabc771cea",
+        "type": "inject",
+        "z": "799bb70ed7364692",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "false",
+        "payloadType": "bool",
+        "x": 130,
+        "y": 540,
+        "wires": [
+            [
+                "d08c99f6e34dde45"
+            ]
+        ]
+    },
+    {
+        "id": "85deeebc1b0d1343",
+        "type": "Axis Security",
+        "z": "799bb70ed7364692",
+        "name": "",
+        "preset": "f869d7cd6eb9b911",
+        "address": "",
+        "action": "Set firewall",
+        "data": "",
+        "options": "",
+        "x": 630,
+        "y": 600,
+        "wires": [
+            [
+                "85852be30473501c"
+            ]
+        ]
+    },
+    {
+        "id": "f9fcdd0c679c4e9a",
+        "type": "inject",
+        "z": "799bb70ed7364692",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 140,
+        "y": 600,
+        "wires": [
+            [
+                "f44fb7972698984f"
+            ]
+        ]
+    },
+    {
+        "id": "f44fb7972698984f",
+        "type": "function",
+        "z": "799bb70ed7364692",
+        "name": "Allowed connects (clients)",
+        "func": "//Empty list will whitelist all\n//Two or more address is required for enabling whitelisting\n//Use with caution to not lockout yourself.\nmsg.payload = [];\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 350,
+        "y": 600,
+        "wires": [
+            [
+                "85deeebc1b0d1343"
+            ]
+        ]
+    },
+    {
+        "id": "287db7ef30a65bf8",
+        "type": "Axis Security",
+        "z": "799bb70ed7364692",
+        "name": "",
+        "preset": "f869d7cd6eb9b911",
+        "address": "",
+        "action": "List certificates",
+        "data": "",
+        "options": "",
+        "x": 620,
+        "y": 660,
+        "wires": [
+            [
+                "ec316609d76553c4"
+            ]
+        ]
+    },
+    {
+        "id": "ed67c7cf23519715",
+        "type": "inject",
+        "z": "799bb70ed7364692",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 140,
+        "y": 660,
+        "wires": [
+            [
+                "287db7ef30a65bf8"
+            ]
+        ]
+    },
+    {
+        "id": "25550e1204af257a",
+        "type": "Axis Security",
+        "z": "799bb70ed7364692",
+        "name": "",
+        "preset": "f869d7cd6eb9b911",
+        "address": "",
+        "action": "Generate CSR",
+        "data": "",
+        "options": "",
+        "x": 620,
+        "y": 720,
+        "wires": [
+            [
+                "39512b6cbc8a0710"
+            ]
+        ]
+    },
+    {
+        "id": "00a057b72ec06b8d",
+        "type": "inject",
+        "z": "799bb70ed7364692",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 140,
+        "y": 720,
+        "wires": [
+            [
+                "ac52b3be6ae4ea50"
+            ]
+        ]
+    },
+    {
+        "id": "ac52b3be6ae4ea50",
+        "type": "function",
+        "z": "799bb70ed7364692",
+        "name": "CSR info",
+        "func": "msg.payload = {\n    CN: \"host.domain.com\",\n    C: \"US\",\n    days: 365\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 300,
+        "y": 720,
+        "wires": [
+            [
+                "25550e1204af257a"
+            ]
+        ]
+    },
+    {
+        "id": "9766e6b69260367f",
+        "type": "Axis Security",
+        "z": "799bb70ed7364692",
+        "name": "",
+        "preset": "f869d7cd6eb9b911",
+        "address": "",
+        "action": "Install Certificate",
+        "data": "",
+        "options": "",
+        "x": 610,
+        "y": 780,
+        "wires": [
+            [
+                "7a1cbd89288252cf"
+            ]
+        ]
+    },
+    {
+        "id": "f7d9c86ec12068c7",
+        "type": "inject",
+        "z": "799bb70ed7364692",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 140,
+        "y": 780,
+        "wires": [
+            [
+                "d7c22eba8565aa47"
+            ]
+        ]
+    },
+    {
+        "id": "72cc364a432d482b",
+        "type": "catch",
+        "z": "799bb70ed7364692",
+        "name": "",
+        "scope": null,
+        "uncaught": false,
+        "x": 120,
+        "y": 60,
+        "wires": [
+            [
+                "2bcd0607b839c5cc"
+            ]
+        ]
+    },
+    {
+        "id": "2bcd0607b839c5cc",
+        "type": "debug",
+        "z": "799bb70ed7364692",
+        "name": "Error",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 370,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "bde4218780827885",
+        "type": "debug",
+        "z": "799bb70ed7364692",
+        "name": "Success",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 800,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "d7a48553bae22c07",
+        "type": "debug",
+        "z": "799bb70ed7364692",
+        "name": "Success",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 800,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "2d746b157b506c4c",
+        "type": "debug",
+        "z": "799bb70ed7364692",
+        "name": "Success",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 800,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "d65fe3eedac51e0c",
+        "type": "debug",
+        "z": "799bb70ed7364692",
+        "name": "Success",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 800,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "6612499b9465f12f",
+        "type": "debug",
+        "z": "799bb70ed7364692",
+        "name": "Success",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 800,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "85852be30473501c",
+        "type": "debug",
+        "z": "799bb70ed7364692",
+        "name": "Success",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 800,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "ec316609d76553c4",
+        "type": "debug",
+        "z": "799bb70ed7364692",
+        "name": "Success",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 800,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "39512b6cbc8a0710",
+        "type": "debug",
+        "z": "799bb70ed7364692",
+        "name": "Success",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 800,
+        "y": 720,
+        "wires": []
+    },
+    {
+        "id": "7a1cbd89288252cf",
+        "type": "debug",
+        "z": "799bb70ed7364692",
+        "name": "Success",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 800,
+        "y": 780,
+        "wires": []
+    },
+    {
+        "id": "d7c22eba8565aa47",
+        "type": "function",
+        "z": "799bb70ed7364692",
+        "name": "Certificate PEM",
+        "func": "msg.payload = \"Paste your signed certificate PEM here\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 320,
+        "y": 780,
+        "wires": [
+            [
+                "9766e6b69260367f"
+            ]
+        ]
+    },
+    {
+        "id": "dfebb63410755080",
+        "type": "Axis Security",
+        "z": "799bb70ed7364692",
+        "name": "",
+        "preset": "f869d7cd6eb9b911",
+        "address": "",
+        "action": "Set HTTPS certificate",
+        "data": "",
+        "options": "",
+        "x": 580,
+        "y": 900,
+        "wires": [
+            [
+                "ea662bcff1b03e3e"
+            ]
+        ]
+    },
+    {
+        "id": "ea662bcff1b03e3e",
+        "type": "debug",
+        "z": "799bb70ed7364692",
+        "name": "Success",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 800,
+        "y": 900,
+        "wires": []
+    },
+    {
+        "id": "7ad37b87256b31a3",
+        "type": "template",
+        "z": "799bb70ed7364692",
+        "name": "Demo Certificate",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "-----BEGIN CERTIFICATE-----\nMIIESzCCAjOgAwIBAgIDEAAAMA0GCSqGSIb3DQEBCwUAMCUxETAPBgNVBAoMCEFj\nbWUgSW5jMRAwDgYDVQQDDAdBY21lIENBMB4XDTIyMTAwMTA4MDU0MVoXDTIzMTAw\nMTA4MDU0MVowGDEWMBQGA1UEAwwNbXkuY2FtZXJhLmNvbTCCASIwDQYJKoZIhvcN\nAQEBBQADggEPADCCAQoCggEBANwqwqFHDsSYibFXCbwERObnb0TIKdAHgJD6mb51\n4EsvtsAKgDH8xdWoIaxZKleipBYgBCgDh6x2i998TI7ZIiJQdHIdZTjMYRPmyJHm\n7DqDQpzkQDVXARkB+LHQMt8qef3WeavBq6fsUtF09usHBmNhfJ7XN0YN0cbroYZ+\n3fj7e9jHle9ol3iai9Igrb/97F8Z9LH/xNy3rt/P0jGvtjTPtAjEXBcHu2BNIgRu\nkgfpHXUeNAeyWIk3FtQHtX0SYVy+6f+iSepyLoFPpGCgKhIcmqrrDu1t/EspfQUO\nOJMRUe3HeFWaIUW/XD7PygaCYgXaMjceo79Ty5dLNM5TuGMCAwEAAaOBkDCBjTAJ\nBgNVHRMEAjAAMBEGCWCGSAGG+EIBAQQEAwIGQDATBgNVHSUEDDAKBggrBgEFBQcD\nATAdBgNVHQ4EFgQUygYpSPAvxk6EmbvFrSiO1XJ5MZEwHwYDVR0jBBgwFoAUMLsL\n4Zzddr4iK3M6vdugQS9rkWcwGAYDVR0RBBEwD4INbXkuY2FtZXJhLmNvbTANBgkq\nhkiG9w0BAQsFAAOCAgEAG78b1wXQ8IAKxbfED9DL0i8I6uQlvGstmKhzXey0mTpP\naaRP7kberoklDg1dWCx/BWFILe1TWkjVm496dhUD3jImELILjtQ3L4sz/4jkz2BF\nnMoEHfN5tc5+ygApniogZX1u8zZg5aXUPzMfexK3/h+TH1OrJLL0iehUWp8k8UFo\nCMfb8TGLlON4RGNjsslJkrKsetuLjCFfQ7fzNdXarmsrk7IzmZQmXUTZhAAcAFDV\nF6cDLfj1dYURiNmEllOAq+qEtVus3YcC4cz2Am9X9DVGt/Go3HRsS5umtoVOlmKr\n7LMVIlOGoca7eAmo3R13jBZ5Lgpf5jme1KJ9FGMOJX74mW4HjJACayDLChzMmM3L\nkZL29qLlxqVFiHK05qMzn9ga69z2CypKUBsVmTnS9GAyzb3LzvGTqOfWuHqgdhCz\nyI2s7/69GiWFs+q3rP8dXCS46Dlk7wMW5QdO7az2H+DyVFefdFtcafWFtzEwJyqI\nOoAhglUf7qICPzkbbbK1gbLTt3ICHMilNeBQzEpGDlWhAmbQFAy9QqVarnqZ/lkl\nAySLpxEU+QE3IsmVto4xcVrSN488ciri5nXrHGTuh8/hSSeAaRYqdhMz7zp1twFB\nqh12tgZxKOSqkUa3mpHemwEJcWYRapv0VArBkVYniHtSv1g3t0Sg2lUQk6whwBc=\n-----END CERTIFICATE-----",
+        "output": "str",
+        "x": 330,
+        "y": 840,
+        "wires": [
+            [
+                "d32cc855c341c225"
+            ]
+        ]
+    },
+    {
+        "id": "4b16d6491a11ff9c",
+        "type": "inject",
+        "z": "799bb70ed7364692",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 140,
+        "y": 840,
+        "wires": [
+            [
+                "7ad37b87256b31a3"
+            ]
+        ]
+    },
+    {
+        "id": "d32cc855c341c225",
+        "type": "change",
+        "z": "799bb70ed7364692",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "cert",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 550,
+        "y": 840,
+        "wires": [
+            [
+                "d0fe40030f22dd47"
+            ]
+        ]
+    },
+    {
+        "id": "d0fe40030f22dd47",
+        "type": "template",
+        "z": "799bb70ed7364692",
+        "name": "Demo private key",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "-----BEGIN RSA PRIVATE KEY-----\nMIIEpAIBAAKCAQEA3CrCoUcOxJiJsVcJvARE5udvRMgp0AeAkPqZvnXgSy+2wAqA\nMfzF1aghrFkqV6KkFiAEKAOHrHaL33xMjtkiIlB0ch1lOMxhE+bIkebsOoNCnORA\nNVcBGQH4sdAy3yp5/dZ5q8Grp+xS0XT26wcGY2F8ntc3Rg3Rxuuhhn7d+Pt72MeV\n72iXeJqL0iCtv/3sXxn0sf/E3Leu38/SMa+2NM+0CMRcFwe7YE0iBG6SB+kddR40\nB7JYiTcW1Ae1fRJhXL7p/6JJ6nIugU+kYKAqEhyaqusO7W38Syl9BQ44kxFR7cd4\nVZohRb9cPs/KBoJiBdoyNx6jv1PLl0s0zlO4YwIDAQABAoIBADEGMHp6+RXbpWVg\nrSE5jiIgTI1zSKQy13Tw6EUZuEzlnfrbG7qFv4OYwY6/+Aa1h3YJwQMr7g0ABJtJ\n8T4pqUkcwyEZ3I0uLTuiOu0KD3Xj/nQy+v0ll2/7GWZ2pq08pxdXp5YQNOnaXIKZ\nWdXxpYGBlp9D6uHld92kYD4zh7fF1g4jLQyjNtciv8OYqa1+8ywU3p7uK8bKYtLd\n837Db0w1QxHMpl64ixF0Hgsd5Jhrd8QyMZWAOZolV4RUaaETEz/uUxSRIRIGD9XS\nVp8ZEjYpMBxBo41s40VWq+IypMbp36w4hDMXlZxYhNaXKvVIHxM4nBqliT1MLXbk\nQKwXYwECgYEA7qPbVEl/pj2Q6+RA/oucUU2tlSLRbpjQibShlnKofa888Y89TxZN\n3oUrAbYSbInwWemANpWCNTa9WZ9cedv/38q9CWzw2i86i0DaGVIZ7zJtDoOwKf/i\nc85LlwgU5K5qxDI9fhOYzA1TqjIJ5Rfz7213JBKu+OMxaIKdyvRySYECgYEA7C7i\nV3B4alJJ8BfUDH5h+t4yssAF/ncE9Pl8d5/SMDH9gHpo214/WTdIGOqhjN2PgS/5\nmgUF/6tCictBm/uChyGZ+M0kPfFMjQ/33B0bkLA50F5sdKLgMwiT2NDhRvRXAURQ\n1XFSUKSanm9uzYokEA1Zb6hPiAFsNfE6iMXUC+MCgYEAnE57JJQXph2BROD2qUNs\nmdxVK+/oWZaCURAdHtvu/JPBST9XGuwzCOMUrkRBgRJAecP1lMsMxCockA1PlwnA\naSbz9q6Ce4afxAIwWJFsJz5SLEWZJ4lRHCUtYbmLZdXQXL3DhUb0uAKqoDmyPXoY\n7uQ2O0x5is/U1u1myT6fdQECgYBxU1W7ivXcXjun/mb6z7GHxBIjfsvhe45fVU6J\nv6AFDBeNDC9AAwr2bfYkLoDxrGXtIO3tHzfvo2c74tFKXPYWjOLqZNRc/Gk0zlKp\nxTWyyTwUZRo5JOXa1uTKBf/yIc+VhggbQlKy6yhdmS5bZUtEgINHdkUjBzu67lKd\nyf6i7QKBgQDa9QRg7yQ8UkV1VlvIfejzmTwUYEwdiXZFDFdqTb5YEhIP6KkE7tit\nea4NGRW8v1fnEkcXXxP81rPggeSwjtgBZBSQGy+LeBbbPCYJ2Hx6uwxsD2YAQUL/\nlAHITkFnzBzVh27E6YhVC3Fz1Rh4wg2YU8j6onP5rthZNx9KtalThQ==\n-----END RSA PRIVATE KEY-----\n",
+        "output": "str",
+        "x": 770,
+        "y": 840,
+        "wires": [
+            [
+                "b9dbc2fc15890cd8"
+            ]
+        ]
+    },
+    {
+        "id": "b9dbc2fc15890cd8",
+        "type": "function",
+        "z": "799bb70ed7364692",
+        "name": "Request",
+        "func": "msg.payload = {\n    cert: msg.cert,\n    key: msg.payload\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 300,
+        "y": 900,
+        "wires": [
+            [
+                "dfebb63410755080"
+            ]
+        ]
+    },
+    {
+        "id": "f869d7cd6eb9b911",
+        "type": "Device Access",
+        "name": "Demo camera",
+        "address": "10.13.8.227",
+        "protocol": "http"
+    }
+]

@@ -1,13 +1,5 @@
 [
     {
-        "id": "4a305f37a96bf169",
-        "type": "tab",
-        "label": "Camera",
-        "disabled": false,
-        "info": "",
-        "env": []
-    },
-    {
         "id": "18a6e5641aa75e93",
         "type": "inject",
         "z": "4a305f37a96bf169",
@@ -29,7 +21,7 @@
         "payload": "",
         "payloadType": "date",
         "x": 140,
-        "y": 80,
+        "y": 120,
         "wires": [
             [
                 "6c93753be2ba2ef2"
@@ -58,7 +50,7 @@
         "payload": "",
         "payloadType": "date",
         "x": 140,
-        "y": 160,
+        "y": 180,
         "wires": [
             [
                 "c9cfdf20d5483f92"
@@ -116,7 +108,7 @@
         "payload": "",
         "payloadType": "date",
         "x": 140,
-        "y": 320,
+        "y": 300,
         "wires": [
             [
                 "79e721c602d5cf2b"
@@ -134,30 +126,13 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 380,
-        "y": 320,
+        "x": 360,
+        "y": 300,
         "wires": [
             [
                 "564fa00c43e5d08b"
             ]
         ]
-    },
-    {
-        "id": "1be1a63fc33351f0",
-        "type": "debug",
-        "z": "4a305f37a96bf169",
-        "name": "Error",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 810,
-        "y": 100,
-        "wires": []
     },
     {
         "id": "a7127613c321e53d",
@@ -172,24 +147,7 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 820,
-        "y": 140,
-        "wires": []
-    },
-    {
-        "id": "5c8d5a4fc385f38b",
-        "type": "debug",
-        "z": "4a305f37a96bf169",
-        "name": "Error",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 810,
+        "x": 800,
         "y": 180,
         "wires": []
     },
@@ -206,25 +164,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 820,
-        "y": 220,
-        "wires": []
-    },
-    {
-        "id": "40600f52d72c63e4",
-        "type": "debug",
-        "z": "4a305f37a96bf169",
-        "name": "Error",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 810,
-        "y": 260,
+        "x": 800,
+        "y": 240,
         "wires": []
     },
     {
@@ -240,25 +181,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 820,
+        "x": 800,
         "y": 300,
-        "wires": []
-    },
-    {
-        "id": "b4dc5f47735575a6",
-        "type": "debug",
-        "z": "4a305f37a96bf169",
-        "name": "Error",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 810,
-        "y": 340,
         "wires": []
     },
     {
@@ -273,14 +197,11 @@
         "filename": "",
         "options": "",
         "data": "",
-        "x": 650,
-        "y": 80,
+        "x": 610,
+        "y": 120,
         "wires": [
             [
                 "0be3d3ae2d5245d3"
-            ],
-            [
-                "1be1a63fc33351f0"
             ]
         ]
     },
@@ -296,14 +217,11 @@
         "filename": "",
         "options": "",
         "data": "",
-        "x": 650,
-        "y": 160,
+        "x": 610,
+        "y": 180,
         "wires": [
             [
                 "a7127613c321e53d"
-            ],
-            [
-                "5c8d5a4fc385f38b"
             ]
         ]
     },
@@ -313,20 +231,17 @@
         "z": "4a305f37a96bf169",
         "name": "",
         "preset": "f869d7cd6eb9b911",
-        "action": "Get Image settings",
+        "action": "Get image settings",
         "resolution": "640x360",
         "output": "Base64",
         "filename": "",
         "options": "",
         "data": "",
-        "x": 630,
+        "x": 590,
         "y": 240,
         "wires": [
             [
                 "6ff0428fa684ced9"
-            ],
-            [
-                "40600f52d72c63e4"
             ]
         ]
     },
@@ -336,20 +251,17 @@
         "z": "4a305f37a96bf169",
         "name": "",
         "preset": "f869d7cd6eb9b911",
-        "action": "Set Image settings",
+        "action": "Set image settings",
         "resolution": "640x360",
         "output": "Base64",
         "filename": "",
         "options": "",
         "data": "",
-        "x": 630,
-        "y": 320,
+        "x": 590,
+        "y": 300,
         "wires": [
             [
                 "9d9d493fae191c02"
-            ],
-            [
-                "b4dc5f47735575a6"
             ]
         ]
     },
@@ -365,7 +277,7 @@
         "finalize": "",
         "libs": [],
         "x": 370,
-        "y": 80,
+        "y": 120,
         "wires": [
             [
                 "9e321868e28db3f9"
@@ -387,17 +299,426 @@
         "resendOnRefresh": true,
         "templateScope": "local",
         "className": "",
-        "x": 820,
-        "y": 60,
+        "x": 800,
+        "y": 120,
         "wires": [
             []
         ]
     },
     {
+        "id": "6cfcabbaa4561be2",
+        "type": "inject",
+        "z": "4a305f37a96bf169",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 140,
+        "y": 560,
+        "wires": [
+            [
+                "dd807f8827665049"
+            ]
+        ]
+    },
+    {
+        "id": "56653149e9dd9e55",
+        "type": "debug",
+        "z": "4a305f37a96bf169",
+        "name": "Success",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 800,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "dd807f8827665049",
+        "type": "Axis camera",
+        "z": "4a305f37a96bf169",
+        "name": "",
+        "preset": "f869d7cd6eb9b911",
+        "action": "Set video filter",
+        "resolution": "640x360",
+        "output": "Base64",
+        "filename": "",
+        "options": "None",
+        "data": "",
+        "x": 600,
+        "y": 560,
+        "wires": [
+            [
+                "56653149e9dd9e55"
+            ]
+        ]
+    },
+    {
+        "id": "e61d7259216ad347",
+        "type": "catch",
+        "z": "4a305f37a96bf169",
+        "name": "",
+        "scope": null,
+        "uncaught": true,
+        "x": 140,
+        "y": 60,
+        "wires": [
+            [
+                "60ee12f982b66d17"
+            ]
+        ]
+    },
+    {
+        "id": "60ee12f982b66d17",
+        "type": "debug",
+        "z": "4a305f37a96bf169",
+        "name": "Error",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 370,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "c81c2a3e12c8eaab",
+        "type": "inject",
+        "z": "4a305f37a96bf169",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 140,
+        "y": 360,
+        "wires": [
+            [
+                "ceb2283f15a12ef4"
+            ]
+        ]
+    },
+    {
+        "id": "9cd71337d940d3a3",
+        "type": "debug",
+        "z": "4a305f37a96bf169",
+        "name": "Success",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 800,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "1877eb3872da442c",
+        "type": "Axis camera",
+        "z": "4a305f37a96bf169",
+        "name": "",
+        "preset": "f869d7cd6eb9b911",
+        "action": "Recordings",
+        "resolution": "640x360",
+        "output": "Base64",
+        "filename": "",
+        "options": "None",
+        "data": "",
+        "x": 610,
+        "y": 360,
+        "wires": [
+            [
+                "9cd71337d940d3a3",
+                "793b2864d891f344"
+            ]
+        ]
+    },
+    {
+        "id": "ceb2283f15a12ef4",
+        "type": "function",
+        "z": "4a305f37a96bf169",
+        "name": "function 1",
+        "func": "msg.payload = {\n//    from: new Date(\"2022-09-29\"),\n//    to: new Date(\"2022-09-30\")\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 340,
+        "y": 360,
+        "wires": [
+            [
+                "1877eb3872da442c"
+            ]
+        ]
+    },
+    {
+        "id": "cce8d14655f197d8",
+        "type": "ui_table",
+        "z": "4a305f37a96bf169",
+        "group": "bc5bc4dfb29f7fdd",
+        "name": "",
+        "order": 0,
+        "width": "16",
+        "height": "12",
+        "columns": [
+            {
+                "field": "storage",
+                "title": "Storage",
+                "width": "15%",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "resolution",
+                "title": "Resolution",
+                "width": "15%",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "start",
+                "title": "Time",
+                "width": "30%",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "duration",
+                "title": "Duration (s)",
+                "width": "15%",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "type",
+                "title": "Type",
+                "width": "12%",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "link",
+                "title": "Download",
+                "width": "12%",
+                "align": "left",
+                "formatter": "html",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            }
+        ],
+        "outputs": 0,
+        "cts": false,
+        "x": 990,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "793b2864d891f344",
+        "type": "function",
+        "z": "4a305f37a96bf169",
+        "name": "Add properties",
+        "func": "msg.payload.forEach( function( item ){\n    item.link = '<a href=\"' + item.url + '\" target=\"_blank\">Download</a>';\n    item.resolution = item.width + \"x\" + item.height;\n});\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 820,
+        "y": 360,
+        "wires": [
+            [
+                "cce8d14655f197d8"
+            ]
+        ]
+    },
+    {
+        "id": "0963861120079180",
+        "type": "inject",
+        "z": "4a305f37a96bf169",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 140,
+        "y": 460,
+        "wires": [
+            [
+                "b0ebb574f0bc59b5"
+            ]
+        ]
+    },
+    {
+        "id": "c2176e2c088daa70",
+        "type": "debug",
+        "z": "4a305f37a96bf169",
+        "name": "Success",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1060,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "b0ebb574f0bc59b5",
+        "type": "Axis camera",
+        "z": "4a305f37a96bf169",
+        "name": "",
+        "preset": "f869d7cd6eb9b911",
+        "action": "Start recording",
+        "resolution": "640x360",
+        "output": "Base64",
+        "filename": "",
+        "options": "None",
+        "data": "",
+        "x": 360,
+        "y": 460,
+        "wires": [
+            [
+                "51d3cbfc982ad303",
+                "0cca16931bccebdb"
+            ]
+        ]
+    },
+    {
+        "id": "51d3cbfc982ad303",
+        "type": "delay",
+        "z": "4a305f37a96bf169",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 580,
+        "y": 460,
+        "wires": [
+            [
+                "4d1bba3b3b53dc38"
+            ]
+        ]
+    },
+    {
+        "id": "4d1bba3b3b53dc38",
+        "type": "Axis camera",
+        "z": "4a305f37a96bf169",
+        "name": "",
+        "preset": "f869d7cd6eb9b911",
+        "action": "Stop recording",
+        "resolution": "640x360",
+        "output": "Base64",
+        "filename": "",
+        "options": "None",
+        "data": "",
+        "x": 800,
+        "y": 460,
+        "wires": [
+            [
+                "c2176e2c088daa70"
+            ]
+        ]
+    },
+    {
+        "id": "0cca16931bccebdb",
+        "type": "debug",
+        "z": "4a305f37a96bf169",
+        "name": "Recording ID",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 590,
+        "y": 500,
+        "wires": []
+    },
+    {
         "id": "f869d7cd6eb9b911",
         "type": "Device Access",
         "name": "Demo camera",
-        "address": "driveway.juhlin.me",
+        "address": "10.13.8.227",
         "protocol": "http"
     },
     {
@@ -408,6 +729,17 @@
         "order": 1,
         "disp": true,
         "width": "13",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "bc5bc4dfb29f7fdd",
+        "type": "ui_group",
+        "name": "Recordings",
+        "tab": "b06550e8db67ab14",
+        "order": 2,
+        "disp": true,
+        "width": "16",
         "collapse": false,
         "className": ""
     },

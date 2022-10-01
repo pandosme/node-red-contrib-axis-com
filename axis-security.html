@@ -18,36 +18,15 @@
             <option value="Generate CSR">Generate CSR</option>
             <option value="Install Certificate">Install Certificate</option>
             <option value="Remove Certificate">Remove Certificate</option>
-            <option value="HTTPS">HTTPS</option>
-            <option value="802.1X EAP-TLS">802.1X EAP-TLS</option>
+            <option value="Set HTTPS certificate">Set HTTPS certificate</option>
 		</select>
 	</div>
-
-    <div class="form-row input_data">
-        <label for="node-input-data"><i class="icon-tag"></i> Data</label>
-        <input type="text" id="node-input-data" placeholder="">
-    </div>
-
-    <div class="form-row input_account">
-        <label for="node-input-data"><i class="icon-tag"></i> Account</label>
-        <input type="text" id="node-input-data" placeholder="Overrides msg.payload">
-    </div>
-
-    <div class="form-row input_options">
-        <label for="node-input-options"><i class="icon-tag"></i> Options</label>
-        <input type="text" id="node-input-options" placeholder="">
-    </div>
-
-    <div class="form-row">
-        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="optional">
-    </div>
 	
 </script>
 
 <script type="text/javascript">
 RED.nodes.registerType('Axis Security',{
-	category: 'Axis Com',
+	category: 'Axis',
 	color: '#FFCC33',
 	defaults: {
 		name: { value:""},
@@ -59,7 +38,7 @@ RED.nodes.registerType('Axis Security',{
 	},
 	icon: "font-awesome/fa-shield",
 	inputs:1,
-	outputs:2,
+	outputs:1,
 	label: function() {
 		return this.name || this.action || "Axis Security";
 	},
@@ -77,21 +56,6 @@ RED.nodes.registerType('Axis Security',{
 				case "Remove account":
 					$(".input_account").show();
 				break;
-				case "Set common hardening":
-					$(".input_options").show();
-				break;
-				case "Set IP whitelist":
-					$(".input_options").show();
-				break;
-				case "List certificates":
-					$(".input_options").show();
-				break;
-				case "Generate CSR":
-					$(".input_data").show();
-				break;
-				case "Install Certificate":
-					$(".input_data").show();
-				break;
 				case "Remove Certificate":
 					$(".input_data").show();
 				break;
@@ -103,103 +67,150 @@ RED.nodes.registerType('Axis Security',{
 </script>
 
 <script type="text/x-red" data-help-name="Axis Security">
-	<h3>Inputs:</h3>
-	<dl class="message-properties">
-		<dt>Device<span class="property-type">configuration</span></dt>
-		<dd>A preset device with address, user and password that can be reused in multuple nodes without the need to inject with msg<br/>
-		Properties in device can be left empty and optional inject <code>msg.address</code>, <code>msg.user</code> and <code>msg.password</code></dd>
-	</dl>	
 
-	<dl class="message-properties">
-		<dt>Action<span class="property-type">string</span></dt>
-		<dd>Use <code>msg.action</code> to override config</dd>
-		<ul>		
-			<li><b>List accounts:</b><br/>
-			Lists all accounts in device.
-			</li>
-			<li><b>Set account:</b><br/>
-			Adds or updates an account.  Valid privilege levels are Viewer, Operator and Admin.<br/>
+	<h2>Inputs & Outputs</h2>
+	Set the device and call an action.
+	Action will only output on success.  Use a Catch node to get detailed errors.
+	
+	<br/><br/>
+
+	<p>
+		<b>List accounts</b><br/>
+		Get all accounts
+	</p><br/>
+
+	<p>
+		<b>Set account</b><br/>
+		Adds or updates an account.  Valid privilege levels are Viewer, Operator and Admin.<br/>
 			<code>msg.payload</code><br/>
-			{<br/>
-			&nbsp;&nbsp;"name":"",<br/>
-			&nbsp;&nbsp;"password":"",<br/>
-			&nbsp;&nbsp;"privileges":"Admin"<br/>
-			}<br/>
-			</li>
-			<li><b>Remove account:</b><br/>
-			Remove an account.<br/>
-			Set <code>msg.payload</code> to account name.
-			</li>
-			<li><b>Set common hardening:</b><br/>
-			Control common services to harden daily operation systems.  Select on or more properties to control.<br/>
-			Discovery enables/disable UPnP, Bonjour and link-local<br/>
-			Manitenance enables/disable SSH and FTP<br/>
-			ForceHTTPS enables/disables accessing the device with HTTP<br/>
-			Browser enables/disables accessing the device with a browser (the API will still be accessible<br/>
-			<code>msg.payload</code><br/>
-			{<br/>
-			&nbsp;&nbsp;"discovery":false,<br/>
-			&nbsp;&nbsp;"maintenance":false,<br/>
-			&nbsp;&nbsp;"forceHTTPS":false,<br/>
-			&nbsp;&nbsp;"browser":false<br/>
-			}<br/>
-			</li>
-			
-			<li><b>Set IP whitelist:</b><br/>
-			A firewall (IP tables) is a very strong Axis Security control that helps mitigate many risks.  Define a list of authorized/trusted IP addresses that the Axis device will respond to. Request from other clients will be ignored.<br/>
-			<i>Note: Make sure to include your Node-RED IP address in the list.  If you lock out administrative clients you may need to factory default the device to regain control</i>
-			Options (msg.options): <code>["1.2.3.4","1.2.3.5",...]</code>. Any other value or empty list will allow all clients.
-			</li>
-			<li><b>List certificates:</b><br/>
-			List all installed certificates.
-			</li>
-			<li><b>Generate CSR:</b><br/>
-			Request device to generate a CSR (Certificate Signing Request).  A self-signed certificate will be generated that you may use as a self-signed certificate.  CN (Common Name) is required, other properties are optional.
-			Data (msg.payload): <code><br/>
+		<dl class="message-properties">
+			<dt>msg.payload<span class="property-type">object</span></dt>
+			<dd>
+				{<br/>
+				&nbsp;&nbsp;"name":"",<br/>
+				&nbsp;&nbsp;"password":"",<br/>
+				&nbsp;&nbsp;"privileges":"Admin"<br/>
+				}<br/>
+			</dd>
+		</dl>	
+	</p><br/>
+
+	<p>
+		<b>Remove account</b><br/>
+		<dl class="message-properties">
+			<dt>msg.payload<span class="property-type">string</span></dt>
+			<dd>
+				Account name
+			</dd>
+		</dl>	
+	</p><br/>
+
+	<p>
+		<b>Allow discovery</b><br/>
+		Enable or disabled discovey protocols (UPnP, Bonjour and Link-local)
+		<dl class="message-properties">
+			<dt>msg.payload<span class="property-type">boolean</span></dt>
+			<dd>
+				true or false
+			</dd>
+		</dl>	
+	</p><br/>
+
+	<p>
+		<b>Allow SSH</b><br/>
+		Enable or disabled ability to connect terminal over SSH (Secure Shell)<br/>
+		Only for advanced maintence.  Recommended to disable during daily operations.
+		<dl class="message-properties">
+			<dt>msg.payload<span class="property-type">boolean</span></dt>
+			<dd>
+				true or false
+			</dd>
+		</dl>	
+	</p><br/>
+
+	<p>
+		<b>Allow Browser Access</b><br/>
+		Enable or disabled ability access device with a Browser<br/>
+		Does not affect the device API for VMS or other clients. Recommended to disable during daily operations.
+		<dl class="message-properties">
+			<dt>msg.payload<span class="property-type">boolean</span></dt>
+			<dd>
+				true or false
+			</dd>
+		</dl>	
+	</p><br/>
+
+	<p>
+		<b>Set firewall</b><br/>
+		Limit connections to only trusted clients and service address.<br/>
+		Add multiple trusted client address to minimize locking yourself out.<br/>
+		All trusted connections needs to be added including outgoing connections such NTP, DNS and MQTT.  Use the Axis Device node to list all current connections and they should be added in the list.
+		<dl class="message-properties">
+			<dt>msg.payload<span class="property-type">array</span></dt>
+			<dd>
+				List of at least two white listed IP addresses.  An empty list will whitelist all connections.<br/>
+				["1.2.3.4.5","2.3.4.5",...]
+			</dd>
+		</dl>	
+	</p><br/>
+
+	<p>
+		<b>List certificates</b><br/>
+		List all installed certificates<br/>
+	</p><br/>
+
+	<p>
+		<b>Generate CSR</b><br/>
+		Generate a CSR (Certificate signing request) to be signed by a CA.<br/>
+		<dl class="message-properties">
+			<dt>msg.payload<span class="property-type">object</span></dt>
+			<dd>
 			{<br/>
 			&nbsp;&nbsp;"CN":"host.domain.com",<br/>
 			&nbsp;&nbsp;"C":"US",<br/>
-			&nbsp;&nbsp;"L":"Some locality city or other"<br/>
 			&nbsp;&nbsp;"O":"Acme Inc"<br/>
-			&nbsp;&nbsp;"OU":"IT Department"<br/>
 			&nbsp;&nbsp;"ST":"State or province name"<br/>
 			&nbsp;&nbsp;"days":365<br/>
 			}<br/>
-			</code>
-			Output: msg.csrID will contain the certificate ID of the CSR
-			</li>
-			<li><b>Install certificate:</b><br/>
-			Install a signed certificate from a previous CSR.
-			Data (msg.payload): <code>Certificate in PEM data (Base64 encoded)</code><br/>
-			Output: msg.certID will contain the certificate ID
-			</li>
-			<li><b>Remove certificate:</b><br/>
-			Removes a certificate.  The certificate may not be attached/associated by device HTTPS or 802.1X settings.
-			Data (msg.payload): <code>Certificate ID</code>
-			</li>
-			<li><b>HTTPS:</b><br/>
-			Configures HTTPS (TLS).<br/>
-			msg.payload: <code><br/>
-			{<br/>
-			&nbsp;&nbsp;"cert":"PEM data",<br/>
-			&nbsp;&nbsp;"key":"PEM data"<br/>
-			}</code><br/>
-			</li>
-			<li><b>802.1X EAP-TLS:</b><br/>
-			Set client certificate, CA and configuration.
-			msg.payload: <code><br/>
-			{<br/>
-			&nbsp;&nbsp;"cert":"PEM data",<br/>
-			&nbsp;&nbsp;"key":"PEM data",<br/>
-			&nbsp;&nbsp;"CA_name":"CA NiceName",<br/>
-			&nbsp;&nbsp;"CA_cert":"PEM data",<br/>
-			&nbsp;&nbsp;"EAP_identity":"some-id",<br/>
-			&nbsp;&nbsp;"EAPOL_version":3<br/>
-			}<br/>
-			</code>
-			</li>
-		</ul>
-	</dl>	
+			</dd>
+		</dl>	
+	</p><br/>
+
+	<p>
+		<b>Install Certificate</b><br/>
+		Install a CA-signed certificate<br/>
+		<dl class="message-properties">
+			<dt>msg.payload<span class="property-type">string</span></dt>
+			<dd>
+			Certificate as PEM format
+			</dd>
+		</dl>	
+	</p><br/>
+
+	<p>
+		<b>Remove Certificate</b><br/>
+		Remove an unused certificate (not currently used by HTTPS or 802.1x<br/>
+		<dl class="message-properties">
+			<dt>msg.payload<span class="property-type">string</span></dt>
+			<dd>
+			Certificate ID from List Certificate
+			</dd>
+		</dl>	
+	</p><br/>
+
+	<p>
+		<b>Set HTTPS certificate</b><br/>
+		Installs a CA-signed certificate and configure HTTPS to use it<br/>
+		<dl class="message-properties">
+			<dt>msg.payload<span class="property-type">object</span></dt>
+			<dd>
+				{<br/>
+				&nbsp;&nbsp;"cert":"PEM data",<br/>
+				&nbsp;&nbsp;"key":"PEM data"<br/>
+				}</code><br/>
+			</dd>
+		</dl>	
+	</p><br/>
 
 	<dl class="message-properties">
 		<dt>Options<span class="property-type">string | object | buffer</span></dt>

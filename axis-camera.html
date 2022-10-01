@@ -7,6 +7,9 @@
         <label for="node-input-action"><i class="icon-tag"></i> Action</label>
         <select id="node-input-action">
             <option value="JPEG Image">JPEG Image</option>
+            <option value="Recordings">Recordings</option>
+            <option value="Start recording">Start recording</option>
+            <option value="Stop recording">Stop recording</option>
             <option value="Camera Info">Camera Info</option>
             <option value="Get image settings">Get image settings</option>
             <option value="Set image settings">Set image settings</option>
@@ -66,7 +69,7 @@
 
 <script type="text/javascript">
 RED.nodes.registerType('Axis camera',{
-	category: 'Axis Com',
+	category: 'Axis',
 	color: '#FFCC33',
 	defaults: {
 		name: { value:""},
@@ -80,7 +83,7 @@ RED.nodes.registerType('Axis camera',{
 	},
 	icon: "font-awesome/fa-video-camera",
 	inputs:1,
-	outputs:2,
+	outputs:1,
 	label: function() {
 		return this.name || this.action || "Axis Camera";
 	},
@@ -97,6 +100,9 @@ RED.nodes.registerType('Axis camera',{
 					$(".user_input_resolution").show();
 					$(".user_input_response").show();
 				break;
+				case "Start recording":
+					$(".user_input_resolution").show();
+				break;
 				case "Set image settings":
 					$(".user_input_data").show();
 				break;
@@ -110,81 +116,89 @@ RED.nodes.registerType('Axis camera',{
 </script>
 
 <script type="text/x-red" data-help-name="Axis camera">
-	<h3>Inputs:</h3>
-	<dl class="message-properties">
-		<dt>Camera<span class="property-type">configuration</span></dt>
-		<dd>A preset device with address, user and password that can be reused in multiple nodes without the need to inject with msg<br/>
-		Properties in device can be left empty and optional inject <code>msg.address</code>, <code>msg.user</code> and <code>msg.password</code></dd>
-	</dl>	
+	<h2>Inputs & Outputs</h2>
+	Set the device and call an action.
+	Action will only output on success.  Use a Catch node to get detailed errors.
+	
+	<br/><br/>
 
-	<dl class="message-properties">
-		<dt>Action<span class="property-type">string</span></dt>
-		<dd>Use <code>msg.action</code> to override config</dd>
-		<ul>
-			<li><b>JPEG Image:</b><br/>
-			Captures an image and returns the user selected output format. See resolution below.
-			</li>
-			<li><b>Camera Info:</b><br/>
-			Returns supported media formats, supported resolutions, aspect ration and rotation.
-			</li>
-			<li><b>Get image settings:</b><br/>
-			Get the most common settings such as brightness, colot saturation, contrast, Wide Dynamic Range, White balance and DayLevel (Day/Night switching).<br/>
-			DayLevel = 0 will keep camera in night mode (B/W) and 100 will keep camera in day mode.  All values inbetween will automatically switch depending on current light conditions.  Lower value makes camera enter night mode faster during sunset/dusk.
-			</li>
-			<li><b>Set image settings:</b><br/>
-			Use same structure recieved by Get image settings.  All properites are optional.  You can set one or more.
-			</li>
-			<li><b>Upload overlay:</b><br/>
-			Uploads a JPEG, PNG or BMD image that can be used as overlay in video.  See camera user interface and documentation.
-			</li>
-		</ul>
-	</dl>	
+	<p>
+		<b>JPEG Image</b><br/>
+		Capture a JPEG image and outputs as binary or base64 format
+		<dl class="message-properties">
+			<dt>msg.resolution<span class="property-type">string</span></dt>
+			<dd>
+				Overrides the node resolution setting. 
+				The resolution needs to be supported by the camera (e.g. "800x600").<br/>
+				It is possible to add addition paramaters e.g. "&camera=1" in the request.  See VAPIX documentation for image capture parameters
+			</dd>
+		</dl>	
+	</p><br/>
 
-	<dl class="message-properties">
-		<dt>Reolution<span class="property-type">string </span></dt>
-		<dd>Note that not all cameras supports all resolutions in list.<br/>
-		Use <code>msg.resolution</code>="640x480" to override config.  Additional profile properties can be added "&prop=value" (see VAPIX documentation).
-		</dd>
-	</dl>	
+	<p>
+		<b>Recordings</b><br/>
+		List camera recordings store on SD Card and NAS
+		<dl class="message-properties">
+			<dt>msg.payload<span class="property-type">object</span></dt>
+			<dd>
+			Optional selections<br/>
+			{<br/>
+			&nbsp;&nbsp;"from": [date string, EPOCH timestamp or Date object],<br/>
+			&nbsp;&nbsp;"to": [null, date string, EPOCH timestamp or Date object]<br/>
+			}<br/>
+			</dd>
+		</dl>	
+	</p><br/>
 
-	<dl class="message-properties">
-		<dt>Output<span class="property-type">string</span></dt>
-		<dd>JPEG can be delivered as a buffer or base64 encoded depending on the needs for the consuming node.<br/>
-		</dd>
-	</dl>	
+	<p>
+		<b>Start recording</b><br/>
+		Record to SD Card using the default stream profile.  An SD Card in camera must be mounted.<br/>
+		Output (msg.payload) is a recording ID to be used with Stop recording.
+	</p><br/>
 
-	<dl class="message-properties">
-		<dt>Filname<span class="property-type">string</span></dt>
-		<dd>The complete filepath of a JPEG, PNG och BMP file<br/>
-		Filename can be injected with <code>msg.filname</code>.<br/>
-		</dd>
-	</dl>	
+	<p>
+		<b>Stop recording</b><br/>
+		<dl class="message-properties">
+			<dt>msg.payload<span class="property-type">string</span></dt>
+			<dd>
+				Recording ID from Start recording
+			</dd>
+		</dl>	
+	</p><br/>
 
-	<dl class="message-properties">
-		<dt>Options (<code>msg.payload</code>) <span class="property-type">string | object</span></dt>
-		<dd>Depends on action (or use <code>msg.payload</code>)</dd>
-	</dl>	
+	<p>
+		<b>Camera Info</b><br/>
+		Get the cameras image and resolution capabilities
+	</p>
 
-	<dl class="message-properties">
-		<dt>Set image settings<span class="property-type">string | object</span></dt>
-		<dd>Use selected properties from <i>Get Image settings</i>. DayLevel controls IR cut filter (0=off, 100=on, 1-99=auto)</dd>
-	</dl>	
+	<p>
+		<b>Get image settings</b><br/>
+		A number of selected few image/camera settings.  See Set image settings
+	</p><br/>
 
-	<dl class="message-properties">
-		<dt>Upload overlay<span class="property-type">string | object</span></dt>
-		<dd>Options (msg.payload): <code>{"scaleToResolution":true,"alpha": "ffffff"}</code><br/></dd>
-	</dl>	
+	<p>
+		<b>Set image settings</b><br/>
+		Change camera settings.  Each property is optional.<br/>
+		DayLevel controls IR cut filter (0=off, 100=on, 1-99=automatic)
+		<dl class="message-properties">
+			<dt>msg.payload<span class="property-type">object</span></dt>
+			<dd>
+			{<br/>
+			&nbsp;&nbsp;"Brightness":50,<br/>
+			&nbsp;&nbsp;"ColorLevel":50,<br/>
+			&nbsp;&nbsp;"Contrast":50,<br/>
+			&nbsp;&nbsp;"Exposure":"auto",<br/>
+			&nbsp;&nbsp;"WhiteBalance":"auto",<br/>
+			&nbsp;&nbsp;"WDR":false,<br/>
+			&nbsp;&nbsp;"DayLevel":50<br/>
+			}<br/>
+			</dd>
+		</dl>	
+	</p><br/>
 
-	<h3>Outputs:</h3>
-	<dl class="message-properties">
-		<dt>msg.error<span class="property-type">bool | string</span></dt>
-		<dd>On success, error will be <code>false</code><br/>
-		On failure, error will be <code>true</code> or message string</dd>
-	</dl>	
-
-	<dl class="message-properties">
-		<dt>msg.payload<span class="property-type">bool | string | buffer</span></dt>
-		<dd>Depends on action</dd>
-	</dl>	
+	<p>
+		<b>Set video filter</b><br/>
+		Apply sketch or blur filter on video.  Set type in the node configuration
+	</p><br/>
 
 </script>

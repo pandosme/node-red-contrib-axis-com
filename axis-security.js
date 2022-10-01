@@ -29,6 +29,7 @@ module.exports = function(RED) {
 				msg.payload.action = action;
 				msg.payload.address = device.address;
 				node.error("Invalid input", msg);
+				return;
 			}	
 
 			var action = msg.action || node.action;

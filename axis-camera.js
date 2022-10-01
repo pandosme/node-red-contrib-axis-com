@@ -38,6 +38,7 @@ module.exports = function(RED) {
 				msg.payload.action = action;
 				msg.payload.address = device.address;
 				node.error(response.statusMessage, msg);
+				return;
 			}	
 			
 			msg.error = false;

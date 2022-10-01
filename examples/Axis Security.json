@@ -1005,7 +1005,7 @@
         "id": "f869d7cd6eb9b911",
         "type": "Device Access",
         "name": "Demo camera",
-        "address": "10.13.8.227",
+        "address": "",
         "protocol": "http"
     }
 ]

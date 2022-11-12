@@ -1,6 +1,11 @@
 # node-red-contrib-axis-com
 
-Nodes to simplify integration with Axis devices. See examples
+Nodes to simplify integration with Axis devices. See examples.
+
+This node replaces the following nodes that are deprecated
+* node-red-contrib-device
+* node-red-contrib-acap
+* node-red-contrib-security
 
 ## Device Node
 Common device management actions.

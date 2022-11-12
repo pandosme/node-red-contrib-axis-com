@@ -7,20 +7,9 @@
     "email": "fred.juhlin@gmail.com"
   },
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/pandosme/node-red-axis-com/issues"
-  },
-  "bundleDependencies": false,
-  "dependencies": {
-    "@mreal/digest-auth": "^1.1.3",
-    "form-data": "^3.0.0",
-    "got": "^11.8.5",
-    "xml2js": "^0.4.23"
-  },
   "deprecated": false,
-  "homepage": "https://github.com/pandosme/node-red-axis-com",
-  "keywords": ["node-red","Axis","Camera"],
   "node-red": {
+    "version": ">=2.0.0",
     "nodes": {
       "Axis Access": "axis-preset.js",
       "Axis Device": "axis-device.js",
@@ -33,6 +22,18 @@
     "type": "git",
     "url": "git+https://github.com/pandosme/node-red-axis-com.git"
   },
+  "homepage": "https://github.com/pandosme/node-red-axis-com",
+  "bugs": {
+    "url": "https://github.com/pandosme/node-red-axis-com/issues"
+  },
+  "bundleDependencies": false,
+  "dependencies": {
+    "@mreal/digest-auth": "^1.1.3",
+    "form-data": "^3.0.0",
+    "got": "^11.8.5",
+    "xml2js": "^0.4.23"
+  },
+  "keywords": ["node-red","Axis","Camera"],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   }

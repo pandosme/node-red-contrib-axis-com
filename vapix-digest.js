@@ -42,7 +42,6 @@ exports.HTTP_Get_No_digest = function( device, path, resonseType, callback ) {
 				});
 				return;
 			}
-console.log(error.code + " : " + url );
 			
 			callback( true, {
 				statusCode: error && error.response ? error.response.statusCode:0,
@@ -68,7 +67,6 @@ exports.HTTP_Get = function( device, path, resonseType, callback ) {
 					const options = res.request.options;
 					const digestHeader = res.headers["www-authenticate"];
 					if (!digestHeader){
-//						console.error("Response contains no digest header");
 						return res;
 					}
 					const incomingDigest = digestAuth.ClientDigestAuth.analyze(	digestHeader );
@@ -117,7 +115,6 @@ exports.HTTP_Get = function( device, path, resonseType, callback ) {
 				});
 				return;
 			}
-console.log(error.code + " : " + url );
 			callback( true, {
 				statusCode: error && error.response ? error.response.statusCode:0,
 				statusMessage: error && error.response ? error.response.statusMessage:"Unkown error",
@@ -137,11 +134,15 @@ exports.HTTP_Post = function( device, path, body, responseType, callback ) {
 		return;
 	}
 
+	var json = null;
 	if( typeof body === "object" )
-		body = JSON.stringify(body);
+		json = body;
+	if( typeof body === "string" && (body[0]==='{' || body[0]==='[' ))
+		json = JSON.parse(body);
 
 	var protocol = device.protocol || "http";
 	var url = protocol + "://" + device.address + path;
+	
 	var client = got.extend({
 		hooks:{
 			afterResponse: [
@@ -149,7 +150,6 @@ exports.HTTP_Post = function( device, path, body, responseType, callback ) {
 					const options = res.request.options;
 					const digestHeader = res.headers["www-authenticate"];
 					if (!digestHeader){
-//						console.error("Response contains no digest header");
 						return res;
 					}
 					const incomingDigest = digestAuth.ClientDigestAuth.analyze(	digestHeader );
@@ -168,11 +168,19 @@ exports.HTTP_Post = function( device, path, body, responseType, callback ) {
 	(async () => {
 		try {
 			var response = 0;
-			response = await client.post( url, {
-				body: body,
-				responseType: responseType,
-				https: {rejectUnauthorized: false}
-			});
+			if( json ) {
+				response = await client.post( url, {
+					json: json,
+					responseType: "json",
+					https: {rejectUnauthorized: false}
+				});
+			} else {
+				response = await client.post( url, {
+					body: body,
+					responseType: responseType,
+					https: {rejectUnauthorized: false}
+				});
+			}
 			callback(false, response.body );
 		} catch (error) {
 			if( error.code === 'ECONNREFUSED' ) {
@@ -199,7 +207,6 @@ exports.HTTP_Post = function( device, path, body, responseType, callback ) {
 				});
 				return;
 			}
-console.log(error.code + " : " + url );
 			callback( true, {
 				statusCode: error && error.response ? error.response.statusCode:0,
 				statusMessage: error && error.response ? error.response.statusMessage:"Unkown error",
@@ -228,8 +235,11 @@ exports.HTTP_Put = function( device, path, body, responseType, callback ) {
 		return;
 	}
 
+	var json = null;
 	if( typeof body === "object" )
-		body = JSON.stringify(body);
+		json = body;
+	if( typeof body === "string" && (body[0]==='{' || body[0]==='[' ))
+		json = JSON.parse(body);
 
 	var protocol = device.protocol || "http";
 	var url = protocol + "://" + device.address + path;
@@ -258,11 +268,19 @@ exports.HTTP_Put = function( device, path, body, responseType, callback ) {
 	(async () => {
 		try {
 			var response = 0;
-			response = await client.put( url, {
-				body: body,
-				responseType: responseType,
-				https: {rejectUnauthorized: false}
-			});
+			if (json )
+				response = await client.put( url, {
+					json: json,
+					responseType: json,
+					https: {rejectUnauthorized: false}
+				});
+			else
+			if (json )
+				response = await client.put( url, {
+					body: body,
+					responseType: responseType,
+					https: {rejectUnauthorized: false}
+				});
 			callback(false, response.body );
 		} catch (error) {
 			if( error.code === 'ECONNREFUSED' ) {
@@ -289,7 +307,6 @@ exports.HTTP_Put = function( device, path, body, responseType, callback ) {
 				});
 				return;
 			}
-console.log(error.code + " : " + url );
 			callback( true, {
 				statusCode: error && error.response ? error.response.statusCode:0,
 				statusMessage: error && error.response ? error.response.statusMessage:"Unkown error",
@@ -322,7 +339,6 @@ exports.HTTP_Patch = function( device, path, body, responseType, callback ) {
 
 	var protocol = device.protocol || "http";
 	var url = protocol + "://" + device.address + path;
-//	console.log("Digest POST:", url, body, responseType );
 	var client = got.extend({
 		hooks:{
 			afterResponse: [
@@ -330,7 +346,6 @@ exports.HTTP_Patch = function( device, path, body, responseType, callback ) {
 					const options = res.request.options;
 					const digestHeader = res.headers["www-authenticate"];
 					if (!digestHeader){
-//						console.error("Response contains no digest header");
 						return res;
 					}
 					const incomingDigest = digestAuth.ClientDigestAuth.analyze(	digestHeader );
@@ -388,7 +403,6 @@ exports.HTTP_Patch = function( device, path, body, responseType, callback ) {
 				});
 				return;
 			}
-console.log(error.code + " : " + url );
 			callback( true, {
 				statusCode: error && error.response ? error.response.statusCode:0,
 				statusMessage: error && error.response ? error.response.statusMessage:"Unkown error",
@@ -416,9 +430,9 @@ exports.Soap = function( device, body, callback ) {
 					   'xmlns:aweb="http://www.axis.com/vapix/ws/webserver" '+
 					   'xmlns:SOAP-ENV="http://www.w3.org/2003/05/soap-envelope">\n';
 
-	soapEnvelope += '<SOAP-ENV:Body>' + body + '</SOAP-ENV:Body>\n';
-	soapEnvelope += '</SOAP-ENV:Envelope>\n';
-//	console.log("VapixDigest.Soap", soapEnvelope);
+		soapEnvelope += '<SOAP-ENV:Body>' + body + '</SOAP-ENV:Body>\n';
+		soapEnvelope += '</SOAP-ENV:Envelope>\n';
+		
 		exports.HTTP_Post( device, '/vapix/services', soapEnvelope,"text", function( error, response) {
 		callback(error,response);
 	});
@@ -520,7 +534,6 @@ exports.upload = function( device, type, filename, options, buffer, callback ) {
 					const options = res.request.options;
 					const digestHeader = res.headers["www-authenticate"];
 					if (!digestHeader){
-//						console.error("Response contains no digest header");
 						return res;
 					}
 					const incomingDigest = digestAuth.ClientDigestAuth.analyze(	digestHeader );
@@ -591,7 +604,6 @@ exports.upload = function( device, type, filename, options, buffer, callback ) {
 				});
 				return;
 			}
-//console.log(error.code + " : " + url );
 			callback( true, {
 				statusCode: error && error.response ? error.response.statusCode:0,
 				statusMessage: error && error.response ? error.response.statusMessage:"Unkown error",

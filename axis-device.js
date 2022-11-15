@@ -42,7 +42,6 @@ module.exports = function(RED) {
 				return;
 			}	
 			
-//			console.log(action,device);
 			switch( action ) {
 				case "Device Info":
 					VapixWrapper.DeviceInfo( device, function(error, response ) {
@@ -58,7 +57,6 @@ module.exports = function(RED) {
 				break;
 
 				case "Get Network settings":
-//					console.log("Get Network settings");
 					var request = {
 						"apiVersion": "1.0",
 						"context": "nodered",
@@ -367,7 +365,6 @@ module.exports = function(RED) {
 						return;
 					}
 					VapixWrapper.HTTP_Get( device, cgi, "text", function(error, response ) {
-console.log(error,response);						
 						msg.payload = response;
 						if( error ) {
 							msg.payload.action = action;
@@ -405,6 +402,7 @@ console.log(error,response);
 						return;
 					}
 					node.status({fill:"blue",shape:"dot",text:"Requesting..."});
+					
 					VapixWrapper.HTTP_Post( device, cgi, data, "text", function(error, response ) {
 						msg.payload = response;
 						if( error ) {
@@ -414,6 +412,7 @@ console.log(error,response);
 							node.error(response.statusMessage, msg);
 							return;
 						}
+
 						node.status({fill:"green",shape:"dot",text:"Request success"});
 						node.send(msg);
 					});

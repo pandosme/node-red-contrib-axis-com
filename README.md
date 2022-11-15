@@ -52,3 +52,7 @@ Common device security controls actions
 
 ### 1.0.3 
 First commit
+
+### 1.1.0 
+- Bug fixes
+- Cleanup

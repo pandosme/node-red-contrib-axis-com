@@ -158,7 +158,6 @@ module.exports = function(RED) {
 					node.status({fill:"blue",shape:"dot",text:"Installing..."});
 					VapixWrapper.Upload_ACAP( device, msg.payload, function(error, response){
 						msg.payload = response;
-//console.log(response);
 						if( error ) {
 							node.status({fill:"red",shape:"dot",text:"Failed"});
 							msg.payload.action = action;

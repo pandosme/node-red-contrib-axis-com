@@ -51,9 +51,7 @@ exports.SOAP = function( device, soapBody, callback ) {
 }
 
 exports.CGI = function( device, cgi, callback ) {
-//console.log("vapix-wrapper:CGI (" + cgi + ")");
 	VapixDigest.HTTP_Get( device, cgi, "text", function( error, body ) {
-//console.log("vapix-wrapper:CGI: Response: ", error, body );
 		if(error) {
 			callback(error,body);
 			return;
@@ -87,7 +85,6 @@ exports.JPEG = function( device, profile, callback ) {
 }
 
 exports.Param_Get = function( device, paramPath, callback ) {
-//	console.log("vapix-wrapper:Param:Get (" + paramPath + ")");
 	if( !paramPath || paramPath.length === 0 || paramPath.toLowerCase ( ) === "root" ) {
 		callback(true,{
 			statusCode: 400,
@@ -97,7 +94,6 @@ exports.Param_Get = function( device, paramPath, callback ) {
 		return;
 	}
 	exports.HTTP_Get( device, '/axis-cgi/param.cgi?action=list&group=' + paramPath, "text", function( error, body ) {
-//		console.log("vapix-wrapper:Param_Get:Response", error, body );
 		if( error ) {
 			callback( error, body );
 			return;
@@ -152,7 +148,6 @@ exports.DeviceInfo = function( device, callback ) {
 
 	exports.Param_Get( device, "brand", function( error, response ) {
 		if( error ) {
-//			console.log( "Param Get ", error, response );
 			callback( error, response );
 			return;
 		}
@@ -247,15 +242,12 @@ exports.Connections = function( device, callback ) {
 }
 
 exports.Location_Get = function( device, callback ) {
-//	console.log("vapix-wrapper:Location_Get");
 	exports.CGI( device, '/axis-cgi/geolocation/get.cgi', function(error, response) {
-//		console.log("vapix-wrapper:Lovation_Get");
 		if( error ) {
 			callback( error, response );
 			return;
 		}
 		VapixParser.Location( response, function(error, data ) {
-//			console.log("vapix-wrapper:Location_Get:Parser", error, data );
 			callback( error, data );
 		});
 	});
@@ -305,7 +297,6 @@ exports.Location_Set = function( device, data, callback ) {
 	cgi += "&lng=" + lngSign + lngZ + parseFloat(location.longitude).toFixed(8);
 	cgi += "&heading=" + location.direction;
 	cgi += "&text=" + encodeURIComponent(location.text);
-//	console.log("Location_Set", cgi);
 	exports.CGI( device, cgi, function(error, response) {
 		if( error ) {
 			callback( error, response );
@@ -386,7 +377,6 @@ exports.ACAP_Control = function( device, action, acapID, callback ) {
 exports.Account_List = function( device, callback) {
 
 	exports.CGI( device, '/axis-cgi/pwdgrp.cgi?action=get', function( error, response ) {
-//console.log(response);
 		if( error ) {
 			callback( true, response );
 			return;
@@ -430,7 +420,6 @@ exports.Account_Set = function( device, options, callback) {
 
 	var cgi = '/axis-cgi/pwdgrp.cgi?action=update&user=' + account.name + '&pwd=' + encodeURIComponent(account.password);
 	VapixDigest.HTTP_Get( device, cgi, "text", function( error, response ) {
-//		console.log("Vapix.Wrapper.Account_Set: Update", error, response);
 		if( !error && response.search("Error") < 0 ) {
 			callback(false,response);
 			return;
@@ -491,7 +480,6 @@ exports.Account_Remove = function( device, accountName, callback) {
 };
 
 exports.Upload_Firmare = function( device , buffer, callback ) {
-	console.log("vapix-wrapper.upload_firmware", device);
 	if( !Buffer.isBuffer(buffer) ) {
 		callback(true,{
 			statusCode: 400,
@@ -503,7 +491,6 @@ exports.Upload_Firmare = function( device , buffer, callback ) {
 	
 	VapixDigest.upload( device, "firmware", "firmware.bin", null, buffer, 
 		function( error, response) {
-console.log("Upload",error,response);
 			if( error )  {
 				callback( error, response );
 				return;

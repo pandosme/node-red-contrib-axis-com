@@ -50,6 +50,9 @@ Common device security controls actions
 
 ## History
 
+### 1.1.1 
+- Fixed a flaw listing certificates when device responds with >= 400 code
+
 ### 1.0.3 
 First commit
 

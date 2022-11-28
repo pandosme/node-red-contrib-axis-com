@@ -651,6 +651,7 @@ exports.Certificates_List = function( device, callback ){
 	VapixDigest.Soap( device, body, function( error, response ) {
 		if( error ) {
 			callback(error, response);
+			return;
 		}
 		VapixParser.Certificates( response, function( error, list ) {
 			if( error ) {

@@ -50,6 +50,9 @@ Common device security controls actions
 
 ## History
 
+### 1.1.4
+- Fixed faulty links in package.json
+
 ### 1.1.3 
 - Fixed a flaw listing certificates when device responds with >= 400 code
 

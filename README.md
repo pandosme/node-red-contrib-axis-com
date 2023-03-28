@@ -50,6 +50,9 @@ Common device security controls actions
 
 ## History
 
+### 1.1.5
+- Extended device info with support for more Axis models
+
 ### 1.1.4
 - Fixed faulty links in package.json
 

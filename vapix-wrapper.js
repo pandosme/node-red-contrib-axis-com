@@ -1,4 +1,4 @@
-//Copyright (c) 2021-2022 Fred Juhlin
+//Copyright (c) 2021-2023 Fred Juhlin
 
 const fs = require("fs");
 const VapixDigest = require("./vapix-digest.js");
@@ -152,8 +152,9 @@ exports.DeviceInfo = function( device, callback ) {
 			return;
 		}
 
-		info.model = response.ProdNbr || "";
-		info.type = response.ProdType || "";
+		info.name = resonse.ProdShortName || null;
+		info.model = response.ProdNbr || null;
+		info.type = response.ProdType || null;
 
 		exports.Param_Get( device, "network", function( error, response ) {
 			if( error ) {

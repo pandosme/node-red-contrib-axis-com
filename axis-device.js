@@ -1,4 +1,4 @@
-//Copyright (c) 2021-2022 Fred Juhlin
+//Copyright (c) 2021-2023 Fred Juhlin
 
 const VapixWrapper = require('./vapix-wrapper');
 var vapix = require("./vapix-digest.js");
@@ -46,87 +46,108 @@ module.exports = function(RED) {
 			switch( action ) {
 				case "Device Info":
 					var deviceInfo = {
+						name: null,
 						model: null,
 						type: null,
-						"hostname": null,
-						"address": null,
-						"IPv4": null,
-						"IPv6": null,
-						"mac": null,
-						"firmware": null,
-						"camera":true,
-						"audio":true,
-						"serial": null,
-						"platform": null,
-						"chipset": null,
-						"hardware": null
+						hostname: null,
+						address: device.address,
+						IPv4: null,
+						IPv6: null,
+						mac: null,
+						firmware: null,
+						camera:true,
+						audio:true,
+						serial: null,
+						platform: null,
+						chipset: null,
+						hardware: null,
+						authenticated: false
+						
 					}
 					vapix.HTTP_Post( device, "/axis-cgi/basicdeviceinfo.cgi", {
-						"apiVersion": "1.3",
-						"method": "getAllUnrestrictedProperties"
-					},"json",
-					function( error, response ) {
-						if(error || !response.hasOwnProperty("data") || !response.data.hasOwnProperty("propertyList") || !response.data.propertyList ) {
-							VapixWrapper.DeviceInfo( device, function(error, response ) {
-								msg.payload = response;
-								if( error ) {
-									msg.payload.action = action;
-									msg.payload.address = device.address;
-									node.error(response.statusMessage, msg);
-									return;
-								}
-								node.send(msg);
-							});
-							return;
-						}
-						var propertyList = response.data.propertyList;
-						deviceInfo.model = propertyList.ProdNbr;
-						deviceInfo.serial = propertyList.SerialNumber;
-						deviceInfo.type = propertyList.ProdType;
-						deviceInfo.mac = propertyList.SerialNumber.slice(0,2) + ":";
-						deviceInfo.mac += propertyList.SerialNumber.slice(2, 4) + ":";
-						deviceInfo.mac += propertyList.SerialNumber.slice(4, 6) + ":";
-						deviceInfo.mac += propertyList.SerialNumber.slice(6, 8) + ":";
-						deviceInfo.mac += propertyList.SerialNumber.slice(8, 10) + ":";
-						deviceInfo.mac += propertyList.SerialNumber.slice(10, 12);
-						deviceInfo.address = device.address;
-						deviceInfo.firmware = propertyList.Version;
-						deviceInfo.hardware = propertyList.HardwareID;
-
-						VapixWrapper.Param_Get( device, "properties", function( error, response ) {
-							if( error ) {
-								msg.payload = deviceInfo;
-								node.send(msg);
+							"apiVersion": "1.3",
+							"method": "getAllUnrestrictedProperties"
+						},"json",
+						function( error, response ) {
+							//Chaeck and manage if firmware that is too old for beasicdeviceinfo...
+							if(error || !response.hasOwnProperty("data") || !response.data.hasOwnProperty("propertyList") || !response.data.propertyList ) {
+								VapixWrapper.DeviceInfo( device, function(error, response ) {
+									deviceInfo.name = response.name;
+									deviceInfo.model = response.model;
+									deviceInfo.serial = response.serial;
+									deviceInfo.type = response.type;
+									deviceInfo.mac = response.mac;
+									deviceInfo.IPv4 = response.IPv4;
+									deviceInfo.IPv6 = response.IPv6;
+									deviceInfo.firmware = response.firmware;
+									deviceInfo.hardware = response.hardware;
+									deviceInfo.platform = response.platform;
+									deviceInfo.chipset = response.chipset;
+									deviceInfo.camera = response.camera;
+									deviceInfo.audio = response.audio;
+									deviceInfo.authenticated = true;
+									msg.payload = deviceInfo;
+									if( error ) {
+										msg.payload.action = action;
+										msg.payload.address = device.address;
+										node.error(response.statusMessage, msg);
+										return;
+									}
+									msg.payload = deviceInfo;
+									node.send(msg);
+								});
 								return;
 							}
-							deviceInfo.camera = response.Image && response.Image.Format ? true: false;
-							deviceInfo.audio = response.Audio && response.Audio.Audio ? true: false;
-							deviceInfo.platform = response.System && response.System.Architecture ? response.System.Architecture:"";
-							if( response.System && response.System.hasOwnProperty("Soc") ) {
-								var items = response.System.Soc.split(' ');
-								if( items.length > 1 )
-									deviceInfo.chipset = items[1];
-								else
-									deviceInfo.chipset = response.System.Soc;
-							}
-							VapixWrapper.Param_Get( device, "network", function( error, response ) {
+							var propertyList = response.data.propertyList;
+							deviceInfo.name = propertyList.ProdFullName;
+							deviceInfo.model = propertyList.ProdNbr;
+							deviceInfo.serial = propertyList.SerialNumber;
+							deviceInfo.type = propertyList.ProdType;
+							deviceInfo.mac = propertyList.SerialNumber.slice(0,2) + ":";
+							deviceInfo.mac += propertyList.SerialNumber.slice(2, 4) + ":";
+							deviceInfo.mac += propertyList.SerialNumber.slice(4, 6) + ":";
+							deviceInfo.mac += propertyList.SerialNumber.slice(6, 8) + ":";
+							deviceInfo.mac += propertyList.SerialNumber.slice(8, 10) + ":";
+							deviceInfo.mac += propertyList.SerialNumber.slice(10, 12);
+							deviceInfo.address = device.address;
+							deviceInfo.firmware = propertyList.Version;
+							deviceInfo.hardware = propertyList.HardwareID;
+
+							VapixWrapper.Param_Get( device, "properties", function( error, response ) {
 								if( error ) {
 									msg.payload = deviceInfo;
 									node.send(msg);
 									return;
 								}
-								deviceInfo.hostname = response.HostName || "";
-								deviceInfo.hostname = response.VolatileHostName.HostName || deviceInfo.hostname;
-								if( response.hasOwnProperty("eth0") && response.eth0.hasOwnProperty("IPv6") ) {
-									deviceInfo.IPv4 = response.eth0.IPAddress || null;
-									deviceInfo.IPv6 = response.eth0.IPv6.IPAddresses || null;
+								deviceInfo.authenticated = true;
+								deviceInfo.camera = response.Image && response.Image.Format ? true: false;
+								deviceInfo.audio = response.Audio && response.Audio.Audio ? true: false;
+								deviceInfo.platform = response.System && response.System.Architecture ? response.System.Architecture:"";
+								if( response.System && response.System.hasOwnProperty("Soc") ) {
+									var items = response.System.Soc.split(' ');
+									if( items.length > 1 )
+										deviceInfo.chipset = items[1];
+									else
+										deviceInfo.chipset = response.System.Soc;
 								}
-								msg.payload = deviceInfo;
-								node.send(msg);
+								VapixWrapper.Param_Get( device, "network", function( error, response ) {
+									if( error ) {
+										msg.payload = deviceInfo;
+										node.send(msg);
+										return;
+									}
+									deviceInfo.hostname = response.HostName || "";
+									deviceInfo.hostname = response.VolatileHostName.HostName || deviceInfo.hostname;
+									if( response.hasOwnProperty("eth0") && response.eth0.hasOwnProperty("IPv6") ) {
+										deviceInfo.IPv4 = response.eth0.IPAddress || null;
+										deviceInfo.IPv6 = response.eth0.IPv6.IPAddresses || null;
+									}
+									msg.payload = deviceInfo;
+									node.send(msg);
+								});
 							});
-						});
-					}
-				);
+						}
+					);
 				break;
 
 				case "Get Network settings":

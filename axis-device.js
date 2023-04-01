@@ -99,7 +99,7 @@ module.exports = function(RED) {
 								return;
 							}
 							var propertyList = response.data.propertyList;
-							deviceInfo.name = propertyList.ProdFullName;
+							deviceInfo.name = propertyList.ProdShortName;
 							deviceInfo.model = propertyList.ProdNbr;
 							deviceInfo.serial = propertyList.SerialNumber;
 							deviceInfo.type = propertyList.ProdType;

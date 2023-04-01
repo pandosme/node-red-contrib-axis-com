@@ -50,8 +50,9 @@ Common device security controls actions
 
 ## History
 
-### 1.2.0
+### 1.2.1
 - Ability to get device info without authentication.  If authetication fails, basic device info is provided withot an error is thrown.
+- Minor fixes
 
 ### 1.1.5
 - Extended device info with support for more Axis models

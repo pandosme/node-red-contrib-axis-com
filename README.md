@@ -50,7 +50,7 @@ Common device security controls actions
 
 ## History
 
-### 1.1.5
+### 1.2.0
 - Ability to get device info without authentication.  If authetication fails, basic device info is provided withot an error is thrown.
 
 ### 1.1.5

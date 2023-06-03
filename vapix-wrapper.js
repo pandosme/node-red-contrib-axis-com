@@ -152,7 +152,7 @@ exports.DeviceInfo = function( device, callback ) {
 			return;
 		}
 
-		info.name = resonse.ProdShortName || null;
+		info.name = response.ProdShortName || null;
 		info.model = response.ProdNbr || null;
 		info.type = response.ProdType || null;
 

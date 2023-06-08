@@ -50,6 +50,9 @@ Common device security controls actions
 
 ## History
 
+### 1.2.2
+- Fixed flaw that prevented reading the DeviceInfo from devices with older firmware
+
 ### 1.2.1
 - Ability to get device info without authentication.  If authetication fails, basic device info is provided withot an error is thrown.
 - Minor fixes

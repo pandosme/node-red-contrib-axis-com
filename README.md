@@ -50,6 +50,9 @@ Common device security controls actions
 
 ## History
 
+### 1.2.3
+- Fixed flaw caused error when upgrading firmware
+
 ### 1.2.2
 - Fixed flaw that prevented reading the DeviceInfo from devices with older firmware
 

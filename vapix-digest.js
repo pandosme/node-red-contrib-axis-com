@@ -1,6 +1,5 @@
 //Copyright (c) 2021 Fred Juhlin
 
-const xml2js = require('xml2js');
 const got = require("got");
 const digestAuth = require("@mreal/digest-auth");
 const FormData = require("form-data");
@@ -412,8 +411,8 @@ exports.HTTP_Patch = function( device, path, body, responseType, callback ) {
 	})();
 }
 
-
 exports.Soap = function( device, body, callback ) {
+
 	var soapEnvelope = '<SOAP-ENV:Envelope ' +
 	                   'xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" '+
 					   'xmlns:xs="http://www.w3.org/2001/XMLSchema" '+
@@ -430,10 +429,11 @@ exports.Soap = function( device, body, callback ) {
 					   'xmlns:aweb="http://www.axis.com/vapix/ws/webserver" '+
 					   'xmlns:SOAP-ENV="http://www.w3.org/2003/05/soap-envelope">\n';
 
-		soapEnvelope += '<SOAP-ENV:Body>' + body + '</SOAP-ENV:Body>\n';
-		soapEnvelope += '</SOAP-ENV:Envelope>\n';
-		
-		exports.HTTP_Post( device, '/vapix/services', soapEnvelope,"text", function( error, response) {
+	soapEnvelope += '<SOAP-ENV:Body>' + body + '</SOAP-ENV:Body>\n';
+	soapEnvelope += '</SOAP-ENV:Envelope>\n';
+	
+	exports.HTTP_Post( device, '/vapix/services', soapEnvelope,"text", function( error, response) {
+		console.log(error,response);
 		callback(error,response);
 	});
 }
@@ -578,7 +578,10 @@ exports.upload = function( device, type, filename, options, buffer, callback ) {
 			const response = await client.post(url, {
 				https:{rejectUnauthorized: false}
 			});
-			callback(false, response.body );
+			var body = response.body;
+			if( typeof body === "string" && (body[0]==='{' || body[0]==='[' ))
+				body = JSON.parse(body);
+			callback(false, body );
 		} catch (error) {
 			if( error.code === 'ECONNREFUSED' ) {
 				callback( true, {

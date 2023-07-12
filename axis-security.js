@@ -1,6 +1,7 @@
-//Copyright (c) 2021 Fred Juhlin
+//Copyright (c) 2021-2023 Fred Juhlin
 
 const VapixWrapper = require('./vapix-wrapper');
+const VapixDigest = require("./vapix-digest.js");
 
 module.exports = function(RED) {
 	function Axis_Security(config) {
@@ -166,6 +167,87 @@ module.exports = function(RED) {
 						}
 						msg.payload = state;
 						node.send(msg);
+					});
+				break;
+
+				case "Set SSH User":
+					var user = msg.payload;
+					if( typeof user !== "object" ) {
+						msg.payload = {
+							statusCode: 400,
+							statusMessage: "Invalid input",
+							body: "msg.payload must be an object"
+						}
+						msg.payload.action = action;
+						msg.payload.address = device.address;
+						node.error("msg.payload must be an object", msg);
+						return;
+					}
+
+					if( !user.hasOwnProperty("name") ) {
+						msg.payload = {
+							statusCode: 400,
+							statusMessage: "Invalid input",
+							body: "Missing name"
+						}
+						msg.payload.action = action;
+						msg.payload.address = device.address;
+						node.error("Missing name", msg);
+						return;
+					}
+
+					if( !user.hasOwnProperty("password") ) {
+						msg.payload = {
+							statusCode: 400,
+							statusMessage: "Invalid input",
+							body: "Missing password"
+						}
+						msg.payload.action = action;
+						msg.payload.address = device.address;
+						node.error("Missing password", msg);
+						return;
+					}
+					
+					var data = {
+						data: {
+							password: user.password,
+							comment: user.comment || "Admin"
+						}
+					}
+					VapixDigest.HTTP_Put( device, '/devconf/rest/ssh/v1/users/'+user.name, data, "json", function(error,response ) {
+						if( response.hasOwnProperty("status") && response.status === "success" ) {
+							msg.payload = "SSH user " + user.name + " is set";
+							node.send(msg);
+							return;
+						}
+
+						data = {
+							data: {
+								username: user.name,
+								password: user.password,
+								comment: user.comment || "Admin"
+							
+							}
+						}
+						
+						VapixDigest.HTTP_Post( device, '/devconf/rest/ssh/v1/users', data, "json", function(error,response ) {
+							msg.payload = response;
+							if( error ) {
+								msg.payload.action = action;
+								msg.payload.address = device.address;
+								node.error(response.statusMessage, msg);
+								return;
+							}
+							if( response.hasOwnProperty("status") && response.status === "success" ) {
+								msg.payload = "SSH user " + user.name + " is set";
+								node.send(msg);
+								return;
+							};
+							msg.payload.action = action;
+							msg.payload.address = device.address;
+							node.error(response.statusMessage, msg);
+							return;
+						});
 					});
 				break;
 

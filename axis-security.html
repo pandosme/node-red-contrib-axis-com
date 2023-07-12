@@ -3,7 +3,7 @@
         <label for="node-input-preset"><i class="icon-tag"></i> Device</label>
         <input type="text" id="node-input-preset">
     </div>
-   
+  
 	<div class="form-row">
         <label for="node-input-action"><i class="icon-tag"></i> Action</label>
         <select id="node-input-action">
@@ -12,6 +12,7 @@
             <option value="Remove account">Remove account</option>
             <option value="Allow discovery">Allow discovery</option>
             <option value="Allow SSH">Allow SSH</option>
+            <option value="Set SSH User">Set SSH User</option>
             <option value="Allow Browser Access">Allow Browser Access</option>
             <option value="Set firewall">Set firewall</option>
             <option value="List certificates">List certificates</option>
@@ -124,6 +125,21 @@ RED.nodes.registerType('Axis Security',{
 			<dt>msg.payload<span class="property-type">boolean</span></dt>
 			<dd>
 				true or false
+			</dd>
+		</dl>	
+	</p><br/>
+
+	<p>
+		<b>Set SSH User</b><br/>
+		Set or update SSH User.  SSH must be enabled for users to access.<br/>
+		<dl class="message-properties">
+			<dt>msg.payload<span class="property-type">object</span></dt>
+			<dd>
+				{<br/>
+				&nbsp;&nbsp;"user":"name",<br/>
+				&nbsp;&nbsp;"password":"password",<br/>
+				&nbsp;&nbsp;"comment":"password",<br/>
+				}</code><br/>
 			</dd>
 		</dl>	
 	</p><br/>

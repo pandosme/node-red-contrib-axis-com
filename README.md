@@ -50,6 +50,10 @@ Common device security controls actions
 
 ## History
 
+### 1.3.0
+- Added support to set SSH user introduced in firmware 11.5.x
+- Added support for HTTP Put in Device node
+
 ### 1.2.3
 - Fixed flaw caused error when upgrading firmware
 

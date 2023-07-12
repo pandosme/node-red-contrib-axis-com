@@ -1,4 +1,4 @@
-//Copyright (c) 2021 Fred Juhlin
+//Copyright (c) 2021-2023 Fred Juhlin
 
 const got = require("got");
 const digestAuth = require("@mreal/digest-auth");
@@ -267,19 +267,19 @@ exports.HTTP_Put = function( device, path, body, responseType, callback ) {
 	(async () => {
 		try {
 			var response = 0;
-			if (json )
+			if( json ) {
 				response = await client.put( url, {
 					json: json,
-					responseType: json,
+					responseType: "json",
 					https: {rejectUnauthorized: false}
 				});
-			else
-			if (json )
+			} else {
 				response = await client.put( url, {
 					body: body,
 					responseType: responseType,
 					https: {rejectUnauthorized: false}
 				});
+			}
 			callback(false, response.body );
 		} catch (error) {
 			if( error.code === 'ECONNREFUSED' ) {

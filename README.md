@@ -42,6 +42,7 @@ Common device security controls actions
 * Set/Update/Remove account
 * Enable/disable discovery protocols
 * Enable/Disable SSH
+* Set SSH user
 * Set Firewall (IP Tables)
 * List certificates
 * Generate CSR
@@ -71,11 +72,7 @@ Common device security controls actions
 - Fixed faulty links in package.json
 
 ### 1.1.3 
-- Fixed a flaw listing certificates when device responds with >= 400 code
+- Fixed a flaw listing certificates when device responds with >= 400 error code
 
 ### 1.0.3 
 First commit
-
-### 1.1.0 
-- Bug fixes
-- Cleanup

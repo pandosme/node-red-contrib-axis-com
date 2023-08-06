@@ -7,6 +7,8 @@ This node replaces the following nodes that are deprecated
 * node-red-contrib-acap
 * node-red-contrib-security
 
+<a href="https://www.buymeacoffee.com/fredjuhlinl" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
+
 ## Device Node
 Common device management actions.
 * Device info

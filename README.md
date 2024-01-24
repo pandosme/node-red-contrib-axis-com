@@ -55,6 +55,11 @@ Common device security controls actions
 ## History
 
 ### 1.3.0
+- Added support for HTTP Patch in the Device node
+- Fixed aa faulty error response on Camera SD Card Stop Recording when the operation was actually successful.
+- Removed the resolution selection in Camera SD Cardt Start recording as it had no impact.
+
+### 1.3.0
 - Added support to set SSH user introduced in firmware 11.5.x
 - Added support for HTTP Put in Device node
 

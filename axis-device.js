@@ -554,6 +554,48 @@ module.exports = function(RED) {
 					});
 				break;
 
+				case "HTTP Patch":
+					var data = node.data || msg.payload;
+					var cgi = node.cgi || msg.cgi;
+					if( !cgi || cgi.length < 2 ) {
+						msg.payload = {
+							statusCode: 400,
+							statusMessage: "Invalid input",
+							body: "Missing cgi"
+						}
+						msg.payload.action = action;
+						msg.payload.address = device.address;
+						node.error(response.statusMessage, msg);
+						return;
+					}
+					if(!data) {
+						msg.payload = {
+							statusCode: 400,
+							statusMessage: "Invalid input",
+							body: "Missing post data"
+						}
+						msg.payload.action = action;
+						msg.payload.address = device.address;
+						node.error(response.statusMessage, msg);
+						return;
+					}
+					node.status({fill:"blue",shape:"dot",text:"Requesting..."});
+					
+					VapixWrapper.HTTP_Patch( device, cgi, data, "text", function(error, response ) {
+						msg.payload = response;
+						if( error ) {
+							node.status({fill:"red",shape:"dot",text:"Request failed"});
+							msg.payload.action = action;
+							msg.payload.address = device.address;
+							node.error(response.statusMessage, msg);
+							return;
+						}
+
+						node.status({fill:"green",shape:"dot",text:"Request success"});
+						node.send(msg);
+					});
+				break;
+
 				case "SOAP Post":
 					if( typeof data !== "string" || data.length < 20 || data[0] !== '<') {
 						msg.payload = {

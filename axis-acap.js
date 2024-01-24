@@ -191,7 +191,7 @@ module.exports = function(RED) {
 
     RED.nodes.registerType("Axis ACAP", Axis_ACAP,{
 		defaults: {
-			action: { type:"txt" },
+			action: { type:"text" },
 			preset: {type:"Device Access"},
 			action: { type:"text" },
 			acap: { type:"text" }

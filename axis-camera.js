@@ -128,7 +128,7 @@ module.exports = function(RED) {
 							if( result.hasOwnProperty("root")
 							  && result.root.hasOwnProperty("record")
 							  && result.root.record.hasOwnProperty("result")
-							  && result.root.record.result === "OK" ) {
+							  && result.root.stop.result === "OK" ) {
 								msg.payload = result.root.record.recordingid;
 								node.send(msg);
 								return;

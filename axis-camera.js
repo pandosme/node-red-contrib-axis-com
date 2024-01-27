@@ -1,4 +1,4 @@
-//Copyright (c) 2021-2022 Fred Juhlin
+//Copyright (c) 2021-2024 Fred Juhlin
 
 const VapixWrapper = require('./vapix-wrapper');
 const xml2js = require('xml2js');
@@ -126,10 +126,8 @@ module.exports = function(RED) {
 								return;
 							}
 							if( result.hasOwnProperty("root")
-							  && result.root.hasOwnProperty("record")
-							  && result.root.record.hasOwnProperty("result")
-							  && result.root.stop.result === "OK" ) {
-								msg.payload = result.root.record.recordingid;
+							  && result.root.hasOwnProperty("stop") {
+								msg.payload = "OK";
 								node.send(msg);
 								return;
 							}

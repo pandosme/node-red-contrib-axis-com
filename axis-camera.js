@@ -102,43 +102,14 @@ module.exports = function(RED) {
 				break;
 
 				case "Stop recording":
-					var recordingid = msg.payload;
-					var cgi = "/axis-cgi/record/stop.cgi?recordingid=" + recordingid;
+					if( typeof msg.payload !== "string" || msg.payload.length < 10 ) {
+						node.error("Invalid Input",msg);
+						return;
+					}
+					var id = msg.payload;
+					var cgi = "/axis-cgi/record/stop.cgi?recordingid=" + msg.payload;
 					VapixWrapper.HTTP_Get( device, cgi, "text", function( error, response) {
-						msg.payload = response;
-						if( error ) {
-							msg.payload.action = action;
-							msg.payload.address = device.address;
-							node.error(response.statusMessage, msg);
-							return;
-						}
-						var parser = new xml2js.Parser({
-							explicitArray: false,
-							mergeAttrs: true
-						});
-						parser.parseString(response, function (err, result) {
-							if( err ) {
-								node.error( "XML parse error", {
-									statusCode: "PARSE_ERROR",
-									statusMessage: "XML parse error",
-									body: response
-								});
-								return;
-							}
-							if( result.hasOwnProperty("root")
-							  && result.root.hasOwnProperty("record")
-							  && result.root.record.hasOwnProperty("result")
-							  && result.root.stop.result === "OK" ) {
-								msg.payload = result.root.record.recordingid;
-								node.send(msg);
-								return;
-							}
-							node.error( "Stop recording failed", {
-								statusCode: 500,
-								statusMessage: "Stop recording failed",
-								body: result
-							});
-						});
+						msg.payload = id;
 						node.send(msg);
 					});
 				break;

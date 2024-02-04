@@ -54,6 +54,12 @@ Common device security controls actions
 
 ## History
 
+### 1.5.0
+- Bug fixes
+
+### 1.4.2
+- Fixed node recording | stopped
+
 ### 1.4.1
 - Fixed a clumsy flaw that broke Device Node when updating to 1.4.0
 

@@ -1,4 +1,4 @@
-//Copyright (c) 2021-2023 Fred Juhlin
+//Copyright (c) 2021-2024 Fred Juhlin
 
 const VapixWrapper = require('./vapix-wrapper');
 var vapix = require("./vapix-digest.js");
@@ -29,7 +29,7 @@ module.exports = function(RED) {
 			var action = msg.action || node.action;
 			var data = node.data || msg.payload;
 			var options = msg.options || node.options;
-			var filename = msg.filename || node.filename;
+			var filename = msg.filename || node.filename || null;
 			
 			if( !device.address || device.address.length === 0 || !device.user || device.user.length === 0 || !device.password || device.password.length === 0 ) {
 				msg.payload = {
@@ -196,19 +196,11 @@ module.exports = function(RED) {
 				break;
 
 				case "Upgrade firmware":
-					if( !Buffer.isBuffer(msg.payload) ) {
-						msg.payload = {
-							statusCode: 0,
-							statusMessage: "Invalid input",
-							body: "Firmware data must be a buffer"
-						}
-						msg.payload.action = action;
-						msg.payload.address = device.address;
-						node.error(response.statusMessage, msg);
-						return;
-					}
 					node.status({fill:"blue",shape:"dot",text:"Updating..."});
-					VapixWrapper.Upload_Firmare( device , msg.payload, function(error, response ) {
+					var fileData = msg.payload;
+					if( filename && filename.length > 5)
+						fileData = filename;
+					VapixWrapper.Upload_Firmare( device , fileData, function(error, response ) {
 						msg.payload = response;
 						if(error) {
 							node.status({fill:"red",shape:"dot",text:"Error"});

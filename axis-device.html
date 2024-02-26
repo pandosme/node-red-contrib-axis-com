@@ -33,7 +33,12 @@
 
     <div class="form-row user_input_options">
         <label for="node-input-options"><i class="icon-tag"></i> Options</label>
-        <input type="text" id="node-input-options" placeholder="Overrides msg.options">
+        <input type="text" id="node-input-options" placeholder="msg.options">
+    </div>
+
+    <div class="form-row user_input_filename">
+        <label for="node-input-filename"><i class="icon-tag"></i> Filename</label>
+        <input type="text" id="node-input-filename" placeholder="msg.filename">
     </div>
 
     <div class="form-row">
@@ -68,6 +73,7 @@ RED.nodes.registerType('Axis device',{
 			$(".user_input_cgi").hide();
 			$(".user_input_data").hide();
 			$(".user_input_options").hide();
+			$(".user_input_filename").hide();
 			
 			switch (action) {
 				case "Set time":
@@ -87,6 +93,9 @@ RED.nodes.registerType('Axis device',{
 				break;
 				case "SOAP Post":
 					$(".user_input_data").show();
+				break;
+				case "Upgrade firmware":
+					$(".user_input_filename").show();
 				break;
 				default:
 				break;
@@ -212,7 +221,8 @@ RED.nodes.registerType('Axis device',{
 		<b>Upgrade firmware</b>
 		<dl class="message-properties">
 			<dt>msg.payload<span class="property-type">buffer</span></dt>
-			<dd>Buffer data to firmware file</dd>
+			<dt>msg.filename<span class="property-type">string</span></dt>
+			<dd>Full file path to file or buffer data to firmware file</dd>
 		</dl>
 	</p>
 

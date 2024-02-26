@@ -1,8 +1,10 @@
-//Copyright (c) 2021-2023 Fred Juhlin
+//Copyright (c) 2021-2024 Fred Juhlin
 
 const got = require("got");
+const fs = require("fs");
 const digestAuth = require("@mreal/digest-auth");
 const FormData = require("form-data");
+
 
 var exports = module.exports = {};
 
@@ -438,26 +440,31 @@ exports.Soap = function( device, body, callback ) {
 	});
 }
 
-exports.upload = function( device, type, filename, options, buffer, callback ) {
+exports.upload = function( device, type, filename, options, fileData, callback ) {
 	if( !device || !device.hasOwnProperty("address") || !device.hasOwnProperty("user") || !device.hasOwnProperty("password") ) {
 			callback("Invalid input","Missing address,user or password");
 			return;
 	}
 	var protocol = device.protocol || "http";
 	var url = protocol + "://" + device.address;
-
-	if(!buffer || Buffer.isBuffer(buffer) !== true ) {
-		callback(true,"Invalid upload buffer");
-		return;
+	var buffer = null;
+	if(Buffer.isBuffer(fileData) === true )
+		buffer = fileData;
+	
+	if( typeof fileData === "string" && fileData.length ) {
+		if( !fs.existsSync(fileData) ) {
+			callback(true,{
+				statusCode: 400,
+				statusMessage: "Invalid input",
+				body: fileData + " does not exist"
+			});
+			return;
+		}	
+		buffer = fs.createReadStream(fileData);
 	}
-
-	if( !filename || typeof filename !== "string" || filename.length === 0 ) {
-		callback(true,"Invalid file path");
-		return;
-	}
-
-	if( !device.user || typeof device.user !== "string" || device.user.length === 0 ) {
-		callback(true,"Invalid user name");
+	
+	if( !buffer ) {
+		callback(true,"Invalid input.  No filepath or file buffer found");
 		return;
 	}
 
@@ -527,6 +534,7 @@ exports.upload = function( device, type, filename, options, buffer, callback ) {
 	}
 
 	var formJSON = JSON.stringify(formData);
+	
 	var client = got.extend({
 		hooks:{
 			afterResponse: [

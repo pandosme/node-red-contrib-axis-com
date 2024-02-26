@@ -1,4 +1,4 @@
-//Copyright (c) 2021-2023 Fred Juhlin
+//Copyright (c) 2021-2024 Fred Juhlin
 
 const fs = require("fs");
 const VapixDigest = require("./vapix-digest.js");
@@ -480,17 +480,8 @@ exports.Account_Remove = function( device, accountName, callback) {
 	});
 };
 
-exports.Upload_Firmare = function( device , buffer, callback ) {
-	if( !Buffer.isBuffer(buffer) ) {
-		callback(true,{
-			statusCode: 400,
-			statusMessage: "Invalid input",
-			body: "Firmware data must be a buffer"
-		});
-		return;
-	}
-	
-	VapixDigest.upload( device, "firmware", "firmware.bin", null, buffer, 
+exports.Upload_Firmare = function( device , fileData, callback ) {
+	VapixDigest.upload( device, "firmware", "firmware.bin", null, fileData, 
 		function( error, response) {
 			if( error )  {
 				callback( error, response );
@@ -510,7 +501,7 @@ exports.Upload_Firmare = function( device , buffer, callback ) {
 				return;
 			}
 			
-			VapixDigest.upload( device, "firmware_legacy", "firmware.bin", null, buffer, function( error2, response2) {
+			VapixDigest.upload( device, "firmware_legacy", "firmware.bin", null, fileData, function( error2, response2) {
 				callback( error2, response2 );
 				return;
 			});

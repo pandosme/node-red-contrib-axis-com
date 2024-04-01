@@ -1,4 +1,4 @@
-//Copyright (c) 2021-2022 Fred Juhlin
+//Copyright (c) 2021-2024 Fred Juhlin
 
 const VapixWrapper = require('./vapix-wrapper');
 
@@ -7,16 +7,11 @@ module.exports = function(RED) {
 		RED.nodes.createNode(this,config);
 		this.preset = config.preset;
 		this.action = config.action;
+		this.filename = config.filename;
 		this.acap = config.acap;
 		var node = this;
 		node.on('input', function(msg) {
 			node.status({});
-			var device = {
-				address: null,
-				user: null,
-				passwaord: null,
-				protocol: "http"
-			}
 			var preset = RED.nodes.getNode(node.preset);
 			var device = {
 				address: msg.address || preset.address,
@@ -146,17 +141,9 @@ module.exports = function(RED) {
 				break;
 
 				case "Install ACAP":
-					if( Buffer.isBuffer( msg.payload ) !== true ) {
-						msg.payload = {
-							statusCode: 400,
-							statusMessage: "Invalid input",
-							body: "msg.payload must be a buffer"
-						}
-						node.error(msg);
-						return;
-					}
+					var filename = msg.filename || node.filename;
 					node.status({fill:"blue",shape:"dot",text:"Installing..."});
-					VapixWrapper.Upload_ACAP( device, msg.payload, function(error, response){
+					VapixWrapper.Upload_ACAP( device, filename, function(error, response){
 						msg.payload = response;
 						if( error ) {
 							node.status({fill:"red",shape:"dot",text:"Failed"});
@@ -194,6 +181,7 @@ module.exports = function(RED) {
 			action: { type:"text" },
 			preset: {type:"Device Access"},
 			action: { type:"text" },
+			filename: {type:"text"},
 			acap: { type:"text" }
 		}
 	});

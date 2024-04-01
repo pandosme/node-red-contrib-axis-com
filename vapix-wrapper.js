@@ -510,7 +510,6 @@ exports.Upload_Firmare = function( device , fileData, callback ) {
 }
 
 exports.Upload_Overlay = function( device, filename, options, callback ) {
-
 	if(!filename || typeof filename !== "string" ) {
 		callback(true,{
 			statusCode: 400,
@@ -519,37 +518,27 @@ exports.Upload_Overlay = function( device, filename, options, callback ) {
 		});
 		return;
 	}
-
-	if( !fs.existsSync(filename) ) {
-		callback(true,{
-			statusCode: 400,
-			statusMessage: "Invalid input",
-			body: filename + " down not exist"
-		});
-		return;
-	}	
 	
 	var paths = filename.split("/");
 	var file = paths[paths.length-1];
-
-	VapixDigest.upload( device, "overlay", file, options, fs.createReadStream(filename), function( error, response) {
+	VapixDigest.upload( device, "overlay", file, options, filename, function( error, response) {
 		callback( error, response );
 	});
 
 }
 
-exports.Upload_ACAP = function( device , buffer, callback ) {
-
-	if(!buffer) {  
-		callback(true,{
+exports.Upload_ACAP = function( device , filename, callback ) {
+	if( typeof filename !== "string" || filename.length < 0  ) {
+		msg.payload = {
 			statusCode: 400,
 			statusMessage: "Invalid input",
-			body: "ACAP data must be a buffer"
-		});
+			body: "Filename neds to be set"
+		}
+		node.error(msg);
 		return;
 	}
-	
-	VapixDigest.upload( device, "acap", "acap.eap", null, buffer, function( error, response) {
+
+	VapixDigest.upload( device, "acap", "acap.eap", null, filename, function( error, response) {
 		if(!error) {
 			//VAPIX responds error with 200 OK but error is in JSON
 			try {
@@ -568,7 +557,7 @@ exports.Upload_ACAP = function( device , buffer, callback ) {
 			return;
 		}
 
-		VapixDigest.upload( device, "acap_legacy", "acap.eap", null, buffer, function( error, response) {
+		VapixDigest.upload( device, "acap_legacy", "acap.eap", null, filename, function( error, response) {
 			if( error ) {
 				callback( error, response );
 				return;

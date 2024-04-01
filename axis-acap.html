@@ -20,6 +20,11 @@
         <input type="text" id="node-input-acap" placeholder="Optional. Overrides msg.payload">
     </div>
 
+    <div class="form-row user_input_filename">
+        <label for="node-input-filename"><i class="icon-tag"></i> Filename</label>
+        <input type="text" id="node-input-filename" placeholder="Full path to ACAP eap file">
+    </div>
+
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="">
@@ -48,13 +53,17 @@ RED.nodes.registerType('Axis ACAP',{
 		$("#node-input-action").change(function() {
 			var action = $("#node-input-action").val();
 			$(".user_input_acap").hide();
+			$(".user_input_filename").hide();
 			switch (action) {
 				case "ACAP Status":
 				case "Start ACAP":
 				case "Stop ACAP":
 				case "Remove ACAP":
 					$(".user_input_acap").show();
-				break;
+					break;
+				case "Install ACAP":
+					$(".user_input_filename").show();
+					break;
 			}
 		});
 	}
@@ -106,8 +115,8 @@ RED.nodes.registerType('Axis ACAP',{
 	<p>
 		<b>Install ACAP</b><br/>
 		<dl class="message-properties">
-			<dt>msg.payload<span class="property-type">buffer</span></dt>
-			<dd>Binary buffer to ACAP eap file</dd>
+			<dt>msg.filename<span class="property-type">string</span></dt>
+			<dd>Full path to ACAP eap</dd>
 		</dl>	
 	</p><br/>
 

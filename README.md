@@ -54,6 +54,9 @@ Common device security controls actions
 
 ## History
 
+### 1.6.1
+- In Axis Camera, reintroduced overlay update.
+
 ### 1.6.0
 - In Axis Device, reintroduced firmware upgrade in from a local file as that approach is much more efficient that providing dile buffer data.
 

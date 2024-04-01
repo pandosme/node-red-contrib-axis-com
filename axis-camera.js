@@ -1,4 +1,4 @@
-//Copyright (c) 2021-2022 Fred Juhlin
+//Copyright (c) 2021-2024 Fred Juhlin
 
 const VapixWrapper = require('./vapix-wrapper');
 const xml2js = require('xml2js');
@@ -345,31 +345,19 @@ module.exports = function(RED) {
 				break;
 
 				case "Upload overlay":
-					if(!filename || filename.length === 0 ) {
-						node.status({fill:"red",shape:"dot",text:"Invalid filename"});
-						msg.error = true;
-						msg.payload = {
-							statusCode: 400,
-							statusMessage: "Invalid input",
-							body: "Missing filename"
-						}
-						node.send([null,msg]);
-					}
-					
 					node.status({fill:"blue",shape:"dot",text:"Uploading image..."});
-					if( typeof options === "number" || typeof options === "boolean" || typeof options === "undefined" )
-						options = null;
 					if( typeof options === "string" )
 						options = JSON.parse( options );
+
 					VapixWrapper.Upload_Overlay( device, filename, options, function(error, response){
 						msg.payload = response;
 						if( error ) {
 							node.status({fill:"red",shape:"dot",text:"Upload failed"});
-							node.send([null,msg]);
+							node.error("Invalid input", msg);
 							return;
 						}
 						node.status({fill:"green",shape:"dot",text:"Upload success"});
-						node.send([msg,null]);
+						node.send(msg);
 					});
 				break;
 				

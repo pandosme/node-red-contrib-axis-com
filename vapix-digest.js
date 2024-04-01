@@ -450,7 +450,7 @@ exports.upload = function( device, type, filename, options, fileData, callback )
 	var buffer = null;
 	if(Buffer.isBuffer(fileData) === true )
 		buffer = fileData;
-	
+console.log(fileData);	
 	if( typeof fileData === "string" && fileData.length ) {
 		if( !fs.existsSync(fileData) ) {
 			callback(true,{

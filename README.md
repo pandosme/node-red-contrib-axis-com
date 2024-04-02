@@ -54,6 +54,9 @@ Common device security controls actions
 
 ## History
 
+### 1.7.0
+- Fixed and updated file upload functions for ACAP and Camera overlay image.
+
 ### 1.6.1
 - In Axis Camera, reintroduced overlay update.
 

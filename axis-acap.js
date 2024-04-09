@@ -15,7 +15,7 @@ module.exports = function(RED) {
 			var device = {
 				address: null,
 				user: null,
-				passwaord: null,
+				password: null,
 				protocol: "http"
 			}
 			var preset = RED.nodes.getNode(node.preset);
@@ -23,7 +23,7 @@ module.exports = function(RED) {
 				address: msg.address || preset.address,
 				user: msg.user || preset.credentials.user,
 				password: msg.password || preset.credentials.password,
-				protocol: preset.protocol || "http"
+				protocol: "http"
 			}
 
 			if( !device.address || device.address.length === 0 || !device.user || device.user.length === 0 || !device.password || device.password.length === 0 ) {

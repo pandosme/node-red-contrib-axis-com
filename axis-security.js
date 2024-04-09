@@ -14,11 +14,14 @@ module.exports = function(RED) {
 		node.on('input', function(msg) {
 			node.status({});
 			var preset = RED.nodes.getNode(node.preset);
+			var user = "root";
+			var user = "root";
+			
 			var device = {
 				address: msg.address || preset.address,
 				user: msg.user || preset.credentials.user,
 				password: msg.password || preset.credentials.password,
-				protocol: preset.protocol || "http"
+				protocol: "http"
 			}
 
 			if( !device.address || device.address.length === 0 || !device.user || device.user.length === 0 || !device.password || device.password.length === 0 ) {

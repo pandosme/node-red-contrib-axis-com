@@ -23,7 +23,7 @@ module.exports = function(RED) {
 				address: msg.address || preset.address,
 				user: msg.user || preset.credentials.user,
 				password: msg.password || preset.credentials.password,
-				protocol: preset.protocol || "http"
+				protocol: "http"
 			}
 			
 			var action = msg.action || node.action;

@@ -23,7 +23,7 @@ module.exports = function(RED) {
 				address: msg.address || preset.address,
 				user: msg.user || preset.credentials.user,
 				password: msg.password || preset.credentials.password,
-				protocol: preset.protocol || "http"
+				protocol: "http"
 			}
 
 			var action = msg.action || node.action;
@@ -404,10 +404,13 @@ module.exports = function(RED) {
 								node.error("HTTP Get failed on " + device.address, msg);
 								return;
 							}
-							node.send(msg);
 						} catch (error) {
+							node.status({fill:"green",shape:"dot",text:"Request success"});
 							node.send(msg);
+							return;
 						}
+						node.status({fill:"green",shape:"dot",text:"Request success"});
+						node.send(msg);
 					});
 				break;
 
@@ -441,11 +444,11 @@ module.exports = function(RED) {
 								node.error("HTTP Put failed on " + device.address, msg);
 								return;
 							}
-							node.send(msg);
 						} catch (error) {
+							node.status({fill:"green",shape:"dot",text:"Request success"});
 							node.send(msg);
+							return;
 						}
-
 						node.status({fill:"green",shape:"dot",text:"Request success"});
 						node.send(msg);
 					});
@@ -482,10 +485,12 @@ module.exports = function(RED) {
 								node.error("HTTP Post failed on " + device.address, msg);
 								return;
 							}
-							node.send(msg);
 						} catch (error) {
+							node.status({fill:"green",shape:"dot",text:"Request success"});
 							node.send(msg);
+							return;
 						}
+						node.status({fill:"green",shape:"dot",text:"Request success"});
 						node.send(msg);
 					});
 				break;
@@ -521,11 +526,11 @@ module.exports = function(RED) {
 								node.error("HTTP Post failed on " + device.address, msg);
 								return;
 							}
-							node.send(msg);
 						} catch (error) {
+							node.status({fill:"green",shape:"dot",text:"Request success"});
 							node.send(msg);
+							return;
 						}
-
 						node.status({fill:"green",shape:"dot",text:"Request success"});
 						node.send(msg);
 					});

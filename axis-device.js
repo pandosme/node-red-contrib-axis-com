@@ -1,7 +1,7 @@
 //Copyright (c) 2021-2024 Fred Juhlin
 
 const VapixWrapper = require('./vapix-wrapper');
-var vapix = require("./vapix-digest.js");
+const fs = require("fs");
 
 module.exports = function(RED) {
 	
@@ -30,19 +30,12 @@ module.exports = function(RED) {
 			var data = node.data || msg.payload;
 			var options = msg.options || node.options;
 			var filename = msg.filename || node.filename || null;
-			
+
 			if( !device.address || device.address.length === 0 || !device.user || device.user.length === 0 || !device.password || device.password.length === 0 ) {
-				msg.payload = {
-					statusCode: 0,
-					statusMessage: "Invalid input",
-					body: "Missing device address, user or password"
-				}
-				msg.payload.action = action;
-				msg.payload.address = device.address;
-				node.error("Invalid input", msg);
+				msg.payload = "Missing one or more attributes (address,user,password)";
+				node.error("Access failed",msg);
 				return;
-			}	
-			
+			}
 			switch( action ) {
 				case "Device Info":
 					var deviceInfo = {
@@ -62,9 +55,8 @@ module.exports = function(RED) {
 						chipset: null,
 						hardware: null,
 						authenticated: false
-						
 					}
-					vapix.HTTP_Post( device, "/axis-cgi/basicdeviceinfo.cgi", {
+					VapixWrapper.HTTP_Post( device, "/axis-cgi/basicdeviceinfo.cgi", {
 							"apiVersion": "1.3",
 							"method": "getAllUnrestrictedProperties"
 						},"json",
@@ -88,9 +80,8 @@ module.exports = function(RED) {
 									deviceInfo.authenticated = true;
 									msg.payload = deviceInfo;
 									if( error ) {
-										msg.payload.action = action;
-										msg.payload.address = device.address;
-										node.error(response.statusMessage, msg);
+										msg.payload = response;
+										node.error("Device Info failed on " + device.msg, msg);
 										return;
 									}
 									msg.payload = deviceInfo;
@@ -160,34 +151,24 @@ module.exports = function(RED) {
 					VapixWrapper.CGI_Post( device, "/axis-cgi/network_settings.cgi", request, function(error, response ) {
 						msg.payload = response;
 						if( error ) {
-							msg.payload.action = action;
-							msg.payload.address = device.address;
-							node.error(action + " failed", msg);
+							node.error("Get Network settings failed on " + device.address, msg);
 							return;
 						}
 						if( msg.payload.hasOwnProperty("error") || !msg.payload.hasOwnProperty("data") ) {
-							msg.payload = {
-								statusCode: 200,
-								statusMessage: "Invalid response",
-								body: msg.payload
-							}
-							msg.payload.action = action;
-							msg.payload.address = device.address;
-							node.error(response.statusMessage, msg);
+							msg.payload = msg.payload.error;
+							node.error("Get Network settings failed on " + device.address, msg);
 							return;
 						}
 						msg.payload = msg.payload.data;
 						node.send(msg);
 					});
 				break;
-				
+
 				case "Restart":
 					VapixWrapper.CGI( device, '/axis-cgi/restart.cgi', function(error, response) {
 						msg.payload = response;
 						if( error ) {
-							msg.payload.action = action;
-							msg.payload.address = device.address;
-							node.error(response.statusMessage, msg);
+							node.error("Reboot failed on " + device.address, msg);
 							return;
 						}
 						msg.payload = device.address + " restarting";
@@ -196,18 +177,21 @@ module.exports = function(RED) {
 				break;
 
 				case "Upgrade firmware":
+					var filename = msg.filename || node.filename;
+					if( !fs.existsSync(filename) ) {
+						node.status({fill:"red",shape:"dot",text:"Error"});
+						msg.payload = filename + " does not exist";
+						node.error("Upgrade firmware failed on " + device.address, msg);
+						return;
+					}
+
 					node.status({fill:"blue",shape:"dot",text:"Updating..."});
-					var fileData = msg.payload;
-					if( filename && filename.length > 5)
-						fileData = filename;
 					VapixWrapper.Upload_Firmare( device , fileData, function(error, response ) {
 						msg.payload = response;
 						if(error) {
 							node.status({fill:"red",shape:"dot",text:"Error"});
 							msg.payload = response;
-							msg.payload.action = action;
-							msg.payload.address = device.address;
-							node.error(response.statusMessage, msg);
+							node.error("Upgrade firmware failed on " + device.address, msg);
 							return;
 						}
 						node.status({fill:"green",shape:"dot",text:"Success"});
@@ -219,14 +203,8 @@ module.exports = function(RED) {
 					if( typeof data === "string" )
 						data = JSON.parse(data);
 					if(!data) {
-						msg.payload = {
-							statusCode: 400,
-							statusMessage: "Invalid input",
-							body: "Time data needs to be an objet or JSON"
-						}
-						msg.payload.action = action;
-						msg.payload.address = device.address;
-						node.error(response.statusMessage, msg);
+						msg.payload = "Input data needs to be an object"
+						node.error("Set time failed on " + device.address, msg);
 						return;
 					}
 					var numberOfSetttings = 0;
@@ -248,9 +226,8 @@ module.exports = function(RED) {
 							VapixWrapper.CGI( device, "/axis-cgi/param.cgi?action=update&Time.ObtainFromDHCP=yes", function(error, response ){
 								msg.payload = response;
 								if( error ) {
-									msg.payload.action = action;
-									msg.payload.address = device.address;
-									node.error(response.statusMessage, msg);
+									msg.payload = response;
+									node.error("Set time failed on " + device.address, msg);
 									return;
 								}
 								numberOfSetttings--;
@@ -273,17 +250,15 @@ module.exports = function(RED) {
 							VapixWrapper.CGI_Post( device, "/axis-cgi/ntp.cgi", body, function(error, response) {
 								msg.payload = response;
 								if( error ) {
-									msg.payload.action = action;
-									msg.payload.address = device.address;
-									node.error(response.statusMessage, msg);
+									msg.payload.action = response;
+									node.error("Set time failed on " + device.address, msg);
 									return;
 								}
 								VapixWrapper.CGI( device, "/axis-cgi/param.cgi?action=update&Time.ObtainFromDHCP=no", function(error, response ){
 									msg.payload = response;
 									if( error ) {
-										msg.payload.action = action;
-										msg.payload.address = device.address;
-										node.error(response.statusMessage, msg);
+										msg.payload.action = response;
+										node.error("Set time failed on " + device.address, msg);
 										return;
 									}
 									numberOfSetttings--;
@@ -301,14 +276,8 @@ module.exports = function(RED) {
 						if( typeof data.timezone !== "string" || data.timezone.length < 8 ||  data.timezone.search("/") < 0 ) {
 							numberOfSetttings--;
 							if( numberOfSetttings <= 0 ) {
-								msg.payload = {
-									statusCode: 400,
-									statusMessage: "Invalid input",
-									body: "Timezon syntax"
-								}
-								msg.payload.action = action;
-								msg.payload.address = device.address;
-								node.error(response.statusMessage, msg);
+								msg.payload = "Invalid input Timezon syntax";
+								node.error("Set time failed on " + device.address, msg);
 								return;
 							}
 						} else {
@@ -322,9 +291,7 @@ module.exports = function(RED) {
 							VapixWrapper.CGI_Post( device, "/axis-cgi/time.cgi", body, function(error, response) {
 								msg.payload = response;
 								if( error ) {
-									msg.payload.action = action;
-									msg.payload.address = device.address;
-									node.error(response.statusMessage, msg);
+									node.error("Set time failed on " + device.address, msg);
 									return;
 								}
 								msg.payload = data;
@@ -337,21 +304,16 @@ module.exports = function(RED) {
 						}
 					}
 				break;
-				
+
 				case "Set name":
 					var name = msg.payload;
 					name = name.replace(/\s/g , "-");
 					if( typeof name !== "string" || name.length < 3 ) {
-						msg.payload = {
-							statusCode: 0,
-							statusMessage: "Invalid input",
-							body: "Name needs to be a string"
-						}
-						msg.payload.action = action;
-						msg.payload.address = device.address;
-						node.error(response.statusMessage, msg);
+						msg.payload = "Name needs to be a string";
+						node.error("Set name failed on " + device.address, msg);
+						return;
 					}
-						
+
 					var cgi = "/axis-cgi/param.cgi?action=update";
 					cgi += "&root.Network.VolatileHostName.ObtainFromDHCP=no";
 					cgi += "&root.Network.HostName=" + name;
@@ -360,9 +322,7 @@ module.exports = function(RED) {
 					VapixWrapper.CGI( device, cgi, function(error, response) {
 						msg.payload = response;
 						if( error ) {
-							msg.payload.action = action;
-							msg.payload.address = device.address;
-							node.error(response.statusMessage, msg);
+							node.error("Set name failed on " + device.address, msg);
 							return;
 						}
 						msg.payload = name;
@@ -374,9 +334,7 @@ module.exports = function(RED) {
 					VapixWrapper.Syslog( device, function( error, response) {
 						msg.payload = response;
 						if( error ) {
-							msg.payload.action = action;
-							msg.payload.address = device.address;
-							node.error(response.statusMessage, msg);
+							node.error("Syslog failed on " + device.address, msg);
 							return;
 						}
 						node.send(msg);
@@ -387,9 +345,7 @@ module.exports = function(RED) {
 					VapixWrapper.Connections( device, function( error, response) {
 						msg.payload = response;
 						if( error ) {
-							msg.payload.action = action;
-							msg.payload.address = device.address;
-							node.error(response.statusMessage, msg);
+							node.error("List conneections failed on " + device.address, msg);
 							return;
 						}
 						node.send(msg);
@@ -400,9 +356,7 @@ module.exports = function(RED) {
 					VapixWrapper.Location_Get( device, function( error, response) {
 						msg.payload = response;
 						if( error ) {
-							msg.payload.action = action;
-							msg.payload.address = device.address;
-							node.error(response.statusMessage, msg);
+							node.error("Get location failed on " + device.address, msg);
 							return;
 						}
 						node.send(msg);
@@ -412,24 +366,16 @@ module.exports = function(RED) {
 				case "Set location":
 					if( typeof data === "string" )
 						data = JSON.parse( data );
-					
+
 					if(!data || typeof data !== "object") {
-						msg.payload = {
-							statusCode: 400,
-							statusMessage: "Invalid input",
-							body: "Location syntax error"
-						}
-						msg.payload.action = action;
-						msg.payload.address = device.address;
-						node.error(response.statusMessage, msg);
+						msg.payload = "Location syntax error";
+						node.error("Set location failed on " + device.address, msg);
 						return;
 					}
 					VapixWrapper.Location_Set( device, data, function( error, response) {
 						msg.payload = response;
 						if( error ) {
-							msg.payload.action = action;
-							msg.payload.address = device.address;
-							node.error(response.statusMessage, msg);
+							node.error("Set location failed on " + device.address, msg);
 							return;
 						}
 						msg.payload = data;
@@ -440,63 +386,64 @@ module.exports = function(RED) {
 				case "HTTP Get":
 					var cgi = node.cgi || msg.cgi;
 					if( !cgi || cgi.length < 2 ) {
-						msg.payload = {
-							statusCode: 400,
-							statusMessage: "Invalid input",
-							body: "Missing cgi"
-						}
-						msg.payload.action = action;
-						msg.payload.address = device.address;
-						node.error(response.statusMessage, msg);
+						msg.payload = "Invalid cgi";
+						node.error("HTTP Get failed on " + device.address, msg);
 						return;
 					}
 					VapixWrapper.HTTP_Get( device, cgi, "text", function(error, response ) {
 						msg.payload = response;
 						if( error ) {
-							msg.payload.action = action;
-							msg.payload.address = device.address;
-							node.error(response.statusMessage, msg);
+							node.error("HTTP Get failed on " + device.address, msg);
 							return;
 						}
-						node.send(msg);
+						try {
+							msg.payload = JSON.parse(response);
+							if( msg.payload.hasOwnProperty("error") ) {
+								node.status({fill:"red",shape:"dot",text:"Request failed"});
+								msg.payload = msg.payload.error;
+								node.error("HTTP Get failed on " + device.address, msg);
+								return;
+							}
+							node.send(msg);
+						} catch (error) {
+							node.send(msg);
+						}
 					});
 				break;
-				
+
 				case "HTTP Put":
-					var data = node.data || msg.payload;
 					var cgi = node.cgi || msg.cgi;
 					if( !cgi || cgi.length < 2 ) {
-						msg.payload = {
-							statusCode: 400,
-							statusMessage: "Invalid input",
-							body: "Missing cgi"
-						}
-						msg.payload.action = action;
-						msg.payload.address = device.address;
-						node.error(response.statusMessage, msg);
+						msg.payload = "Invalid cgi";
+						node.error("HTTP Put failed on " + device.address, msg);
 						return;
 					}
+					var data = node.data || msg.payload;
 					if(!data) {
-						msg.payload = {
-							statusCode: 400,
-							statusMessage: "Invalid input",
-							body: "Missing post data"
-						}
-						msg.payload.action = action;
-						msg.payload.address = device.address;
-						node.error(response.statusMessage, msg);
+						msg.payload = "Invalid PUT data";
+						node.error("HTTP Put failed on " + device.address, msg);
 						return;
 					}
 					node.status({fill:"blue",shape:"dot",text:"Requesting..."});
-					
+
 					VapixWrapper.HTTP_Put( device, cgi, data, "text", function(error, response ) {
 						msg.payload = response;
 						if( error ) {
 							node.status({fill:"red",shape:"dot",text:"Request failed"});
-							msg.payload.action = action;
-							msg.payload.address = device.address;
-							node.error(response.statusMessage, msg);
+							node.error("HTTP Put failed on " + device.address, msg);
 							return;
+						}
+						try {
+							msg.payload = JSON.parse(response);
+							if( msg.payload.hasOwnProperty("error") ) {
+								node.status({fill:"red",shape:"dot",text:"Request failed"});
+								msg.payload = msg.payload.error;
+								node.error("HTTP Put failed on " + device.address, msg);
+								return;
+							}
+							node.send(msg);
+						} catch (error) {
+							node.send(msg);
 						}
 
 						node.status({fill:"green",shape:"dot",text:"Request success"});
@@ -505,82 +452,78 @@ module.exports = function(RED) {
 				break;
 
 				case "HTTP Post":
-					var data = node.data || msg.payload;
 					var cgi = node.cgi || msg.cgi;
 					if( !cgi || cgi.length < 2 ) {
-						msg.payload = {
-							statusCode: 400,
-							statusMessage: "Invalid input",
-							body: "Missing cgi"
-						}
-						msg.payload.action = action;
-						msg.payload.address = device.address;
-						node.error(response.statusMessage, msg);
+						msg.payload = "Invalid cgi";
+						node.error("HTTP Post failed on " + device.address, msg);
 						return;
 					}
+					var data = node.data || msg.payload;
 					if(!data) {
-						msg.payload = {
-							statusCode: 400,
-							statusMessage: "Invalid input",
-							body: "Missing post data"
-						}
-						msg.payload.action = action;
-						msg.payload.address = device.address;
-						node.error(response.statusMessage, msg);
+						msg.payload = "Invalid post data";
+						node.error("HTTP Post failed on " + device.address, msg);
 						return;
 					}
 					node.status({fill:"blue",shape:"dot",text:"Requesting..."});
-					
+
 					VapixWrapper.HTTP_Post( device, cgi, data, "text", function(error, response ) {
 						msg.payload = response;
 						if( error ) {
 							node.status({fill:"red",shape:"dot",text:"Request failed"});
-							msg.payload.action = action;
-							msg.payload.address = device.address;
-							node.error(response.statusMessage, msg);
+							node.error("HTTP Post failed on " + device.address, msg);
 							return;
 						}
-
 						node.status({fill:"green",shape:"dot",text:"Request success"});
+						try {
+							msg.payload = JSON.parse(response);
+							if( msg.payload.hasOwnProperty("error") ) {
+								node.status({fill:"red",shape:"dot",text:"Request failed"});
+								msg.payload = msg.payload.error;
+								node.error("HTTP Post failed on " + device.address, msg);
+								return;
+							}
+							node.send(msg);
+						} catch (error) {
+							node.send(msg);
+						}
 						node.send(msg);
 					});
 				break;
 
 				case "HTTP Patch":
-					var data = node.data || msg.payload;
 					var cgi = node.cgi || msg.cgi;
 					if( !cgi || cgi.length < 2 ) {
-						msg.payload = {
-							statusCode: 400,
-							statusMessage: "Invalid input",
-							body: "Missing cgi"
-						}
-						msg.payload.action = action;
-						msg.payload.address = device.address;
-						node.error(response.statusMessage, msg);
+						msg.payload = "Invalid cgi";
+						node.error("HTTP Patch failed on " + device.address, msg);
 						return;
 					}
+					var data = node.data || msg.payload;
 					if(!data) {
-						msg.payload = {
-							statusCode: 400,
-							statusMessage: "Invalid input",
-							body: "Missing post data"
-						}
-						msg.payload.action = action;
-						msg.payload.address = device.address;
-						node.error(response.statusMessage, msg);
+						node.status({fill:"red",shape:"dot",text:"Request failed"});
+						msg.payload = "Invalid patch data";
+						node.error("HTTP Patch failed on " + device.address, msg);
 						return;
 					}
 					node.status({fill:"blue",shape:"dot",text:"Requesting..."});
-					
+
 					VapixWrapper.HTTP_Patch( device, cgi, data, "text", function(error, response ) {
 						msg.payload = response;
 						if( error ) {
 							node.status({fill:"red",shape:"dot",text:"Request failed"});
-							msg.payload.action = action;
-							msg.payload.address = device.address;
-							node.error(response.statusMessage, msg);
+							node.error("HTTP Patch failed on " + device.address, msg);
 							return;
+						}
+						try {
+							msg.payload = JSON.parse(response);
+							if( msg.payload.hasOwnProperty("error") ) {
+								node.status({fill:"red",shape:"dot",text:"Request failed"});
+								msg.payload = msg.payload.error;
+								node.error("HTTP Post failed on " + device.address, msg);
+								return;
+							}
+							node.send(msg);
+						} catch (error) {
+							node.send(msg);
 						}
 
 						node.status({fill:"green",shape:"dot",text:"Request success"});
@@ -590,43 +533,28 @@ module.exports = function(RED) {
 
 				case "SOAP Post":
 					if( typeof data !== "string" || data.length < 20 || data[0] !== '<') {
-						msg.payload = {
-							statusCode: 400,
-							statusMessage: "Invalid input",
-							body: "SOAP body syntax"
-						}
-						msg.payload.action = action;
-						msg.payload.address = device.address;
-						node.error(response.statusMessage, msg);
+						msg.payload = "Invalid SOAP body syntax";
+						node.error("SOAP Post failed on " + device.address, msg);
 						return;
 					}
 					VapixWrapper.SOAP( device, data, function(error, response ) {
 						if( error ) {
 							msg.payload = response;
-							msg.payload.action = action;
-							msg.payload.address = device.address;
-							node.error(response.statusMessage, msg);
+							node.error("SOAP Post failed on " + device.address, msg);
 							return;
 						}
 						msg.payload = response;
 						node.send(msg);
 					});
 				break;
-				
+
 				default:
-					msg.payload = {
-						statusCode: 400,
-						statusMessage: "Invalid input",
-						body: action + "is undefined",
-					}
-					msg.payload.action = action;
-					msg.payload.address = device.address;
-					node.error(response.statusMessage, msg);
+					node.error("Invalid action", msg);
 					return;
 			}
         });
     }
-	
+
     RED.nodes.registerType("Axis device",Axis_Device,{
 		defaults: {
 			name: { type:"text" },
@@ -636,7 +564,7 @@ module.exports = function(RED) {
 			options: {type: "text"},
 			cgi: {type: "text"},
 			filename: { type:"text" }
-		}		
+		}
 	});
 }
 

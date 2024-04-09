@@ -54,6 +54,10 @@ Common device security controls actions
 
 ## History
 
+### 1.8.0
+- Refactoring exception handling.  Trown errors are now more consistant and informative.
+- Device request that responds with JSON will now throw an error on 200 OK if the JSON has a property "error"
+
 ### 1.7.0
 - Fixed and updated file upload functions for ACAP and Camera overlay image.
 

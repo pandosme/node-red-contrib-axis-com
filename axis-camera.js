@@ -2,6 +2,7 @@
 
 const VapixWrapper = require('./vapix-wrapper');
 const xml2js = require('xml2js');
+const fs = require("fs");
 
 module.exports = function(RED) {
 	
@@ -13,7 +14,7 @@ module.exports = function(RED) {
 		this.output = config.output;
 		this.options = config.options;
 		this.filename = config.filename;
-		
+	
 		var node = this;
 		node.on('input', function(msg) {
 			node.status({});
@@ -30,14 +31,8 @@ module.exports = function(RED) {
 			var options = node.options || msg.payload;
 
 			if( !device.address || device.address.length === 0 || !device.user || device.user.length === 0 || !device.password || device.password.length === 0 ) {
-				msg.payload = {
-					statusCode: 0,
-					statusMessage: "Invalid input",
-					body: "Missing, address, user or password"
-				}
-				msg.payload.action = action;
-				msg.payload.address = device.address;
-				node.error(response.statusMessage, msg);
+				msg.payload = "Missing one or more attributes (address,user,password)";
+				node.error("Access failed",msg);
 				return;
 			}	
 			
@@ -50,9 +45,7 @@ module.exports = function(RED) {
 					VapixWrapper.JPEG( device, resolution, function( error, response) {
 						msg.payload = response;
 						if( error ) {
-							msg.payload.action = action;
-							msg.payload.address = device.address;
-							node.error(response.statusMessage, msg);
+							node.error("JPEG Imaged failed on " + device.address, msg);
 							return;
 						}
 						if( node.output === "Base64" )
@@ -66,9 +59,7 @@ module.exports = function(RED) {
 					VapixWrapper.HTTP_Get( device, cgi, "text", function( error, response) {
 						msg.payload = response;
 						if( error ) {
-							msg.payload.action = action;
-							msg.payload.address = device.address;
-							node.error(response.statusMessage, msg);
+							node.error("Start recording failed on " + device.address, msg);
 							return;
 						}
 						var parser = new xml2js.Parser({
@@ -77,11 +68,8 @@ module.exports = function(RED) {
 						});
 						parser.parseString(response, function (err, result) {
 							if( err ) {
-								node.error( "XML parse error", {
-									statusCode: "PARSE_ERROR",
-									statusMessage: "XML parse error",
-									body: response
-								});
+								msg.payload = "Invalid XML response from camera";
+								node.error("Start recording failed on " + device.address, msg);
 								return;
 							}
 							if( result.hasOwnProperty("root")
@@ -92,23 +80,26 @@ module.exports = function(RED) {
 								node.send(msg);
 								return;
 							}
-							node.error( "Start recording failed", {
-								statusCode: 500,
-								statusMessage: "Start recording failed",
-								body: result
-							});
+							msg.payload = result;
+							node.error( "Start recording failed on " + device.address, msg);
 						});
 					});
 				break;
 
 				case "Stop recording":
 					if( typeof msg.payload !== "string" || msg.payload.length < 10 ) {
-						node.error("Invalid Input",msg);
+						msg.payload = "Input must be a valid recording ID string";
+						node.error("Stop recording failed on " + device.address,msg);
 						return;
 					}
 					var id = msg.payload;
 					var cgi = "/axis-cgi/record/stop.cgi?recordingid=" + msg.payload;
 					VapixWrapper.HTTP_Get( device, cgi, "text", function( error, response) {
+						if( error ) {
+							msg.payload = response;
+							node.error("Stop recording failed on " + device.address,msg);
+							return;
+						}
 						msg.payload = id;
 						node.send(msg);
 					});
@@ -118,21 +109,13 @@ module.exports = function(RED) {
 					VapixWrapper.Param_Get( device, "properties", function( error, response ) {
 						msg.payload = response;
 						if( error ) {
-							msg.payload.action = action;
-							msg.payload.address = device.address;
-							node.error(response.statusMessage, msg);
+							node.error("Camera Info failed on " + device.address, msg);
 							return;
 						}
 						var info = {};
 						if( !response.hasOwnProperty("Image") || !response.Image.hasOwnProperty("Format")) {
-							msg.payload = {
-								statusCode: 200,
-								statusMessage: "No camera info",
-								body: response
-							}
-							msg.payload.action = action;
-							msg.payload.address = device.address;
-							node.error(response.statusMessage, msg);
+							msg.payload = "No camera info";
+							node.error("Camera Info failed on " + device.address, msg);
 							return;
 						}
 						info.formats = response.Image.Format.split(","),
@@ -145,9 +128,7 @@ module.exports = function(RED) {
 						VapixWrapper.Param_Get( device, "ImageSource.I0", function( error, response ) {
 							if( error ) {
 								msg.payload = response;
-								msg.payload.action = action;
-								msg.payload.address = device.address;
-								node.error(response.statusMessage, msg);
+								node.error("Camera Info failed on " + device.address, msg);
 								return;
 							}
 							if( response.hasOwnProperty("I0") ) { 
@@ -175,9 +156,7 @@ module.exports = function(RED) {
 					VapixWrapper.Param_Get( device, "ImageSource.I0.Sensor", function( error, response ) {
 						if( error ) {
 							msg.payload = response;
-							msg.payload.action = action;
-							msg.payload.address = device.address;
-							node.error(response.statusMessage, msg);
+							node.error("Get image settings failed on " + device.address, msg);
 							return;
 						}
 						var settings = {
@@ -191,9 +170,7 @@ module.exports = function(RED) {
 						VapixWrapper.Param_Get( device, "ImageSource.I0.DayNight", function( error, response ) {
 							if( error ) {
 								msg.payload = response;
-								msg.payload.action = action;
-								msg.payload.address = device.address;
-								node.error(response.statusMessage, msg);
+								node.error("Get image settings failed on " + device.address, msg);
 								return;
 							}
 							settings.DayLevel = parseInt(response.I0.DayNight.ShiftLevel);
@@ -217,20 +194,12 @@ module.exports = function(RED) {
 					VapixWrapper.Param_Set( device, "ImageSource.I0.Sensor", sensor, function( error, response ) {
 						if( error ) {
 							msg.payload = response;
-							msg.payload.action = action;
-							msg.payload.address = device.address;
-							node.error(response.statusMessage, msg);
+							node.error("Set image settings failed on " + device.address, msg);
 							return;
 						}
 						if( !options.hasOwnProperty("DayLevel") ) {
-							msg.payload = {
-								statusCode: 400,
-								statusMessage: "Invalid input",
-								body: "Missing DayLevel"
-							}
-							msg.payload.action = action;
-							msg.payload.address = device.address;
-							node.error(response.statusMessage, msg);
+							msg.payload = "Missing propertry DayLevel";
+							node.error("Set image settings failed on " + device.address, msg);
 							return;
 						}
 						var DayNight = {
@@ -245,9 +214,7 @@ module.exports = function(RED) {
 							msg.payload = response;
 							if( error ) {
 								msg.payload = response;
-								msg.payload.action = action;
-								msg.payload.address = device.address;
-								node.error(response.statusMessage, msg);
+								node.error("Set image settings failed on " + device.address, msg);
 								return;
 							}
 							msg.payload = options;
@@ -260,9 +227,7 @@ module.exports = function(RED) {
 					VapixWrapper.Recordings( device, msg.payload, function(error,response ) {
 						msg.payload = response;
 						if( error ) {
-							msg.payload.action = action;
-							msg.payload.address = device.address;
-							node.error(response.statusMessage, msg);
+							node.error("List Recordings failed on " + device.address, msg);
 							return;
 						}
 						msg.payload.forEach( function(item){
@@ -277,12 +242,8 @@ module.exports = function(RED) {
 
 				case "Export Recording":
 					if( !msg.payload.hasOwnProperty("storage") || !msg.payload.hasOwnProperty("id") ) {
-						msg.payload = {
-							statusCode: 400,
-							statusMessage: "Invalid input",
-							body: "Missing property storage or id"
-						}
-						node.error("Invalid Input", msg );
+						msg.payload = "Missing property storage or id";
+						node.error("Export Recording failed on " + device.address, msg );
 						return;
 					}
 					var cgi = "/axis-cgi/record/export/exportrecording.cgi?schemaversion=1&exportformat=matroska";
@@ -291,56 +252,10 @@ module.exports = function(RED) {
 					VapixWrapper.HTTP_Get( device, cgi, "blob", function(error, response) {
 						msg.payload = response;
 						if( error ) {
-							msg.payload.action = action;
-							msg.payload.address = device.address;
-							node.error(response.statusMessage, msg);
+							node.error("Export Recording failed on " + device.address, msg );
 							return;
 						}
 						node.send( msg );
-					});
-				break;
-
-				case "Set video filter":
-					var filter = node.options;
-					var postData = {
-						"apiVersion": "1.0", 
-						"method": "set",
-						"params":{"flagValues":{"graphics_udvd":true}}
-					}
-					VapixWrapper.HTTP_Post(device,'/axis-cgi/featureflag.cgi',postData, "text", function(error,response){
-						if( error ) {
-							node.send([null,msg]);
-							return;
-						}
-						postData = {
-							"apiVersion": "1.0", 
-							"method": "toggle_filter", "param": { "type": "none"}
-						};
-						var filter = node.options;
-						switch( filter ) {
-							case "Sketch": 
-								postData = {
-									"apiVersion": "1.0", 
-									"method": "toggle_filter", "param": { "type": "sobel"}
-								}
-							break;
-							case "Blur":
-								postData = {
-									"apiVersion": "1.0", 
-									"method": "toggle_filter", "param": { "type": "blur"}
-								}
-							break;
-						}
-
-						VapixWrapper.HTTP_Post(device,'/axis-cgi/udvd/udvd.cgi',postData, "text", function(error2,response2){
-							if( error2 ) {
-								msg.payload = response2;
-								node.send([null,msg]);
-								return;
-							}
-							msg.payload = filter;
-							node.send([msg,null]);
-						});
 					});
 				break;
 
@@ -353,7 +268,12 @@ module.exports = function(RED) {
 						msg.payload = response;
 						if( error ) {
 							node.status({fill:"red",shape:"dot",text:"Upload failed"});
-							node.error("Invalid input", msg);
+							node.error("Upload overlay failed on " + device.address, msg);
+							return;
+						}
+						if( msg.payload.hasOwnProperty("error") ) {
+							msg.payload = msg.payload.error;
+							node.error("Upload overlay failed on " + device.address, msg);
 							return;
 						}
 						node.status({fill:"green",shape:"dot",text:"Upload success"});

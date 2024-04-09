@@ -13,8 +13,6 @@
             <option value="Camera Info">Camera Info</option>
             <option value="Get image settings">Get image settings</option>
             <option value="Set image settings">Set image settings</option>
-            <option value="Set video filter">Set video filter</option>
-            <option value="Upload overlay">Upload overlay</option>
 		</select>
 	</div>
 
@@ -52,11 +50,6 @@
     <div class="form-row user_input_data">
         <label for="node-input-data"><i class="icon-tag"></i> Data</label>
         <input type="text" id="node-input-data" placeholder="Overrides msg.payload">
-    </div>
-
-    <div class="form-row user_input_filename">
-        <label for="node-input-filename"><i class="icon-tag"></i> File</label>
-        <input type="text" id="node-input-filename" placeholder="Full path to image file">
     </div>
 
     <div class="form-row user_input_response">
@@ -101,23 +94,16 @@ RED.nodes.registerType('Axis camera',{
 			$(".user_input_data").hide();
 			$(".user_input_options").hide();
 			$(".user_input_filter").hide();
-			$(".user_input_filename").hide();
 			switch (action) {
 				case "JPEG Image":
 					$(".user_input_resolution").show();
 					$(".user_input_response").show();
-				break;
-				case "Start recording":
-					$(".user_input_resolution").show();
 				break;
 				case "Set image settings":
 					$(".user_input_data").show();
 				break;
 				case "Set video filter":
 					$(".user_input_filter").show();
-				break;
-				case "Upload overlay":
-					$(".user_input_filename").show();
 				break;
 			}
 		});
@@ -201,23 +187,6 @@ RED.nodes.registerType('Axis camera',{
 			&nbsp;&nbsp;"WhiteBalance":"auto",<br/>
 			&nbsp;&nbsp;"WDR":false,<br/>
 			&nbsp;&nbsp;"DayLevel":50<br/>
-			}<br/>
-			</dd>
-		</dl>	
-	</p><br/>
-
-	<p>
-		<b>Upload overlay</b><br/>
-		<br/>
-		
-		<dl class="message-properties">
-			<dt>msg.filename<span class="property-type">string</span></dt>
-			Full file path to image file.
-			<dt>msg.payload<span class="property-type">object</span></dt>
-			<dd>
-			{<br/>
-			&nbsp;&nbsp;"scale":true,<br/>
-			&nbsp;&nbsp;"alpha":0<br/>
 			}<br/>
 			</dd>
 		</dl>	

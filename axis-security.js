@@ -1,4 +1,4 @@
-//Copyright (c) 2021-2023 Fred Juhlin
+//Copyright (c) 2021-2024 Fred Juhlin
 
 const VapixWrapper = require('./vapix-wrapper');
 const VapixDigest = require("./vapix-digest.js");
@@ -22,14 +22,8 @@ module.exports = function(RED) {
 			}
 
 			if( !device.address || device.address.length === 0 || !device.user || device.user.length === 0 || !device.password || device.password.length === 0 ) {
-				msg.payload = {
-					statusCode: 0,
-					statusMessage: "Invalid input",
-					body: "Missing device address, user or password"
-				}
-				msg.payload.action = action;
-				msg.payload.address = device.address;
-				node.error("Invalid input", msg);
+				msg.payload = "Missing one or more attributes (address,user,password)";
+				node.error("Access failed",msg);
 				return;
 			}	
 
@@ -42,9 +36,7 @@ module.exports = function(RED) {
 					VapixWrapper.Account_List( device,function(error, response){
 						msg.payload = response;
 						if( error ) {
-							msg.payload.action = action;
-							msg.payload.address = device.address;
-							node.error(response.statusMessage, msg);
+							node.error("List accounts failed on " + device.address, msg);
 							return;
 						}
 						node.send(msg);
@@ -57,22 +49,14 @@ module.exports = function(RED) {
 						account = JSON.parse(account);
 					
 					if( !account || typeof account !== "object" ) {
-						msg.payload = {
-							statusCode: 400,
-							statusMessage: "Invalid input",
-							body: "Missing account data"
-						}
-						msg.payload.action = action;
-						msg.payload.address = device.address;
-						node.error(response.statusMessage, msg);
+						msg.payload = "Property account needs to be an object";
+						node.error("Set account failed on " + device.address, msg);
 						return;
 					}
 					VapixWrapper.Account_Set( device, account, function(error, response){
 						msg.payload = response;
 						if( error ) {
-							msg.payload.action = action;
-							msg.payload.address = device.address;
-							node.error(response.statusMessage, msg);
+							node.error("Set account failed on " + device.address, msg);
 							return;
 						}
 						msg.payload = account;
@@ -83,22 +67,14 @@ module.exports = function(RED) {
 				case "Remove account":
 					var account = node.account || msg.payload;
 					if( !account || typeof account !== "string" || account.length === 0 ) {
-						msg.payload = {
-							statusCode: 400,
-							statusMessage: "Invalid input",
-							body: "Missing account name"
-						}
-						msg.payload.action = action;
-						msg.payload.address = device.address;
-						node.error(response.statusMessage, msg);
+						msg.payload = "Account needs to be a string";
+						node.error("Remove account failed on " + device.address, msg);
 						return;
 					}
 					VapixWrapper.Account_Remove( device, account, function(error, response){
 						msg.payload = response;
 						if( error ) {
-							msg.payload.action = action;
-							msg.payload.address = device.address;
-							node.error(response.statusMessage, msg);
+							node.error("Remove account failed on " + device.address, msg);
 							return;
 						}
 						msg.payload = account;
@@ -109,14 +85,8 @@ module.exports = function(RED) {
 				case "Allow discovery":
 					var state = msg.payload;
 					if( typeof state !== "boolean" ) {
-						msg.payload = {
-							statusCode: 400,
-							statusMessage: "Invalid input",
-							body: "msg.payload must be boolean"
-						}
-						msg.payload.action = action;
-						msg.payload.address = device.address;
-						node.error("msg.payload must be boolean", msg);
+						msg.payload = "msg.payload must be boolean";
+						node.error("Discovery config failed on " + msg.device, msg);
 						return;
 					}
 					
@@ -128,9 +98,7 @@ module.exports = function(RED) {
 					VapixWrapper.CGI( device, cgi, function(error,response ) {
 						msg.payload = response;
 						if( error ) {
-							msg.payload.action = action;
-							msg.payload.address = device.address;
-							node.error(response.statusMessage, msg);
+							node.error("Discovery config failed on " + device.account, msg);
 							return;
 						}
 						msg.payload = state;
@@ -141,14 +109,8 @@ module.exports = function(RED) {
 				case "Allow SSH":
 					var state = msg.payload;
 					if( typeof state !== "boolean" ) {
-						msg.payload = {
-							statusCode: 400,
-							statusMessage: "Invalid input",
-							body: "msg.payload must be boolean"
-						}
-						msg.payload.action = action;
-						msg.payload.address = device.address;
-						node.error("msg.payload must be boolean", msg);
+						msg.payload = "msg.payload must be boolean";
+						node.error("SSH Config failed on " + device.address, msg);
 						return;
 					}
 					
@@ -160,9 +122,7 @@ module.exports = function(RED) {
 					VapixWrapper.CGI( device, cgi, function(error,response ) {
 						msg.payload = response;
 						if( error ) {
-							msg.payload.action = action;
-							msg.payload.address = device.address;
-							node.error(response.statusMessage, msg);
+							node.error("SSH config failed on " + device.address, msg);
 							return;
 						}
 						msg.payload = state;
@@ -172,42 +132,12 @@ module.exports = function(RED) {
 
 				case "Set SSH User":
 					var user = msg.payload;
-					if( typeof user !== "object" ) {
-						msg.payload = {
-							statusCode: 400,
-							statusMessage: "Invalid input",
-							body: "msg.payload must be an object"
-						}
-						msg.payload.action = action;
-						msg.payload.address = device.address;
-						node.error("msg.payload must be an object", msg);
+					if( typeof user !== "object" || !user.hasOwnProperty("name") || !user.hasOwnProperty("password") ) {
+						msg.payload = "msg.payload must be an object with attribure name and password";
+						node.error("Set SSH User failed on " + device.address, msg);
 						return;
 					}
-
-					if( !user.hasOwnProperty("name") ) {
-						msg.payload = {
-							statusCode: 400,
-							statusMessage: "Invalid input",
-							body: "Missing name"
-						}
-						msg.payload.action = action;
-						msg.payload.address = device.address;
-						node.error("Missing name", msg);
-						return;
-					}
-
-					if( !user.hasOwnProperty("password") ) {
-						msg.payload = {
-							statusCode: 400,
-							statusMessage: "Invalid input",
-							body: "Missing password"
-						}
-						msg.payload.action = action;
-						msg.payload.address = device.address;
-						node.error("Missing password", msg);
-						return;
-					}
-					
+				
 					var data = {
 						data: {
 							password: user.password,
@@ -233,9 +163,7 @@ module.exports = function(RED) {
 						VapixDigest.HTTP_Post( device, '/devconf/rest/ssh/v1/users', data, "json", function(error,response ) {
 							msg.payload = response;
 							if( error ) {
-								msg.payload.action = action;
-								msg.payload.address = device.address;
-								node.error(response.statusMessage, msg);
+								node.error("Set SSH user failed on " + device.address, msg);
 								return;
 							}
 							if( response.hasOwnProperty("status") && response.status === "success" ) {
@@ -243,9 +171,7 @@ module.exports = function(RED) {
 								node.send(msg);
 								return;
 							};
-							msg.payload.action = action;
-							msg.payload.address = device.address;
-							node.error(response.statusMessage, msg);
+							node.error("Set SSH user failed on " + device.address, msg);
 							return;
 						});
 					});
@@ -254,14 +180,8 @@ module.exports = function(RED) {
 				case "Allow Browser Access":
 					var state = msg.payload;
 					if( typeof state !== "boolean" ) {
-						msg.payload = {
-							statusCode: 400,
-							statusMessage: "Invalid input",
-							body: "msg.payload must be boolean"
-						}
-						msg.payload.action = action;
-						msg.payload.address = device.address;
-						node.error("msg.payload must be boolean", msg);
+						msg.payload = "msg.payload must be boolean";
+						node.error("Browser access config failed on " + device.address, msg);
 						return;
 					}
 					if( state === true ) {
@@ -272,9 +192,7 @@ module.exports = function(RED) {
 					VapixWrapper.CGI( device, cgi, function(error,response ) {
 						msg.payload = response;
 						if( error ) {
-							msg.payload.action = action;
-							msg.payload.address = device.address;
-							node.error(response.statusMessage, msg);
+							node.error("Browser access config failed on " + device.address, msg);
 							return;
 						}
 						msg.payload = state;
@@ -290,14 +208,8 @@ module.exports = function(RED) {
 					if( typeof list === "string" && list[0] === "[")
 						list = JSON.parse(list);
 					if( !list || !Array.isArray(list) ) {
-						msg.payload = {
-							statusCode: 400,
-							statusMessage: "Invalid input",
-							body: "Input must be an array of IP addresses"
-						}
-						msg.payload.action = action;
-						msg.payload.address = device.address;
-						node.error(response.statusMessage, msg);
+						msg.payload = "Input must be an array of IP addresses";
+						node.error("Set firewall failed on " + device.address, msg);
 						return;
 					}
 			
@@ -310,14 +222,8 @@ module.exports = function(RED) {
 							return;
 						if( !ipFormat.test(item) ) {
 							listOK = false;
-							msg.payload = {
-								statusCode: 400,
-								statusMessage: "Invalid input",
-								body: item + " is invalid IP address"
-							}
-							msg.payload.action = action;
-							msg.payload.address = device.address;
-							node.error(response.statusMessage, msg);
+							msg.payload = item + " is invalid IP address";
+							node.error("Set firewall failed on " + device.address, msg);
 							return;
 						}
 						stringList += item + " ";
@@ -327,14 +233,8 @@ module.exports = function(RED) {
 						return;
 
 					if( list.length === 1 ) {
-						msg.payload = {
-							statusCode: 400,
-							statusMessage: "Invalid input",
-							body: "Set two or more white listed IP address"
-						}
-						msg.payload.action = action;
-						msg.payload.address = device.address;
-						node.error(response.statusMessage, msg);
+						msg.payload = "Set two or more white listed IP address";
+						node.error("Set firewall failed on " + device.address, msg);
 						return;
 					}
 
@@ -348,9 +248,7 @@ module.exports = function(RED) {
 					VapixWrapper.CGI( device, cgi, function(error,response ) {
 						msg.payload = response;
 						if( error ) {
-							msg.payload.action = action;
-							msg.payload.address = device.address;
-							node.error(response.statusMessage, msg);
+							node.error("Set firewall failed on " + device.address, msg);
 							return;
 						}
 						msg.payload = list;
@@ -362,9 +260,7 @@ module.exports = function(RED) {
 					VapixWrapper.Certificates_List( device, function(error, response){
 						msg.payload = response;
 						if( error ) {
-							msg.payload.action = action;
-							msg.payload.address = device.address;
-							node.error(response.statusMessage, msg);
+							node.error("List certificates failed on " + device.address, msg);
 							return;
 						}
 						node.send(msg);
@@ -374,14 +270,10 @@ module.exports = function(RED) {
 				case "Set HTTPS certificate":
 					data = msg.payload;
 					if( !data || typeof data !== "object" || !data.hasOwnProperty("cert") || !data.hasOwnProperty("key") ) {
-						msg.payload = {
-							statusCode: 400,
-							statusMessage: "Invalid input",
-							body: "Missing cert or key"
-						}
+						msg.payload = "Input must be be an object with properties cert or key";
 						msg.payload.action = action;
 						msg.payload.address = device.address;
-						node.error(response.statusMessage, msg);
+						node.error("Set HTTPS certificate failed on " + device.address, msg);
 						return;
 					}
 					data.cert = data.cert.replace("-----BEGIN CERTIFICATE-----","");
@@ -397,9 +289,7 @@ module.exports = function(RED) {
 					VapixWrapper.SOAP( device, body, function(error,response){
 						msg.payload = response;
 						if( error ) {
-							msg.payload.action = action;
-							msg.payload.address = device.address;
-							node.error(response.statusMessage, msg);
+							node.error("Set HTTPS certificate failed on " + device.address, msg);
 							return;
 						}
 						body = '<aweb:SetWebServerTlsConfiguration xmlns="http://www.axis.com/vapix/ws/webserver"><Configuration>';
@@ -423,9 +313,7 @@ module.exports = function(RED) {
 						VapixWrapper.SOAP( device, body, function(error,response){
 							msg.payload = response;
 							if( error ) {
-								msg.payload.action = action;
-								msg.payload.address = device.address;
-								node.error(response.statusMessage, msg);
+								node.error("Set HTTPS certificate failed on " + device.address, msg);
 								return;
 							}
 							msg.payload = data;
@@ -441,25 +329,13 @@ module.exports = function(RED) {
 						csr = JSON.parse(data);
 					
 					if( !csr || typeof csr !== "object" ) {
-						msg.payload = {
-							statusCode: 400,
-							statusMessage: "Invalid input",
-							body: "Invalid object or JSON"
-						}
-						msg.payload.action = action;
-						msg.payload.address = device.address;
-						node.error(response.statusMessage, msg);
+						msg.payload = "CSR request inoput must be an object with property CN";
+						node.error("Generate CSR failed on " + device.address, msg);
 						return;
 					}
 					if( !csr.hasOwnProperty('CN') ) {
-						msg.payload = {
-							statusCode: 400,
-							statusMessage: "Invalid input",
-							body: "Common name (CN) must be set"
-						}
-						msg.payload.action = action;
-						msg.payload.address = device.address;
-						node.error(response.statusMessage, msg);
+						msg.payload = "Common name (CN) must be set";
+						node.error("Generate CSR failed on " + device.address, msg);
 					}
 					node.status({fill:"blue",shape:"dot",text:"Requesting CSR..."});
 
@@ -496,9 +372,7 @@ module.exports = function(RED) {
 						if( error ) {
 							msg.payload = certResponse;
 							node.status({fill:"red",shape:"dot",text:"CSR request failed"});
-							msg.payload.action = action;
-							msg.payload.address = device.address;
-							node.error(response.statusMessage, msg);
+							node.error("Generate CSR failed on " + device.address, msg);
 							return;
 						}
 						node.status({fill:"green",shape:"dot",text:"CSR complete"});
@@ -511,9 +385,7 @@ module.exports = function(RED) {
 								if( error ) {
 									msg.payload = response;
 									node.status({fill:"red",shape:"dot",text:"CSR request failed"});
-									msg.payload.action = action;
-									msg.payload.address = device.address;
-									node.error(response.statusMessage, msg);
+									node.error("Generate CSR failed on " + device.address, msg);
 									return;
 								}
 								node.status({fill:"green",shape:"dot",text:"CSR complete"});
@@ -538,25 +410,13 @@ module.exports = function(RED) {
 				case "Install Certificate":
 					var PEM = data;
 					if( !PEM || typeof PEM !== "string" ) {
-						msg.payload = {
-							statusCode: 400,
-							statusMessage: "Invalid input",
-							body: "Missing PEM DATA"
-						}
-						msg.payload.action = action;
-						msg.payload.address = device.address;
-						node.error(response.statusMessage, msg);
+						msg.payload = "Missing PEM data";
+						node.error("Install Certificate failed on " + device.address, msg);
 						return;
 					}
 					if( PEM.search("-----BEGIN CERTIFICATE-----") < 0 || PEM.search("-----END CERTIFICATE-----") < 0 ) {
-						msg.payload = {
-							statusCode: 400,
-							statusMessage: "Invalid input",
-							body: "Invalid PEM data"
-						}
-						msg.payload.action = action;
-						msg.payload.address = device.address;
-						node.error(response.statusMessage, msg);
+						msg.payload = "Invalid PEM data";
+						node.error("Install Certificate failed on " + device.address, msg);
 						return;
 					}
 					//Awkward ONVIF again...why not accepting standard PEM formating?!!!!!!!
@@ -576,11 +436,9 @@ module.exports = function(RED) {
 					soapBody += '</tds:LoadCertificates>';
 
 					VapixWrapper.SOAP( device, soapBody, function(error,response) {
-							msg.payload = response;
+						msg.payload = response;
 						if( error ) {
-							msg.payload.action = action;
-							msg.payload.address = device.address;
-							node.error(response.statusMessage, msg);
+							node.error("Install Certificate failed on " + device.address, msg);
 							return;
 						}
 						msg.certID;
@@ -592,14 +450,8 @@ module.exports = function(RED) {
 				case "Remove Certificate":
 					var ID = data;
 					if( !ID || typeof ID !== "string" || ID.length < 2 || ID.length > 60) {
-						msg.payload = {
-							statusCode: 400,
-							statusMessage: "Invalid input",
-							body: "Missing certificate id"
-						}
-						msg.payload.action = action;
-						msg.payload.address = device.address;
-						node.error(response.statusMessage, msg);
+						msg.payload = "Missing certificate id";
+						node.error("Remove Certificate failed on " + device.address, msg);
 						return;
 					}
 					var soapBody = '<tds:DeleteCertificates xmlns="http://www.onvif.org/ver10/device/wsdl">';
@@ -608,9 +460,7 @@ module.exports = function(RED) {
 					VapixWrapper.SOAP( device, soapBody, function(error,response) {
 						msg.payload = response;
 						if( error ) {
-							msg.payload.action = action;
-							msg.payload.address = device.address;
-							node.error(response.statusMessage, msg);
+							node.error("Remove Certificate failed on " + device.address, msg);
 							return;
 						}
 						node.send(msg);
@@ -625,16 +475,10 @@ module.exports = function(RED) {
 						!data.hasOwnProperty("EAP_identity") || !data.hasOwnProperty("EAPOL_version") || 
 						data.cert.length < 500 || data.key.length < 500 || data.CA_cert.length < 500
 						) {
-						msg.payload = {
-							statusCode: 400,
-							statusMessage: "Invalid input",
-							body: "Check 802.1X property syntax"
+							msg.payload = "Input must have valid properties cert, CA_name and EAP_identity";
+							node.error("802.1X EAP-TLS failed on " + device.address, msg);
+							return;
 						}
-						msg.payload.action = action;
-						msg.payload.address = device.address;
-						node.error(response.statusMessage, msg);
-						return;
-					}
 
 					data.CA_cert = data.CA_cert.replace("-----BEGIN CERTIFICATE-----","");
 					data.CA_cert = data.CA_cert.replace("-----END CERTIFICATE-----","");
@@ -643,12 +487,9 @@ module.exports = function(RED) {
 					body += '<CACertificate><tt:CertificateID>' + data.CA_name + '</tt:CertificateID>';
 					body += '<tt:Certificate><tt:Data>' + data.CA_cert + '</tt:Data></tt:Certificate></CACertificate></tds:LoadCACertificates>';
 					VapixWrapper.SOAP( device, body, function(error,response){
-						msg.error = error;
 						msg.payload = response;
 						if( error ) {
-							msg.payload.action = action;
-							msg.payload.address = device.address;
-							node.error(response.statusMessage, msg);
+							node.error("802.1X EAP-TLS failed on " + device.address, msg);
 							return;
 						}
 						data.cert = data.cert.replace("-----BEGIN CERTIFICATE-----","");
@@ -665,9 +506,7 @@ module.exports = function(RED) {
 						VapixWrapper.SOAP( device, body, function(error,response){
 							msg.payload = response;
 							if( error ) {
-								msg.payload.action = action;
-								msg.payload.address = device.address;
-								node.error(response.statusMessage, msg);
+								node.error("802.1X EAP-TLS failed on " + device.address, msg);
 								return;
 							}
 					
@@ -682,22 +521,16 @@ module.exports = function(RED) {
 							body += '<tt:CACertificateID>' + data.CA_name + '</tt:CACertificateID>';
 							body += '</Dot1XConfiguration></tds:SetDot1XConfiguration>';
 							VapixWrapper.SOAP( device, body, function(error,response){
-								msg.error = error;
 								msg.payload = response;
 								if( error ) {
-									msg.payload.action = action;
-									msg.payload.address = device.address;
-									node.error(response.statusMessage, msg);
+									node.error("802.1X EAP-TLS failed on " + device.address, msg);
 									return;
 								}
 								var cgi = '/axis-cgi/param.cgi?action=update&Network.Interface.I0.dot1x.Enabled=yes&Network.Interface.I0.dot1x.EAPOLVersion=' + data.EAPOL_version;	
 								VapixWrapper.CGI( device, cgi, function(error,response ) {
 									msg.payload = resonse;
 									if(error) {
-										msg.payload = "Certififcates installed but could not enable 802.1X";
-										msg.payload.action = action;
-										msg.payload.address = device.address;
-										node.error(response.statusMessage, msg);
+										node.error("802.1X EAP-TLS failed on " + device.address, msg);
 										return;
 									}
 									node.send(msg);

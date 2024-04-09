@@ -1,5 +1,6 @@
-//Copyright (c) 2021-2024 Fred Juhlin
+//Copyright (c) 2021-2022 Fred Juhlin
 
+const fs = require("fs");
 const VapixWrapper = require('./vapix-wrapper');
 
 module.exports = function(RED) {
@@ -7,11 +8,16 @@ module.exports = function(RED) {
 		RED.nodes.createNode(this,config);
 		this.preset = config.preset;
 		this.action = config.action;
-		this.filename = config.filename;
 		this.acap = config.acap;
 		var node = this;
 		node.on('input', function(msg) {
 			node.status({});
+			var device = {
+				address: null,
+				user: null,
+				passwaord: null,
+				protocol: "http"
+			}
 			var preset = RED.nodes.getNode(node.preset);
 			var device = {
 				address: msg.address || preset.address,
@@ -21,14 +27,8 @@ module.exports = function(RED) {
 			}
 
 			if( !device.address || device.address.length === 0 || !device.user || device.user.length === 0 || !device.password || device.password.length === 0 ) {
-				msg.payload = {
-					statusCode: 0,
-					statusMessage: "Invalid input",
-					body: "Missing device address, user or password"
-				}
-				msg.payload.action = action;
-				msg.payload.address = device.address;
-				node.error("Invalid input", msg);
+				msg.payload = "Missing one or more attributes (address,user,password)";
+				node.error("Access failed",msg);
 				return;
 			}	
 
@@ -42,9 +42,7 @@ module.exports = function(RED) {
 					VapixWrapper.ACAP_List( device, function( error, response ) {
 						msg.payload = response;
 						if( error ) {
-							msg.payload.action = action;
-							msg.payload.address = device.address;
-							node.error(response.statusMessage, msg);
+							node.error("ACAP Status failed on " + device.address, msg);
 							return;
 						}
 						if( acap ) {
@@ -58,12 +56,8 @@ module.exports = function(RED) {
 								node.send(msg);
 								return;
 							} else {
-								msg.payload = {
-									statusCode: 400,
-									statusMessage: "Invalid input",
-									body: acap + " is not installed"
-								}
-								node.error("Invalid input", msg);
+								msg.payload = acap + " is not installed";
+								node.error("ACAP Status failed on " + device.address, msg);
 								return;
 							}
 						}
@@ -73,20 +67,14 @@ module.exports = function(RED) {
 
 				case "Start ACAP":
 					if(!acap) {
-						msg.payload = {
-							statusCode: 0,
-							statusMessage: "Invalid input",
-							body: "Set ACAP ip"
-						}
-						node.error("Invalid input",msg);
+						msg.payload = "Undefined ACAP package id";
+						node.error("Start ACAP failed on " + device.address,msg);
 						return;
 					}
 					VapixWrapper.ACAP_Control( device, "start", acap, function(error, response){
 						msg.payload = response;
 						if( error ) {
-							msg.payload.action = action;
-							msg.payload.address = device.address;
-							node.error(response.statusMessage, msg);
+							node.error("Start ACAP failed on " + device.address,msg);
 							return;
 						}
 						msg.payload = acap;
@@ -96,12 +84,8 @@ module.exports = function(RED) {
 
 				case "Stop ACAP":
 					if(!acap) {
-						msg.payload = {
-							statusCode: 0,
-							statusMessage: "Invalid input",
-							body: "Set ACAP ip"
-						}
-						node.error("Invalid input",msg);
+						msg.payload = "Undefined ACAP package id";
+						node.error("Stop ACAP failed on " + device.address,msg);
 						return;
 					}
 					VapixWrapper.ACAP_Control( device, "stop", acap, function(error, response){
@@ -109,7 +93,7 @@ module.exports = function(RED) {
 						if( error ) {
 							msg.payload.action = action;
 							msg.payload.address = device.address;
-							node.error(response.statusMessage, msg);
+							node.error("Stop ACAP failed on " + device.address,msg);
 							return;
 						}
 						msg.payload = acap;
@@ -119,20 +103,14 @@ module.exports = function(RED) {
 
 				case "Remove ACAP":
 					if(!acap) {
-						msg.payload = {
-							statusCode: 0,
-							statusMessage: "Invalid input",
-							body: "Set ACAP ip"
-						}
-						node.error("Invalid input",msg);
+						msg.payload = "Undefined ACAP package id";
+						node.error("Remove ACAP failed on " + device.address,msg);
 						return;
 					}
 					VapixWrapper.ACAP_Control( device, "remove", acap, function(error, response){
 						msg.payload = response;
 						if( error ) {
-							msg.payload.action = action;
-							msg.payload.address = device.address;
-							node.error(response.statusMessage, msg);
+							node.error("Remove ACAP failed on " + device.address,msg);
 							return;
 						}
 						msg.payload = acap;
@@ -142,20 +120,25 @@ module.exports = function(RED) {
 
 				case "Install ACAP":
 					var filename = msg.filename || node.filename;
+					if( !fs.existsSync(filename) ) {
+						msg.payload = filename + " does not exist";
+						node.error("Install ACAP failed on " + device.address, msg);
+						return;
+					}	
+					
 					node.status({fill:"blue",shape:"dot",text:"Installing..."});
 					VapixWrapper.Upload_ACAP( device, filename, function(error, response){
 						msg.payload = response;
 						if( error ) {
 							node.status({fill:"red",shape:"dot",text:"Failed"});
-							msg.payload.action = action;
-							msg.payload.address = device.address;
-							node.error(response.statusMessage, msg);
+							node.error("Install ACAP failed on " + device.address, msg);
 							return;
 						}
 
 						if( typeof response === "object" && response.hasOwnProperty("data") ) {
 							msg.payload = response.data.id;
-						}
+						} else 
+							msg.payload = acap;
 						
 						node.status({fill:"green",shape:"dot",text:"Success"});
 						node.send(msg);
@@ -163,14 +146,7 @@ module.exports = function(RED) {
 				break;
 
 				default:
-					msg.payload = {
-						statusCode: 400,
-						statusMessage: "Invalid input",
-						body: action + "is undefined",
-					}
-					msg.payload.action = action;
-					msg.payload.address = device.address;
-					node.error(response.statusMessage, msg);
+					node.error("Invalid action", msg);
 				break;
 			}
         });
@@ -181,7 +157,6 @@ module.exports = function(RED) {
 			action: { type:"text" },
 			preset: {type:"Device Access"},
 			action: { type:"text" },
-			filename: {type:"text"},
 			acap: { type:"text" }
 		}
 	});

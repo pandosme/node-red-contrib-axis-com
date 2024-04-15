@@ -186,7 +186,7 @@ module.exports = function(RED) {
 					}
 
 					node.status({fill:"blue",shape:"dot",text:"Updating..."});
-					VapixWrapper.Upload_Firmare( device , fileData, function(error, response ) {
+					VapixWrapper.Upload_Firmare( device , filename, function(error, response ) {
 						msg.payload = response;
 						if(error) {
 							node.status({fill:"red",shape:"dot",text:"Error"});

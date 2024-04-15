@@ -54,6 +54,9 @@ Common device security controls actions
 
 ## History
 
+### 1.8.2
+- Fixed flaw device firmware upgrade
+
 ### 1.8.1
 - Fixed flaw introduced in 1.8.0
 

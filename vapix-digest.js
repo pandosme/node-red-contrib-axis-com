@@ -116,6 +116,24 @@ exports.HTTP_Get = function( device, path, resonseType, callback ) {
 				});
 				return;
 			}
+
+			if( error.code === 'ETIMEDOUT' ) {
+				callback( true, {
+					statusCode: error.code,
+					statusMessage: "Timeout",
+					body: "Host does not respond"
+				});
+				return;
+			}
+			if( error.code === 'ENOTFOUND' ) {
+				callback( true, {
+					statusCode: 500,
+					statusMessage: "Unable to resolve address",
+					body: device.address + " is not a valid network address"
+				});
+				return;
+			}
+	
 			callback( true, {
 				statusCode: error && error.response ? error.response.statusCode:0,
 				statusMessage: error && error.response ? error.response.statusMessage:"Unkown error",
@@ -208,6 +226,15 @@ exports.HTTP_Post = function( device, path, body, responseType, callback ) {
 				});
 				return;
 			}
+			if( error.code === 'ENOTFOUND' ) {
+				callback( true, {
+					statusCode: 500,
+					statusMessage: "Unable to resolve address",
+					body: device.address + " is not a valid network address"
+				});
+				return;
+			}
+			
 			callback( true, {
 				statusCode: error && error.response ? error.response.statusCode:0,
 				statusMessage: error && error.response ? error.response.statusMessage:"Unkown error",
@@ -308,6 +335,15 @@ exports.HTTP_Put = function( device, path, body, responseType, callback ) {
 				});
 				return;
 			}
+			if( error.code === 'ENOTFOUND' ) {
+				callback( true, {
+					statusCode: 500,
+					statusMessage: "Unable to resolve address",
+					body: device.address + " is not a valid network address"
+				});
+				return;
+			}
+			
 			callback( true, {
 				statusCode: error && error.response ? error.response.statusCode:0,
 				statusMessage: error && error.response ? error.response.statusMessage:"Unkown error",
@@ -404,6 +440,15 @@ exports.HTTP_Patch = function( device, path, body, responseType, callback ) {
 				});
 				return;
 			}
+			if( error.code === 'ENOTFOUND' ) {
+				callback( true, {
+					statusCode: 500,
+					statusMessage: "Unable to resolve address",
+					body: device.address + " is not a valid network address"
+				});
+				return;
+			}
+			
 			callback( true, {
 				statusCode: error && error.response ? error.response.statusCode:0,
 				statusMessage: error && error.response ? error.response.statusMessage:"Unkown error",
@@ -435,7 +480,7 @@ exports.Soap = function( device, body, callback ) {
 	soapEnvelope += '</SOAP-ENV:Envelope>\n';
 	
 	exports.HTTP_Post( device, '/vapix/services', soapEnvelope,"text", function( error, response) {
-		console.log(error,response);
+//		console.log(error,response);
 		callback(error,response);
 	});
 }
@@ -450,7 +495,6 @@ exports.upload = function( device, type, filename, options, fileData, callback )
 	var buffer = null;
 	if(Buffer.isBuffer(fileData) === true )
 		buffer = fileData;
-console.log(fileData);	
 	if( typeof fileData === "string" && fileData.length ) {
 		if( !fs.existsSync(fileData) ) {
 			callback(true,{
@@ -612,6 +656,14 @@ console.log(fileData);
 					statusCode: error.code,
 					statusMessage: "Timeout",
 					body: "Host does not respond"
+				});
+				return;
+			}
+			if( error.code === 'ENOTFOUND' ) {
+				callback( true, {
+					statusCode: 500,
+					statusMessage: "Unable to resolve address",
+					body: device.address + " is not a valid network address"
 				});
 				return;
 			}

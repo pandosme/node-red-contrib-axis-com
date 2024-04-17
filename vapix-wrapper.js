@@ -425,14 +425,6 @@ exports.Account_Set = function( device, options, callback) {
 			callback(false,response);
 			return;
 		}
-
-		if( account.name === "root" ) {  //Try generate root account for the first time
-			cgi = '/axis-cgi/pwdgrp.cgi?action=add&user=root&pwd=' + encodeURIComponent(account.password) + '&grp=root&sgrp=admin:operator:viewer:ptz';
-			VapixDigest.HTTP_Get_No_digest( device, cgi, "text", function(error, response ) {
-				callback( error, response );
-			});
-			return;
-		}
 		
 		var sgrp = "viewer";
 		if( account.privileges.toLowerCase() === "viewer" || account.privileges.toLowerCase() === "player" )

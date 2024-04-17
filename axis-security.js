@@ -48,14 +48,6 @@ module.exports = function(RED) {
 
 				case "Set account":
 					var account = msg.payload;
-					if( typeof options === "string" )
-						account = JSON.parse(account);
-					
-					if( !account || typeof account !== "object" ) {
-						msg.payload = "Property account needs to be an object";
-						node.error("Set account failed on " + device.address, msg);
-						return;
-					}
 					VapixWrapper.Account_Set( device, account, function(error, response){
 						msg.payload = response;
 						if( error ) {

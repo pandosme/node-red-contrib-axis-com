@@ -54,6 +54,10 @@ Common device security controls actions
 
 ## History
 
+### 1.8.3
+- Improved exceptionhandling when invalid network address is used
+- Allow any account name (beside root) to be added/intialized on a factory default device
+
 ### 1.8.2
 - Fixed flaw device firmware upgrade
 

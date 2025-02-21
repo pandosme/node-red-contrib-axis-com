@@ -271,10 +271,10 @@ module.exports = function(RED) {
 						node.error("Set HTTPS certificate failed on " + device.address, msg);
 						return;
 					}
-					data.cert = data.cert.replace("-----BEGIN CERTIFICATE-----","");
-					data.cert = data.cert.replace("-----END CERTIFICATE-----","");
-					data.key = data.key.replace("-----BEGIN RSA PRIVATE KEY-----","");
-					data.key = data.key.replace("-----END RSA PRIVATE KEY-----","");
+					data.cert = data.cert.replace(/-{5}(BEGIN|END).+?-{5}/g,"");
+					data.cert = data.cert.replace(/-{5}(BEGIN|END).+?-{5}/g,"");
+					data.key = data.key.replace(/-{5}(BEGIN|END).+?-{5}/g,"");
+					data.key = data.key.replace(/-{5}(BEGIN|END).+?-{5}/g,"");
 					var certID = "HTTPS_" + new Date().toISOString().split('.')[0]
 					var body = '<tds:LoadCertificateWithPrivateKey xmlns="http://www.onvif.org/ver10/device/wsdl"><CertificateWithPrivateKey>\n';
 					body += '<tt:CertificateID>' + certID + '</tt:CertificateID>\n';
@@ -415,8 +415,8 @@ module.exports = function(RED) {
 						return;
 					}
 					//Awkward ONVIF again...why not accepting standard PEM formating?!!!!!!!
-					PEM = PEM.replace("-----BEGIN CERTIFICATE-----","");
-					PEM = PEM.replace("-----END CERTIFICATE-----","");
+					PEM = PEM.replace(/-{5}(BEGIN|END).+?-{5}/g,"");
+					PEM = PEM.replace(/-{5}(BEGIN|END).+?-{5}/g,"");
 					
 					var ID = "CERT_" + new Date().toISOString().split('.')[0];
 					
@@ -475,8 +475,8 @@ module.exports = function(RED) {
 							return;
 						}
 
-					data.CA_cert = data.CA_cert.replace("-----BEGIN CERTIFICATE-----","");
-					data.CA_cert = data.CA_cert.replace("-----END CERTIFICATE-----","");
+					data.CA_cert = data.CA_cert.replace(/-{5}(BEGIN|END).+?-{5}/g,"");
+					data.CA_cert = data.CA_cert.replace(/-{5}(BEGIN|END).+?-{5}/g,"");
 					
 					var body = '<tds:LoadCACertificates xmlns="http://www.onvif.org/ver10/device/wsdl">';
 					body += '<CACertificate><tt:CertificateID>' + data.CA_name + '</tt:CertificateID>';
@@ -487,10 +487,10 @@ module.exports = function(RED) {
 							node.error("802.1X EAP-TLS failed on " + device.address, msg);
 							return;
 						}
-						data.cert = data.cert.replace("-----BEGIN CERTIFICATE-----","");
-						data.cert = data.cert.replace("-----END CERTIFICATE-----","");
-						data.key = data.key.replace("-----BEGIN RSA PRIVATE KEY-----","");
-						data.key = data.key.replace("-----END RSA PRIVATE KEY-----","");
+						data.cert = data.cert.replace(/-{5}(BEGIN|END).+?-{5}/g,"");
+						data.cert = data.cert.replace(/-{5}(BEGIN|END).+?-{5}/g,"");
+						data.key = data.key.replace(/-{5}(BEGIN|END).+?-{5}/g,"");
+						data.key = data.key.replace(/-{5}(BEGIN|END).+?-{5}/g,"");
 						
 						var certID = "802.1X_" + parseInt(new Date().getTime()/1000);
 						var body = '<tds:LoadCertificateWithPrivateKey xmlns="http://www.onvif.org/ver10/device/wsdl"><CertificateWithPrivateKey>\n';
